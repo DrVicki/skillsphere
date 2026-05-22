@@ -49,7 +49,7 @@ export default function CourseCard({
             <img
               src={thumbnailUrl}
               alt={title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-cover scale-100 group-hover:scale-110 transition-transform duration-500 ease-out will-change-transform"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
