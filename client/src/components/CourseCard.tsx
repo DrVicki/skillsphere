@@ -58,9 +58,13 @@ export default function CourseCard({
           )}
           {/* Hover overlay with Enroll Now button */}
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out">
-            <span className="inline-flex items-center gap-2 bg-white text-primary font-semibold text-sm px-5 py-2.5 rounded-full shadow-lg translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ease-out">
+            <a
+              href={`/courses/${slug}`}
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-2 bg-white text-primary font-semibold text-sm px-5 py-2.5 rounded-full shadow-lg translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ease-out hover:bg-primary hover:text-white active:scale-95"
+            >
               Enroll Now
-            </span>
+            </a>
           </div>
 
           {/* Price badge */}
