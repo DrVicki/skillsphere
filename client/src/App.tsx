@@ -5,14 +5,29 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
+import Courses from "./pages/Courses";
+import CourseDetail from "./pages/CourseDetail";
+import Dashboard from "./pages/Dashboard";
+import LearnCourse from "./pages/LearnCourse";
+import TrainerDashboard from "./pages/TrainerDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import Payments from "./pages/Payments";
+import About from "./pages/About";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
+      <Route path="/" component={Home} />
+      <Route path="/courses" component={Courses} />
+      <Route path="/courses/:slug" component={CourseDetail} />
+      <Route path="/learn/:slug" component={LearnCourse} />
+      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/trainer" component={TrainerDashboard} />
+      <Route path="/admin" component={AdminDashboard} />
+      <Route path="/payments" component={Payments} />
+      <Route path="/about" component={About} />
+      <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -31,7 +46,7 @@ function App() {
         // switchable
       >
         <TooltipProvider>
-          <Toaster />
+          <Toaster richColors position="top-right" />
           <Router />
         </TooltipProvider>
       </ThemeProvider>

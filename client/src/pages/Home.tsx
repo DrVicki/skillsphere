@@ -1,31 +1,261 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import { getLoginUrl } from "@/const";
-import { Streamdown } from 'streamdown';
+import { trpc } from "@/lib/trpc";
+import CourseCard from "@/components/CourseCard";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  ArrowRight, BookOpen, Users, Award, TrendingUp, Star, CheckCircle,
+  Play, MessageSquare, BarChart3, Shield, Zap, Globe
+} from "lucide-react";
+import { Link } from "wouter";
 
-/**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Workflow, Frontend Best Practices, Design Guide and Common Pitfalls
- */
+const LOGO_URL = "/manus-storage/skillsphere-logo_e90b0563.png";
+
+const STATS = [
+  { label: "Active Learners", value: "10,000+", icon: Users },
+  { label: "Expert Courses", value: "200+", icon: BookOpen },
+  { label: "Completion Rate", value: "94%", icon: Award },
+  { label: "Organizations", value: "500+", icon: Globe },
+];
+
+const FEATURES = [
+  { icon: Play, title: "Rich Course Content", desc: "Video, text, and interactive assessments in one seamless experience.", color: "text-blue-600 bg-blue-50" },
+  { icon: MessageSquare, title: "Discussion & Chat", desc: "Per-course boards and real-time chat keep learners and instructors connected.", color: "text-purple-600 bg-purple-50" },
+  { icon: BarChart3, title: "Progress Analytics", desc: "Track completion, engagement, and revenue with detailed dashboards.", color: "text-green-600 bg-green-50" },
+  { icon: Shield, title: "Secure Payments", desc: "Stripe-powered checkout with coupons, bundles, and subscriptions.", color: "text-yellow-600 bg-yellow-50" },
+  { icon: Users, title: "Role-Based Access", desc: "Distinct experiences for admins, trainers, and learners.", color: "text-red-600 bg-red-50" },
+  { icon: Zap, title: "Instant Enrollment", desc: "One-click enrollment for free courses; seamless checkout for paid content.", color: "text-indigo-600 bg-indigo-50" },
+];
+
+const TESTIMONIALS = [
+  { name: "Sarah M.", role: "HR Director", text: "SkillSphere transformed our onboarding. Our team's productivity increased by 40% in just three months.", avatar: "SM" },
+  { name: "James K.", role: "Senior Trainer", text: "The platform is intuitive and powerful. I can create and publish courses in hours, not days.", avatar: "JK" },
+  { name: "Priya R.", role: "Learner", text: "The discussion boards and live chat make learning feel personal even in an online environment.", avatar: "PR" },
+];
+
 export default function Home() {
-  // The userAuth hooks provides authentication state
-  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
-  let { user, loading, error, isAuthenticated, logout } = useAuth();
-
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
+  const { isAuthenticated } = useAuth();
+  const { data: courses } = trpc.courses.list.useQuery({ limit: 6 });
 
   return (
     <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
-      </main>
+      <Navbar />
+
+      {/* ─── Hero ──────────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden brand-gradient text-white">
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-white/5 blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-white/5 blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-white/3 blur-3xl" />
+        </div>
+
+        <div className="container relative py-20 md:py-28">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="animate-fade-in-up">
+              <Badge className="mb-4 bg-white/20 text-white border-white/30 hover:bg-white/30">
+                🚀 Workforce Development Platform
+              </Badge>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6" style={{ fontFamily: "Poppins, sans-serif" }}>
+                Empower Your
+                <span className="block" style={{ color: "#F5B942" }}>Workforce Skills</span>
+              </h1>
+              <p className="text-lg text-white/80 mb-8 leading-relaxed max-w-lg">
+                A secure, interactive platform where professionals and organizations learn, collaborate, and advance workforce capabilities through world-class courses.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button
+                  size="lg"
+                  className="bg-white text-primary hover:bg-white/90 font-semibold shadow-lg"
+                  asChild
+                >
+                  <Link href="/courses">
+                    Explore Courses <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+                {!isAuthenticated && (
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-white/40 text-white hover:bg-white/10 bg-transparent"
+                    asChild
+                  >
+                    <a href={getLoginUrl("/dashboard")}>Start Learning Free</a>
+                  </Button>
+                )}
+              </div>
+              <div className="flex items-center gap-6 mt-8 text-sm text-white/70">
+                <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-green-400" /> No credit card required</span>
+                <span className="flex items-center gap-1.5"><CheckCircle className="h-4 w-4 text-green-400" /> Free courses available</span>
+              </div>
+            </div>
+
+            {/* Hero visual */}
+            <div className="hidden md:flex justify-center animate-fade-in-up stagger-2">
+              <div className="relative">
+                <div className="w-72 h-72 rounded-full bg-white/10 flex items-center justify-center">
+                  <img src={LOGO_URL} alt="SkillSphere" className="w-56 h-56 object-contain drop-shadow-2xl" />
+                </div>
+                {/* Floating cards */}
+                <div className="absolute -top-4 -right-8 bg-white rounded-xl shadow-xl p-3 text-gray-900 text-xs font-medium animate-pulse-glow">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
+                      <CheckCircle className="h-3.5 w-3.5 text-green-600" />
+                    </div>
+                    <span>Course Completed!</span>
+                  </div>
+                </div>
+                <div className="absolute -bottom-4 -left-8 bg-white rounded-xl shadow-xl p-3 text-gray-900 text-xs">
+                  <div className="flex items-center gap-2">
+                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <span className="font-bold">4.9</span>
+                    <span className="text-gray-500">rating</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Stats ─────────────────────────────────────────────────────────── */}
+      <section className="py-12 bg-white border-b border-border">
+        <div className="container">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {STATS.map((stat, i) => (
+              <div key={stat.label} className={`text-center animate-fade-in-up stagger-${i + 1}`}>
+                <div className="flex justify-center mb-2">
+                  <stat.icon className="h-6 w-6 text-primary" />
+                </div>
+                <p className="text-2xl md:text-3xl font-bold text-foreground" style={{ fontFamily: "Poppins, sans-serif" }}>
+                  {stat.value}
+                </p>
+                <p className="text-sm text-muted-foreground">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Featured Courses ──────────────────────────────────────────────── */}
+      <section className="section-padding bg-gray-50">
+        <div className="container">
+          <div className="text-center mb-12 animate-fade-in-up">
+            <Badge className="mb-3 bg-primary/10 text-primary border-primary/20">Featured Courses</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Expand Your <span className="brand-gradient-text">Professional Skills</span>
+            </h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">
+              Discover expert-led courses designed to advance your career and empower your organization.
+            </p>
+          </div>
+
+          {courses && courses.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {courses.map((course, i) => (
+                <div key={course.id} className={`animate-fade-in-up stagger-${Math.min(i + 1, 4)}`}>
+                  <CourseCard {...course} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <BookOpen className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+              <p className="text-muted-foreground">Courses coming soon. Check back shortly!</p>
+            </div>
+          )}
+
+          <div className="text-center mt-10">
+            <Button variant="outline" size="lg" asChild>
+              <Link href="/courses">
+                View All Courses <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Features ──────────────────────────────────────────────────────── */}
+      <section className="section-padding bg-white">
+        <div className="container">
+          <div className="text-center mb-12">
+            <Badge className="mb-3 bg-secondary/20 text-yellow-700 border-secondary/30">Platform Features</Badge>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Everything You Need to <span className="brand-gradient-text">Succeed</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {FEATURES.map((feature, i) => (
+              <div key={feature.title} className={`p-6 rounded-xl border border-border hover:shadow-md transition-shadow animate-fade-in-up stagger-${Math.min(i + 1, 4)}`}>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-4 ${feature.color}`}>
+                  <feature.icon className="h-5 w-5" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-2">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Testimonials ──────────────────────────────────────────────────── */}
+      <section className="section-padding bg-gray-50">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Trusted by <span className="brand-gradient-text">Thousands</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {TESTIMONIALS.map((t, i) => (
+              <div key={t.name} className={`bg-white rounded-xl p-6 border border-border shadow-sm animate-fade-in-up stagger-${i + 1}`}>
+                <div className="flex gap-1 mb-4">
+                  {[...Array(5)].map((_, j) => (
+                    <Star key={j} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-sm text-muted-foreground italic mb-4 leading-relaxed">"{t.text}"</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">
+                    {t.avatar}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{t.name}</p>
+                    <p className="text-xs text-muted-foreground">{t.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CTA ───────────────────────────────────────────────────────────── */}
+      <section className="section-padding brand-gradient text-white">
+        <div className="container text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Ready to Build Your <span style={{ color: "#F5B942" }}>Future?</span>
+          </h2>
+          <p className="text-white/80 max-w-xl mx-auto mb-8">
+            Join thousands of professionals advancing their careers with SkillSphere's expert-led courses.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button size="lg" className="bg-white text-primary hover:bg-white/90 font-semibold" asChild>
+              <Link href="/courses">Browse Courses</Link>
+            </Button>
+            {!isAuthenticated && (
+              <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10 bg-transparent" asChild>
+                <a href={getLoginUrl("/dashboard")}>Create Free Account</a>
+              </Button>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </div>
   );
 }
