@@ -9,10 +9,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import {
-  Play, FileText, ClipboardList, CheckCircle, ChevronRight, MessageSquare,
-  Send, BookOpen, Users, Star, ArrowLeft
+import { Play, FileText, ClipboardList, CheckCircle, ChevronRight, MessageSquare,
+  Send, BookOpen, Users, Star, ArrowLeft, Award
 } from "lucide-react";
+import CourseCertificate from "@/components/CourseCertificate";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Link } from "wouter";
 
@@ -30,6 +30,7 @@ export default function LearnCourse({ params }: Props) {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
+  const [showCertificate, setShowCertificate] = useState(false);
 
   const { data: course } = trpc.courses.bySlug.useQuery(params.slug);
   const { data: modules } = trpc.modules.byCourse.useQuery(course?.id ?? 0, { enabled: !!course?.id });
@@ -87,6 +88,8 @@ export default function LearnCourse({ params }: Props) {
     if (type === "assessment") return <ClipboardList className="h-4 w-4" />;
     return <FileText className="h-4 w-4" />;
   };
+
+  const certId = course ? `SS-${course.id}-${user?.id ?? 0}-${new Date().getFullYear()}` : "";
 
   if (!course) return (
     <div className="min-h-screen flex flex-col">
@@ -236,7 +239,22 @@ export default function LearnCourse({ params }: Props) {
                     )}
                   </div>
 
-                  {/* Review section (after completion) */}
+                  {/* Certificate + Review section (after completion) */}
+                  {progressPercent === 100 && (
+                    <div className="mt-6 bg-gradient-to-r from-[#2A63BF]/10 to-[#F5B942]/10 rounded-xl border border-[#F5B942]/30 p-6 text-center">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Award className="h-6 w-6 text-[#F5B942]" />
+                        <h3 className="text-lg font-bold text-foreground">Congratulations! You've completed this course!</h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-4">Your certificate of completion is ready to download.</p>
+                      <Button
+                        className="bg-[#2A63BF] hover:bg-[#2A63BF]/90 text-white px-8 py-2.5 text-sm font-semibold shadow-lg"
+                        onClick={() => setShowCertificate(true)}
+                      >
+                        <Award className="h-4 w-4 mr-2" /> Claim Your Certificate
+                      </Button>
+                    </div>
+                  )}
                   {progressPercent === 100 && (
                     <div className="mt-8 bg-white rounded-xl border border-border p-6">
                       <h3 className="font-semibold mb-4 flex items-center gap-2">
@@ -387,6 +405,18 @@ export default function LearnCourse({ params }: Props) {
           </Tabs>
         </main>
       </div>
+
+      {/* Certificate Modal */}
+      {showCertificate && (
+        <CourseCertificate
+          open={showCertificate}
+          onClose={() => setShowCertificate(false)}
+          learnerName={user?.name ?? "Learner"}
+          courseTitle={course.title}
+          completionDate={new Date()}
+          certificateId={certId}
+        />
+      )}
     </div>
   );
 }
