@@ -45,8 +45,12 @@ export default function Navbar() {
       <div className="container">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
+          <Link href="/" className="flex items-center gap-2.5 shrink-0">
             <img src={LOGO_URL} alt="SkillSphere" className="h-10 w-10 rounded-full object-cover" />
+            <div className="leading-tight">
+              <span className="block text-base font-bold tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', background: 'linear-gradient(90deg, #2A63BF, #7B3FE4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>SkillSphere</span>
+              <span className="block text-[10px] text-muted-foreground" style={{ fontFamily: 'Lato, sans-serif', color: '#F5B942' }}>Empowering Skills. Building Futures.</span>
+            </div>
           </Link>
 
           {/* Desktop Nav */}

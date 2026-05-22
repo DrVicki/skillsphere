@@ -100,6 +100,11 @@ export default function Home() {
                 <div className="w-72 h-72 rounded-full bg-white/10 flex items-center justify-center overflow-hidden">
                   <img src={LOGO_CIRCLE_URL} alt="SkillSphere" className="w-full h-full object-cover drop-shadow-2xl" />
                 </div>
+                {/* Company name + tagline below the circle */}
+                <div className="mt-5 text-center">
+                  <p className="text-2xl font-bold tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', color: '#FFFFFF' }}>SkillSphere</p>
+                  <p className="text-sm mt-0.5 font-medium" style={{ fontFamily: 'Lato, sans-serif', color: '#F5B942' }}>Empowering Skills. Building Futures.</p>
+                </div>
                 {/* Floating cards */}
                 <div className="absolute -top-4 -right-8 bg-white rounded-xl shadow-xl p-3 text-gray-900 text-xs font-medium animate-pulse-glow">
                   <div className="flex items-center gap-2">
