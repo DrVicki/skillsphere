@@ -67,21 +67,21 @@ export default function Courses() {
                 className="pl-9"
               />
             </div>
-            <Select value={category ?? ""} onValueChange={(v) => setCategory(v || undefined)}>
+            <Select value={category ?? "all"} onValueChange={(v) => setCategory(v === "all" ? undefined : v)}>
               <SelectTrigger className="w-44">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Categories</SelectItem>
+                <SelectItem value="all">All Categories</SelectItem>
                 {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
               </SelectContent>
             </Select>
-            <Select value={level ?? ""} onValueChange={(v) => setLevel(v || undefined)}>
+            <Select value={level ?? "all"} onValueChange={(v) => setLevel(v === "all" ? undefined : v)}>
               <SelectTrigger className="w-36">
                 <SelectValue placeholder="Level" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Levels</SelectItem>
+                <SelectItem value="all">All Levels</SelectItem>
                 {LEVELS.map((l) => <SelectItem key={l} value={l}>{l.charAt(0).toUpperCase() + l.slice(1)}</SelectItem>)}
               </SelectContent>
             </Select>
