@@ -14,7 +14,7 @@ import { Menu, X, ChevronDown, BookOpen, LayoutDashboard, Users, BarChart3, LogO
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 
-const LOGO_URL = "/manus-storage/skillsphere-logo_e90b0563.png";
+const LOGO_URL = "/manus-storage/skillsphere-logo-circle_4b524ad4.png";
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -46,7 +46,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <img src={LOGO_URL} alt="SkillSphere" className="h-10 w-auto" />
+            <img src={LOGO_URL} alt="SkillSphere" className="h-10 w-10 rounded-full object-cover" />
           </Link>
 
           {/* Desktop Nav */}

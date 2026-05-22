@@ -13,6 +13,7 @@ import {
 import { Link } from "wouter";
 
 const LOGO_URL = "/manus-storage/skillsphere-logo_e90b0563.png";
+const LOGO_CIRCLE_URL = "/manus-storage/skillsphere-logo-circle_4b524ad4.png";
 
 const STATS = [
   { label: "Active Learners", value: "10,000+", icon: Users },
@@ -96,8 +97,8 @@ export default function Home() {
             {/* Hero visual */}
             <div className="hidden md:flex justify-center animate-fade-in-up stagger-2">
               <div className="relative">
-                <div className="w-72 h-72 rounded-full bg-white/10 flex items-center justify-center">
-                  <img src={LOGO_URL} alt="SkillSphere" className="w-56 h-56 object-contain drop-shadow-2xl" />
+                <div className="w-72 h-72 rounded-full bg-white/10 flex items-center justify-center overflow-hidden">
+                  <img src={LOGO_CIRCLE_URL} alt="SkillSphere" className="w-full h-full object-cover drop-shadow-2xl" />
                 </div>
                 {/* Floating cards */}
                 <div className="absolute -top-4 -right-8 bg-white rounded-xl shadow-xl p-3 text-gray-900 text-xs font-medium animate-pulse-glow">
