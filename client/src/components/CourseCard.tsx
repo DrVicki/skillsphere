@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge";
-import { Star, Users, Clock, BookOpen } from "lucide-react";
+import { useState } from "react";
+import { Star, Users, BookOpen, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 
 interface CourseCardProps {
@@ -34,11 +34,24 @@ export default function CourseCard({
   totalModules,
   trainerName,
 }: CourseCardProps) {
+  const [enrolling, setEnrolling] = useState(false);
+
   const levelColors: Record<string, string> = {
     beginner: "bg-green-100 text-green-700",
     intermediate: "bg-yellow-100 text-yellow-700",
     advanced: "bg-red-100 text-red-700",
   };
+
+  function handleEnrollClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    e.stopPropagation();
+    e.preventDefault();
+    if (enrolling) return;
+    setEnrolling(true);
+    // Brief delay so the spinner is visible before navigation
+    setTimeout(() => {
+      window.location.href = `/courses/${slug}`;
+    }, 700);
+  }
 
   return (
     <Link href={`/courses/${slug}`}>
@@ -56,14 +69,26 @@ export default function CourseCard({
               <BookOpen className="h-12 w-12 text-primary/30" />
             </div>
           )}
+
           {/* Hover overlay with Enroll Now button */}
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out">
             <a
               href={`/courses/${slug}`}
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-2 bg-white text-primary font-semibold text-sm px-5 py-2.5 rounded-full shadow-lg translate-y-2 group-hover:translate-y-0 transition-transform duration-300 ease-out hover:bg-primary hover:text-white active:scale-95"
+              onClick={handleEnrollClick}
+              className={`inline-flex items-center gap-2 font-semibold text-sm px-5 py-2.5 rounded-full shadow-lg translate-y-2 group-hover:translate-y-0 transition-all duration-300 ease-out active:scale-95 min-w-[120px] justify-center
+                ${enrolling
+                  ? "bg-primary text-white cursor-not-allowed"
+                  : "bg-white text-primary hover:bg-primary hover:text-white"
+                }`}
             >
-              Enroll Now
+              {enrolling ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Loading…</span>
+                </>
+              ) : (
+                "Enroll Now"
+              )}
             </a>
           </div>
 
