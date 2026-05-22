@@ -13,7 +13,7 @@ import {
 import { Link } from "wouter";
 
 const LOGO_URL = "/manus-storage/skillsphere-logo_e90b0563.png";
-const LOGO_CIRCLE_URL = "/manus-storage/skillsphere-logo-circle_4b524ad4.png";
+const LOGO_CIRCLE_URL = "/manus-storage/skillsphere-logo-circle_8ea1006a.png";
 
 const STATS = [
   { label: "Active Learners", value: "10,000+", icon: Users },

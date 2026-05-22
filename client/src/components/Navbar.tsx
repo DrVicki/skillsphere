@@ -14,7 +14,7 @@ import { Menu, X, ChevronDown, BookOpen, LayoutDashboard, Users, BarChart3, LogO
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 
-const LOGO_URL = "/manus-storage/skillsphere-logo-circle_4b524ad4.png";
+const LOGO_URL = "/manus-storage/skillsphere-logo-circle_8ea1006a.png";
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
