@@ -52,7 +52,12 @@
 
 ## Future Enhancements
 - [ ] Email notifications for enrollment and completion
-- [ ] Certificate generation on course completion
+
+## Active Work
+- [ ] Style course content viewer (LearnCourse page) to match SkillSphere brand
+- [ ] Add visual progress tracker sidebar with per-module completion and overall percentage
+- [ ] Build completion certificate with Dr. Vicki Bealman as issuer, SkillSphere logo and tagline
+- [ ] Certificate download as printable HTML/PDF when learner reaches 100% completion
 - [ ] Subscription management UI
 - [ ] Bundle purchase flow
 - [ ] AI-powered course recommendations
