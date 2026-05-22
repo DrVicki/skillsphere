@@ -8,9 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Clock, Award, ArrowRight, TrendingUp, Download, ExternalLink, GraduationCap } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { BookOpen, Clock, Award, ArrowRight, TrendingUp, Download, ExternalLink, GraduationCap, Pencil, Check, X } from "lucide-react";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 const LOGO_URL = "/manus-storage/skillsphere-logo-circle_8ea1006a.png";
 
@@ -27,6 +30,24 @@ export default function Dashboard() {
   const { data: payments } = trpc.payments.myHistory.useQuery(undefined, { enabled: isAuthenticated });
 
   const [cert, setCert] = useState<CertificateState | null>(null);
+  const [editingName, setEditingName] = useState(false);
+  const [certName, setCertName] = useState("");
+  const [showNamePrompt, setShowNamePrompt] = useState(false);
+  const [pendingCert, setPendingCert] = useState<CertificateState | null>(null);
+
+  const utils = trpc.useUtils();
+  const updateProfile = trpc.auth.updateProfile.useMutation({
+    onSuccess: () => {
+      utils.auth.me.invalidate();
+      toast.success("Certificate name updated!");
+      setEditingName(false);
+    },
+    onError: () => toast.error("Failed to update name"),
+  });
+
+  useEffect(() => {
+    if (user?.name) setCertName(user.name);
+  }, [user?.name]);
 
   if (loading) return (
     <div className="min-h-screen flex flex-col">
@@ -55,11 +76,29 @@ export default function Dashboard() {
   function openCert(enrollment: typeof completedCourses[0]) {
     const courseId = enrollment.course?.id ?? enrollment.courseId;
     const certId = `SS-${courseId}-${user?.id ?? 0}-${new Date().getFullYear()}`;
-    setCert({
+    const certData: CertificateState = {
       open: true,
       courseTitle: enrollment.course?.title ?? "Course",
       completionDate: enrollment.completedAt ? new Date(enrollment.completedAt) : new Date(),
       certificateId: certId,
+    };
+    // If user has no name set, prompt them first
+    if (!user?.name || user.name.trim() === "") {
+      setPendingCert(certData);
+      setCertName("");
+      setShowNamePrompt(true);
+    } else {
+      setCert(certData);
+    }
+  }
+
+  function confirmNameAndOpenCert() {
+    if (!certName.trim()) { toast.error("Please enter your name"); return; }
+    updateProfile.mutate({ name: certName.trim() }, {
+      onSuccess: () => {
+        setShowNamePrompt(false);
+        if (pendingCert) { setCert(pendingCert); setPendingCert(null); }
+      },
     });
   }
 
@@ -77,9 +116,39 @@ export default function Dashboard() {
                 : <span className="text-2xl font-bold text-white">{(user?.name ?? "L")[0].toUpperCase()}</span>
               }
             </div>
-            <div>
+            <div className="flex-1">
               <h1 className="text-2xl md:text-3xl font-bold mb-0.5">Welcome back, {user?.name?.split(" ")[0] ?? "Learner"}! 👋</h1>
               <p className="text-white/70 text-sm">Continue your learning journey</p>
+              {/* Certificate name editor */}
+              <div className="mt-3 flex items-center gap-2">
+                <GraduationCap className="h-4 w-4 text-[#F5B942] shrink-0" />
+                <span className="text-white/60 text-xs">Certificate name:</span>
+                {editingName ? (
+                  <>
+                    <Input
+                      value={certName}
+                      onChange={(e) => setCertName(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") updateProfile.mutate({ name: certName.trim() }); if (e.key === "Escape") { setCertName(user?.name ?? ""); setEditingName(false); } }}
+                      className="h-7 text-xs bg-white/10 border-white/30 text-white placeholder:text-white/40 w-48 focus:bg-white/20"
+                      placeholder="Your full name"
+                      autoFocus
+                    />
+                    <button onClick={() => updateProfile.mutate({ name: certName.trim() })} disabled={updateProfile.isPending} className="w-6 h-6 rounded-full bg-[#F5B942] flex items-center justify-center hover:bg-[#e8a020] transition-colors">
+                      <Check className="h-3.5 w-3.5 text-[#0d1b3e]" />
+                    </button>
+                    <button onClick={() => { setCertName(user?.name ?? ""); setEditingName(false); }} className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
+                      <X className="h-3.5 w-3.5 text-white" />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-white text-xs font-semibold">{user?.name ?? <span className="text-white/40 italic">Not set</span>}</span>
+                    <button onClick={() => { setCertName(user?.name ?? ""); setEditingName(true); }} className="flex items-center gap-1 text-[#F5B942] text-xs hover:text-[#e8a020] transition-colors">
+                      <Pencil className="h-3 w-3" /> Edit
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -380,12 +449,52 @@ export default function Dashboard() {
         <CourseCertificate
           open={cert.open}
           onClose={() => setCert(null)}
-          learnerName={user?.name ?? "Learner"}
+          learnerName={certName.trim() || user?.name || "Learner"}
           courseTitle={cert.courseTitle}
           completionDate={cert.completionDate}
           certificateId={cert.certificateId}
         />
       )}
+
+      {/* Name Prompt Dialog — shown when user has no name set */}
+      <Dialog open={showNamePrompt} onOpenChange={(v) => { if (!v) { setShowNamePrompt(false); setPendingCert(null); } }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <GraduationCap className="h-5 w-5 text-[#F5B942]" />
+              Set Your Certificate Name
+            </DialogTitle>
+            <DialogDescription>
+              Enter your full name exactly as you want it to appear on your certificate. This will also update your profile name.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-2 space-y-4">
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Full Name</label>
+              <Input
+                value={certName}
+                onChange={(e) => setCertName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") confirmNameAndOpenCert(); }}
+                placeholder="e.g. Jane Smith"
+                className="w-full"
+                autoFocus
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                className="flex-1 bg-[#2A63BF] hover:bg-[#2A63BF]/90 text-white"
+                onClick={confirmNameAndOpenCert}
+                disabled={updateProfile.isPending || !certName.trim()}
+              >
+                {updateProfile.isPending ? "Saving..." : "Save & View Certificate"}
+              </Button>
+              <Button variant="outline" onClick={() => { setShowNamePrompt(false); setPendingCert(null); }}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
