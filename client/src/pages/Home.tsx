@@ -114,11 +114,13 @@ export default function Home() {
                     <span>Course Completed!</span>
                   </div>
                 </div>
-                <div className="absolute -bottom-4 -left-8 bg-white rounded-xl shadow-xl p-3 text-gray-900 text-xs">
+                {/* 7 o'clock = 210°: x = 144 + 144*cos(210°) ≈ 19, y = 144 + 144*sin(210°) ≈ 216 from top-left of circle */}
+                <div className="absolute bg-white rounded-xl shadow-xl p-3 text-gray-900 text-xs font-medium animate-pulse-glow" style={{ top: '196px', left: '-44px' }}>
                   <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="font-bold">4.9</span>
-                    <span className="text-gray-500">rating</span>
+                    <div className="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center">
+                      <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
+                    </div>
+                    <span><span className="font-bold">4.9</span> Rating</span>
                   </div>
                 </div>
               </div>
