@@ -7,7 +7,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Target, Eye, Heart, Users, BookOpen, Globe, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 
-const LOGO_URL = "/manus-storage/skillsphere-logo_e90b0563.png";
+const LOGO_URL = "/manus-storage/skillsphere-logo-circle_8ea1006a.png";
 
 const VALUES = [
   { icon: Target, title: "Excellence", desc: "We hold ourselves to the highest standards in every course, interaction, and outcome." },
@@ -26,7 +26,7 @@ export default function About() {
       {/* Hero */}
       <section className="brand-gradient text-white py-16 md:py-24">
         <div className="container text-center">
-          <img src={LOGO_URL} alt="SkillSphere" className="h-20 w-auto mx-auto mb-6 drop-shadow-2xl" />
+          <img src={LOGO_URL} alt="SkillSphere" className="h-20 w-20 rounded-full object-cover mx-auto mb-6 drop-shadow-2xl bg-white/10" />
           <Badge className="mb-4 bg-white/20 text-white border-white/30">Our Mission</Badge>
           <h1 className="text-3xl md:text-5xl font-bold mb-6 max-w-3xl mx-auto leading-tight">
             Empowering Skills.<br />

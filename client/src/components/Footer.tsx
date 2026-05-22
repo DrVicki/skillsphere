@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 
-const LOGO_URL = "/manus-storage/skillsphere-logo_e90b0563.png";
+const LOGO_URL = "/manus-storage/skillsphere-logo-circle_8ea1006a.png";
 
 export default function Footer() {
   return (
@@ -9,7 +9,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <img src={LOGO_URL} alt="SkillSphere" className="h-12 w-auto mb-4 brightness-0 invert" />
+            <img src={LOGO_URL} alt="SkillSphere" className="h-12 w-12 rounded-full object-cover mb-4" />
             <p className="text-sm text-gray-400 max-w-xs leading-relaxed">
               Empowering professionals and organizations to learn, collaborate, and advance workforce capabilities through world-class online education.
             </p>
