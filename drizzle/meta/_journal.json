@@ -15,6 +15,13 @@
       "when": 1779468780026,
       "tag": "0001_powerful_deadpool",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1779564400704,
+      "tag": "0002_smooth_paibok",
+      "breakpoints": true
     }
   ]
 }

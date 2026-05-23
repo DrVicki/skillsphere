@@ -89,7 +89,7 @@ export async function updateUserStripeCustomerId(userId: number, stripeCustomerI
 // ─── Courses ──────────────────────────────────────────────────────────────────
 
 export async function getCourses(opts: {
-  search?: string; category?: string; level?: string; isFree?: boolean;
+  search?: string; category?: string; level?: string; isFree?: boolean; isFeatured?: boolean;
   limit?: number; offset?: number; publishedOnly?: boolean; trainerId?: number;
 } = {}) {
   const db = await getDb();
@@ -100,6 +100,7 @@ export async function getCourses(opts: {
   if (opts.category) conditions.push(eq(courses.category, opts.category));
   if (opts.level) conditions.push(eq(courses.level, opts.level as any));
   if (opts.isFree !== undefined) conditions.push(eq(courses.isFree, opts.isFree));
+  if (opts.isFeatured !== undefined) conditions.push(eq(courses.isFeatured, opts.isFeatured));
   if (opts.trainerId) conditions.push(eq(courses.trainerId, opts.trainerId));
   return db.select({
     id: courses.id, slug: courses.slug, title: courses.title,
@@ -108,6 +109,7 @@ export async function getCourses(opts: {
     level: courses.level, category: courses.category, rating: courses.rating,
     ratingCount: courses.ratingCount, enrollmentCount: courses.enrollmentCount,
     totalModules: courses.totalModules, isPublished: courses.isPublished,
+    isFeatured: courses.isFeatured,
     trainerId: courses.trainerId, tags: courses.tags, createdAt: courses.createdAt,
     trainerName: users.name,
   }).from(courses).leftJoin(users, eq(courses.trainerId, users.id))
@@ -128,6 +130,7 @@ export async function getCourseBySlug(slug: string) {
     level: courses.level, category: courses.category, rating: courses.rating,
     ratingCount: courses.ratingCount, enrollmentCount: courses.enrollmentCount,
     totalModules: courses.totalModules, isPublished: courses.isPublished,
+    isFeatured: courses.isFeatured,
     trainerId: courses.trainerId, tags: courses.tags, createdAt: courses.createdAt,
     trainerName: users.name, trainerBio: users.bio, trainerAvatar: users.avatarUrl,
   }).from(courses).leftJoin(users, eq(courses.trainerId, users.id))

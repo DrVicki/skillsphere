@@ -49,6 +49,7 @@ export const courses = mysqlTable("courses", {
   comparePrice: decimal("comparePrice", { precision: 10, scale: 2 }),
   isFree: boolean("isFree").default(false),
   isPublished: boolean("isPublished").default(false),
+  isFeatured: boolean("isFeatured").default(false),
   totalDuration: int("totalDuration").default(0),
   totalModules: int("totalModules").default(0),
   enrollmentCount: int("enrollmentCount").default(0),
