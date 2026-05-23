@@ -62,7 +62,7 @@ export default function CourseCard({
       tabIndex={0}
       onClick={handleCardClick}
       onKeyDown={(e) => e.key === "Enter" && handleCardClick()}
-      className="group bg-card border border-border rounded-xl overflow-hidden card-hover cursor-pointer h-full flex flex-col"
+      className="group bg-card border border-border rounded-xl overflow-hidden card-hover cursor-pointer h-full flex flex-col transition-transform duration-300 ease-out hover:scale-[1.03] hover:shadow-xl will-change-transform"
     >
       {/* Thumbnail */}
       <div className="relative aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 overflow-hidden">
