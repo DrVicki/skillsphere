@@ -13,6 +13,7 @@ import { Play, FileText, ClipboardList, CheckCircle, ChevronRight, MessageSquare
   Send, BookOpen, Users, Star, ArrowLeft, Award
 } from "lucide-react";
 import CourseCertificate from "@/components/CourseCertificate";
+import LessonContent from "@/components/LessonContent";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Link } from "wouter";
 
@@ -204,9 +205,7 @@ export default function LearnCourse({ params }: Props) {
 
                   {/* Text/Assessment Content */}
                   {activeModule.content && (
-                    <div className="prose prose-sm max-w-none bg-white rounded-xl border border-border p-6">
-                      <div className="whitespace-pre-wrap text-foreground leading-relaxed">{activeModule.content}</div>
-                    </div>
+                    <LessonContent content={activeModule.content} title={activeModule.title} />
                   )}
 
                   {/* Assessment */}
