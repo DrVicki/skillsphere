@@ -1,4 +1,14 @@
 import { useEditor, EditorContent } from "@tiptap/react";
+import { marked } from "marked";
+
+// Convert Markdown to HTML if the content is not already HTML
+function normalizeToHTML(content: string): string {
+  if (!content || !content.trim()) return "";
+  // If it already looks like HTML, return as-is
+  if (/<[a-z][\s\S]*>/i.test(content.trim())) return content;
+  // Otherwise parse as Markdown
+  return marked.parse(content, { async: false }) as string;
+}
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
@@ -101,7 +111,7 @@ export default function RichTextEditor({
       TableHeader,
       TableCell,
     ],
-    content: value,
+    content: normalizeToHTML(value),
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
@@ -116,9 +126,10 @@ export default function RichTextEditor({
   // Sync external value changes (e.g. loading existing post)
   useEffect(() => {
     if (!editor) return;
+    const normalized = normalizeToHTML(value);
     const current = editor.getHTML();
-    if (value !== current && value !== "<p></p>") {
-      editor.commands.setContent(value);
+    if (normalized !== current && normalized !== "<p></p>" && normalized !== "") {
+      editor.commands.setContent(normalized);
     }
   }, [value, editor]);
 
