@@ -20,7 +20,8 @@ import { Table } from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableCell from "@tiptap/extension-table-cell";
 import TableHeader from "@tiptap/extension-table-header";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
@@ -28,8 +29,8 @@ import {
   List, ListOrdered, Quote, Code, Code2,
   AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Link as LinkIcon, Image as ImageIcon, Table as TableIcon,
-  Minus, Undo, Redo, Highlighter, Type,
-  Pilcrow,
+  Minus, Undo, Redo, Highlighter,
+  Pilcrow, Upload, Loader2,
 } from "lucide-react";
 import { Toggle } from "@/components/ui/toggle";
 import { Separator } from "@/components/ui/separator";
@@ -87,6 +88,9 @@ export default function RichTextEditor({
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [imageAlt, setImageAlt] = useState("");
+  const [imageUploading, setImageUploading] = useState(false);
+  const [imageTab, setImageTab] = useState<"upload" | "url">("upload");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
     extensions: [
@@ -155,6 +159,43 @@ export default function RichTextEditor({
     setImageUrl("");
     setImageAlt("");
   }, [editor, imageUrl, imageAlt]);
+
+  const handleFileUpload = useCallback(async (file: File) => {
+    if (!editor) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file (JPG, PNG, GIF, WebP, etc.)");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Image must be under 10 MB");
+      return;
+    }
+    setImageUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const key = `editor-images/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+      const res = await fetch(`/api/upload?key=${encodeURIComponent(key)}`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const { url } = await res.json();
+      editor.chain().focus().setImage({ src: url, alt: file.name.replace(/\.[^.]+$/, "") }).run();
+      toast.success("Image inserted!");
+      setImageDialogOpen(false);
+    } catch (err) {
+      toast.error("Upload failed — please try again");
+    } finally {
+      setImageUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }, [editor]);
+
+  const handleToolbarUploadClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
 
   const insertTable = useCallback(() => {
     if (!editor) return;
@@ -325,9 +366,33 @@ export default function RichTextEditor({
         >
           <LinkIcon className="h-3.5 w-3.5" />
         </ToolbarButton>
+        {/* Hidden file input for direct upload */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={e => { const f = e.target.files?.[0]; if (f) handleFileUpload(f); }}
+        />
+        {/* Upload image directly from disk */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Toggle
+              size="sm"
+              pressed={false}
+              onPressedChange={handleToolbarUploadClick}
+              disabled={imageUploading}
+              className="h-7 w-7 p-0 rounded-md transition-colors text-gray-500 hover:text-gray-900 hover:bg-gray-100 disabled:opacity-40"
+            >
+              {imageUploading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+            </Toggle>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="text-xs">Upload Image from Computer</TooltipContent>
+        </Tooltip>
+        {/* Insert image by URL */}
         <ToolbarButton
-          onClick={() => { setImageUrl(""); setImageAlt(""); setImageDialogOpen(true); }}
-          title="Insert Image"
+          onClick={() => { setImageUrl(""); setImageAlt(""); setImageTab("url"); setImageDialogOpen(true); }}
+          title="Insert Image by URL"
         >
           <ImageIcon className="h-3.5 w-3.5" />
         </ToolbarButton>
@@ -399,33 +464,87 @@ export default function RichTextEditor({
 
       {/* Image dialog */}
       <Dialog open={imageDialogOpen} onOpenChange={setImageDialogOpen}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-w-md">
           <DialogHeader><DialogTitle>Insert Image</DialogTitle></DialogHeader>
-          <div className="space-y-3 py-2">
-            <div>
-              <Label className="text-xs mb-1.5 block">Image URL *</Label>
-              <Input
-                value={imageUrl}
-                onChange={e => setImageUrl(e.target.value)}
-                placeholder="https://example.com/image.jpg"
-                autoFocus
-              />
-            </div>
-            <div>
-              <Label className="text-xs mb-1.5 block">Alt Text</Label>
-              <Input
-                value={imageAlt}
-                onChange={e => setImageAlt(e.target.value)}
-                placeholder="Image description"
-              />
-            </div>
-            {imageUrl && (
-              <img src={imageUrl} alt={imageAlt} className="w-full h-32 object-cover rounded-lg border" onError={e => (e.currentTarget.style.display = "none")} />
-            )}
+          {/* Tabs */}
+          <div className="flex border-b border-gray-100 mb-1">
+            <button
+              type="button"
+              onClick={() => setImageTab("upload")}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                imageTab === "upload" ? "border-primary text-primary" : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Upload File
+            </button>
+            <button
+              type="button"
+              onClick={() => setImageTab("url")}
+              className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                imageTab === "url" ? "border-primary text-primary" : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Image URL
+            </button>
           </div>
+
+          {imageTab === "upload" ? (
+            <div className="py-2">
+              <div
+                className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={e => e.preventDefault()}
+                onDrop={e => {
+                  e.preventDefault();
+                  const f = e.dataTransfer.files?.[0];
+                  if (f) { handleFileUpload(f); setImageDialogOpen(false); }
+                }}
+              >
+                {imageUploading ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                    <p className="text-sm text-gray-500">Uploading…</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-2">
+                    <Upload className="h-8 w-8 text-gray-300" />
+                    <p className="text-sm font-medium text-gray-600">Click to choose a file</p>
+                    <p className="text-xs text-gray-400">or drag & drop here</p>
+                    <p className="text-xs text-gray-400 mt-1">JPG, PNG, GIF, WebP — max 10 MB</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3 py-2">
+              <div>
+                <Label className="text-xs mb-1.5 block">Image URL *</Label>
+                <Input
+                  value={imageUrl}
+                  onChange={e => setImageUrl(e.target.value)}
+                  placeholder="https://example.com/image.jpg"
+                  autoFocus
+                />
+              </div>
+              <div>
+                <Label className="text-xs mb-1.5 block">Alt Text</Label>
+                <Input
+                  value={imageAlt}
+                  onChange={e => setImageAlt(e.target.value)}
+                  placeholder="Image description"
+                />
+              </div>
+              {imageUrl && (
+                <img src={imageUrl} alt={imageAlt} className="w-full h-32 object-cover rounded-lg border" onError={e => (e.currentTarget.style.display = "none")} />
+              )}
+            </div>
+          )}
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setImageDialogOpen(false)}>Cancel</Button>
-            <Button onClick={insertImage} disabled={!imageUrl}>Insert Image</Button>
+            {imageTab === "url" && (
+              <Button onClick={insertImage} disabled={!imageUrl}>Insert Image</Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

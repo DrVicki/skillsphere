@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar, Clock, ArrowLeft, User } from "lucide-react";
 import DOMPurify from "dompurify";
+import { marked } from "marked";
 
 // Detect if content is HTML (from Tiptap) or Markdown
 function isHTML(str: string): boolean {
@@ -151,8 +152,12 @@ export default function BlogPost() {
     );
   }
 
-  const contentIsHTML = isHTML(post.content ?? "");
-  if (contentIsHTML) injectBlogStyles();
+  // Always convert to HTML — Markdown via marked, HTML passed through as-is
+  const rawContent = post.content ?? "";
+  const htmlContent = isHTML(rawContent)
+    ? rawContent
+    : (marked.parse(rawContent, { async: false }) as string);
+  injectBlogStyles();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -221,21 +226,15 @@ export default function BlogPost() {
 
             {/* Content */}
             {post.content && (
-              contentIsHTML ? (
-                <div
-                  className="blog-html-content"
-                  dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(post.content, {
-                      ADD_TAGS: ["iframe"],
-                      ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"],
-                    }),
-                  }}
-                />
-              ) : (
-                <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  {post.content}
-                </div>
-              )
+              <div
+                className="blog-html-content"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(htmlContent, {
+                    ADD_TAGS: ["iframe"],
+                    ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"],
+                  }),
+                }}
+              />
             )}
 
             {/* Tags */}
