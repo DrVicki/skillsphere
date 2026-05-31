@@ -263,6 +263,87 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── Transforming Workforce Potential ─────────────────────────────── */}
+      <section className="py-24 px-4 bg-white">
+        <div className="max-w-5xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <span className="inline-block bg-blue-50 text-blue-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-4 tracking-wide uppercase">Why SkillSphere</span>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+              SkillSphere: <span style={{color: '#2A63BF'}}>Transforming</span> Workforce Potential
+            </h2>
+            <p className="text-xl text-gray-500 font-medium">Empowering People. Elevating Organizations.</p>
+            <div className="mt-6 mx-auto w-20 h-1 rounded-full" style={{background: 'linear-gradient(90deg, #2A63BF, #f59e0b)'}} />
+          </div>
+
+          {/* Intro paragraph */}
+          <p className="text-lg text-gray-600 text-center max-w-3xl mx-auto mb-16 leading-relaxed">
+            In a world where skills become obsolete overnight, SkillSphere equips your workforce with the tools, knowledge, and confidence to stay ahead — not just today, but for every challenge tomorrow brings.
+          </p>
+
+          {/* Four pillars */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+            {[
+              {
+                icon: '🤖',
+                title: 'AI-Driven Workforce Solutions',
+                color: '#2A63BF',
+                bg: '#eff6ff',
+                body: 'Gone are the days of one-size-fits-all training. SkillSphere harnesses the power of artificial intelligence to deliver personalized learning journeys that adapt in real time to each employee\'s pace, role, and performance. Our intelligent platform identifies skill gaps before they become business gaps — keeping your organization agile, competitive, and future-ready.',
+              },
+              {
+                icon: '🎯',
+                title: 'Competency-Based Training Models',
+                color: '#7c3aed',
+                bg: '#f5f3ff',
+                body: 'We don\'t just train employees — we engineer expertise. SkillSphere\'s competency-based framework breaks every role down into its essential tasks, behaviors, and skills. The result? Laser-focused training that targets exactly what matters, eliminates wasted time, and delivers measurable performance improvements your leadership team can actually see.',
+              },
+              {
+                icon: '🏢',
+                title: 'Custom Learning Solutions for Enterprises',
+                color: '#059669',
+                bg: '#ecfdf5',
+                body: 'No two businesses are alike, and your training program shouldn\'t be either. SkillSphere partners closely with your team to design bespoke learning experiences — from onboarding to leadership development — that align with your culture, industry, and strategic goals. Scalable, flexible, and built entirely around you.',
+              },
+              {
+                icon: '🧠',
+                title: 'Institutional Knowledge Optimization',
+                color: '#d97706',
+                bg: '#fffbeb',
+                body: 'Your organization\'s greatest asset is the expertise living inside your people. SkillSphere captures, structures, and amplifies that knowledge — transforming it into accessible, transferable learning content that survives turnover, fuels growth, and ensures your best practices endure for generations.',
+              },
+            ].map(({ icon, title, color, bg, body }) => (
+              <div
+                key={title}
+                className="rounded-2xl p-8 transition-all duration-300 hover:shadow-xl"
+                style={{ background: bg, border: `1.5px solid ${color}22` }}
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-3xl">{icon}</span>
+                  <h3 className="text-xl font-bold" style={{ color }}>{title}</h3>
+                </div>
+                <p className="text-gray-600 leading-relaxed">{body}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Closing statement */}
+          <div className="text-center rounded-2xl py-12 px-8" style={{ background: 'linear-gradient(135deg, #1e3a6e 0%, #2A63BF 60%, #4a90d9 100%)' }}>
+            <p className="text-white text-xl font-medium mb-6 leading-relaxed">
+              At SkillSphere, we believe that when people grow, businesses thrive.<br />
+              <span className="font-bold">Let's build a smarter, stronger workforce — together.</span>
+            </p>
+            <p className="text-blue-100 mb-8">Ready to invest in your team's future?</p>
+            <a
+              href="/courses"
+              className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-gray-900 font-bold px-8 py-3.5 rounded-xl text-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+            >
+              Get Started with SkillSphere →
+            </a>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
