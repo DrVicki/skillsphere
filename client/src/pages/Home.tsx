@@ -33,11 +33,141 @@ const FEATURES = [
   { icon: Zap, title: "Instant Enrollment", desc: "One-click enrollment for free courses; seamless checkout for paid content.", color: "text-indigo-600 bg-indigo-50" },
 ];
 
+const PILLARS = [
+  {
+    icon: '🤖',
+    title: 'AI-Driven Workforce Solutions',
+    color: '#2A63BF',
+    bg: '#eff6ff',
+    border: '#2A63BF22',
+    body: "Gone are the days of one-size-fits-all training. SkillSphere harnesses the power of artificial intelligence to deliver personalized learning journeys that adapt in real time to each employee's pace, role, and performance. Our intelligent platform identifies skill gaps before they become business gaps — keeping your organization agile, competitive, and future-ready.",
+  },
+  {
+    icon: '🎯',
+    title: 'Competency-Based Training Models',
+    color: '#7c3aed',
+    bg: '#f5f3ff',
+    border: '#7c3aed22',
+    body: "We don't just train employees — we engineer expertise. SkillSphere's competency-based framework breaks every role down into its essential tasks, behaviors, and skills. The result? Laser-focused training that targets exactly what matters, eliminates wasted time, and delivers measurable performance improvements your leadership team can actually see.",
+  },
+  {
+    icon: '🏢',
+    title: 'Custom Learning Solutions for Enterprises',
+    color: '#059669',
+    bg: '#ecfdf5',
+    border: '#05966922',
+    body: "No two businesses are alike, and your training program shouldn't be either. SkillSphere partners closely with your team to design bespoke learning experiences — from onboarding to leadership development — that align with your culture, industry, and strategic goals. Scalable, flexible, and built entirely around you.",
+  },
+  {
+    icon: '🧠',
+    title: 'Institutional Knowledge Optimization',
+    color: '#d97706',
+    bg: '#fffbeb',
+    border: '#d9770622',
+    body: "Your organization's greatest asset is the expertise living inside your people. SkillSphere captures, structures, and amplifies that knowledge — transforming it into accessible, transferable learning content that survives turnover, fuels growth, and ensures your best practices endure for generations.",
+  },
+];
+
 const TESTIMONIALS = [
   { name: "Sarah M.", role: "HR Director", text: "SkillSphere transformed our onboarding. Our team's productivity increased by 40% in just three months.", avatar: "SM" },
   { name: "James K.", role: "Senior Trainer", text: "The platform is intuitive and powerful. I can create and publish courses in hours, not days.", avatar: "JK" },
   { name: "Priya R.", role: "Learner", text: "The discussion boards and live chat make learning feel personal even in an online environment.", avatar: "PR" },
 ];
+
+function PillarsCarousel() {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const total = PILLARS.length;
+
+  const prev = useCallback(() => setActive(i => (i - 1 + total) % total), [total]);
+  const next = useCallback(() => setActive(i => (i + 1) % total), [total]);
+
+  useEffect(() => {
+    if (paused) return;
+    const id = setInterval(next, 4000);
+    return () => clearInterval(id);
+  }, [paused, next]);
+
+  const pillar = PILLARS[active];
+
+  return (
+    <div
+      className="relative max-w-2xl mx-auto mb-16"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {/* Prev button */}
+      <button
+        onClick={prev}
+        aria-label="Previous pillar"
+        className="absolute -left-5 md:-left-12 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center text-gray-400 hover:text-primary hover:border-primary transition-all duration-200 hover:scale-110 active:scale-95"
+      >
+        <ChevronLeft className="h-5 w-5" />
+      </button>
+
+      {/* Card */}
+      <div
+        key={active}
+        className="rounded-2xl p-8 transition-all duration-300 hover:shadow-xl"
+        style={{
+          background: pillar.bg,
+          border: `1.5px solid ${pillar.border}`,
+          animation: 'pillarFadeIn 0.35s cubic-bezier(0.23,1,0.32,1)',
+        }}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <span className="text-4xl">{pillar.icon}</span>
+          <h3 className="text-xl font-bold" style={{ color: pillar.color }}>{pillar.title}</h3>
+        </div>
+        <p className="text-gray-600 leading-relaxed">{pillar.body}</p>
+        {/* Progress indicator inside card */}
+        <div className="mt-6 flex items-center gap-2">
+          <span className="text-xs font-medium" style={{ color: pillar.color }}>{active + 1} / {total}</span>
+          <div className="flex-1 h-1 rounded-full bg-gray-200 overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-300"
+              style={{ width: `${((active + 1) / total) * 100}%`, background: pillar.color }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Next button */}
+      <button
+        onClick={next}
+        aria-label="Next pillar"
+        className="absolute -right-5 md:-right-12 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center text-gray-400 hover:text-primary hover:border-primary transition-all duration-200 hover:scale-110 active:scale-95"
+      >
+        <ChevronRight className="h-5 w-5" />
+      </button>
+
+      {/* Dot indicators */}
+      <div className="flex justify-center gap-2 mt-6">
+        {PILLARS.map((p, i) => (
+          <button
+            key={i}
+            onClick={() => setActive(i)}
+            aria-label={`Go to pillar ${i + 1}`}
+            className="transition-all duration-300"
+            style={{
+              width: i === active ? '28px' : '10px',
+              height: '10px',
+              borderRadius: '9999px',
+              background: i === active ? p.color : '#d1d5db',
+            }}
+          />
+        ))}
+      </div>
+
+      <style>{`
+        @keyframes pillarFadeIn {
+          from { opacity: 0; transform: translateY(10px) scale(0.98); }
+          to   { opacity: 1; transform: translateY(0)   scale(1); }
+        }
+      `}</style>
+    </div>
+  );
+}
 
 function TestimonialsCarousel() {
   const [active, setActive] = useState(0);
@@ -170,10 +300,13 @@ export default function Home() {
               <Badge className="mb-4 bg-white/20 text-white border-white/30 hover:bg-white/30">
                 🚀 Workforce Development Platform
               </Badge>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6" style={{ fontFamily: "Poppins, sans-serif" }}>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4" style={{ fontFamily: "Poppins, sans-serif" }}>
                 Empower Your
                 <span className="block" style={{ color: "#F5B942" }}>Workforce Skills</span>
               </h1>
+              <p className="text-sm font-semibold tracking-widest uppercase mb-6" style={{ color: 'rgba(255,255,255,0.65)', letterSpacing: '0.12em' }}>
+                Individuals&nbsp;&nbsp;|&nbsp;&nbsp;Teams&nbsp;&nbsp;|&nbsp;&nbsp;Organizations&nbsp;&nbsp;|&nbsp;&nbsp;Educational Institutions
+              </p>
               <p className="text-lg text-white/80 mb-8 leading-relaxed max-w-lg">
                 A secure, interactive platform where professionals and organizations learn, collaborate, and advance workforce capabilities through world-class courses.
               </p>
@@ -390,51 +523,8 @@ export default function Home() {
             In a world where skills become obsolete overnight, SkillSphere equips your workforce with the tools, knowledge, and confidence to stay ahead — not just today, but for every challenge tomorrow brings.
           </p>
 
-          {/* Four pillars */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-            {[
-              {
-                icon: '🤖',
-                title: 'AI-Driven Workforce Solutions',
-                color: '#2A63BF',
-                bg: '#eff6ff',
-                body: 'Gone are the days of one-size-fits-all training. SkillSphere harnesses the power of artificial intelligence to deliver personalized learning journeys that adapt in real time to each employee\'s pace, role, and performance. Our intelligent platform identifies skill gaps before they become business gaps — keeping your organization agile, competitive, and future-ready.',
-              },
-              {
-                icon: '🎯',
-                title: 'Competency-Based Training Models',
-                color: '#7c3aed',
-                bg: '#f5f3ff',
-                body: 'We don\'t just train employees — we engineer expertise. SkillSphere\'s competency-based framework breaks every role down into its essential tasks, behaviors, and skills. The result? Laser-focused training that targets exactly what matters, eliminates wasted time, and delivers measurable performance improvements your leadership team can actually see.',
-              },
-              {
-                icon: '🏢',
-                title: 'Custom Learning Solutions for Enterprises',
-                color: '#059669',
-                bg: '#ecfdf5',
-                body: 'No two businesses are alike, and your training program shouldn\'t be either. SkillSphere partners closely with your team to design bespoke learning experiences — from onboarding to leadership development — that align with your culture, industry, and strategic goals. Scalable, flexible, and built entirely around you.',
-              },
-              {
-                icon: '🧠',
-                title: 'Institutional Knowledge Optimization',
-                color: '#d97706',
-                bg: '#fffbeb',
-                body: 'Your organization\'s greatest asset is the expertise living inside your people. SkillSphere captures, structures, and amplifies that knowledge — transforming it into accessible, transferable learning content that survives turnover, fuels growth, and ensures your best practices endure for generations.',
-              },
-            ].map(({ icon, title, color, bg, body }) => (
-              <div
-                key={title}
-                className="rounded-2xl p-8 transition-all duration-300 hover:shadow-xl"
-                style={{ background: bg, border: `1.5px solid ${color}22` }}
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl">{icon}</span>
-                  <h3 className="text-xl font-bold" style={{ color }}>{title}</h3>
-                </div>
-                <p className="text-gray-600 leading-relaxed">{body}</p>
-              </div>
-            ))}
-          </div>
+          {/* Four pillars carousel */}
+          <PillarsCarousel />
 
           {/* Closing statement */}
           <div className="text-center rounded-2xl py-12 px-8" style={{ background: 'linear-gradient(135deg, #1e3a6e 0%, #2A63BF 60%, #4a90d9 100%)' }}>
