@@ -38,6 +38,17 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
 
+  // ─── www → apex redirect ────────────────────────────────────────────────
+  app.use((req, res, next) => {
+    const host = req.headers.host ?? "";
+    if (host.startsWith("www.")) {
+      const apex = host.slice(4);
+      const proto = req.headers["x-forwarded-proto"] ?? "https";
+      return res.redirect(301, `${proto}://${apex}${req.originalUrl}`);
+    }
+    next();
+  });
+
   // ─── Stripe Webhook (must be before json parser) ─────────────────────────
   app.post("/api/stripe/webhook", express.raw({ type: "application/json" }), async (req, res) => {
     const sig = req.headers["stripe-signature"] as string;
