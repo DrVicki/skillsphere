@@ -305,7 +305,7 @@ export default function Home() {
                 <span className="block" style={{ color: "#F5B942" }}>Workforce Skills</span>
               </h1>
               <p
-                className="font-semibold uppercase mb-6 text-[10px] sm:text-xs md:text-sm leading-relaxed"
+                className="font-semibold uppercase mb-6 text-[10px] sm:text-xs md:text-sm leading-relaxed animate-fade-in-up stagger-3"
                 style={{ color: 'rgba(255,255,255,0.65)', letterSpacing: '0.1em' }}
               >
                 <span className="inline sm:hidden">Individuals&nbsp;|&nbsp;Teams&nbsp;|<br />Organizations&nbsp;|&nbsp;Educational Institutions</span>
