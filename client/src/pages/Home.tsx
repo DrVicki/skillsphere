@@ -304,8 +304,12 @@ export default function Home() {
                 Empower Your
                 <span className="block" style={{ color: "#F5B942" }}>Workforce Skills</span>
               </h1>
-              <p className="text-sm font-semibold tracking-widest uppercase mb-6" style={{ color: 'rgba(255,255,255,0.65)', letterSpacing: '0.12em' }}>
-                Individuals&nbsp;&nbsp;|&nbsp;&nbsp;Teams&nbsp;&nbsp;|&nbsp;&nbsp;Organizations&nbsp;&nbsp;|&nbsp;&nbsp;Educational Institutions
+              <p
+                className="font-semibold uppercase mb-6 text-[10px] sm:text-xs md:text-sm leading-relaxed"
+                style={{ color: 'rgba(255,255,255,0.65)', letterSpacing: '0.1em' }}
+              >
+                <span className="inline sm:hidden">Individuals&nbsp;|&nbsp;Teams&nbsp;|<br />Organizations&nbsp;|&nbsp;Educational Institutions</span>
+                <span className="hidden sm:inline">Individuals&nbsp;&nbsp;|&nbsp;&nbsp;Teams&nbsp;&nbsp;|&nbsp;&nbsp;Organizations&nbsp;&nbsp;|&nbsp;&nbsp;Educational Institutions</span>
               </p>
               <p className="text-lg text-white/80 mb-8 leading-relaxed max-w-lg">
                 A secure, interactive platform where professionals and organizations learn, collaborate, and advance workforce capabilities through world-class courses.
