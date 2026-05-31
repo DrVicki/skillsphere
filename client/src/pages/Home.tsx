@@ -264,7 +264,37 @@ export default function Home() {
       </section>
 
       {/* ─── Transforming Workforce Potential ─────────────────────────────── */}
-      <section className="py-24 px-4 bg-white">
+      <section className="py-24 px-4 bg-white relative overflow-hidden">
+        {/* Geometric background pattern */}
+        <svg
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 w-full h-full"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <pattern id="dot-grid" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
+              <circle cx="1.5" cy="1.5" r="1.5" fill="#2A63BF" fillOpacity="0.07" />
+            </pattern>
+            <pattern id="hex-lines" x="0" y="0" width="60" height="104" patternUnits="userSpaceOnUse">
+              <path d="M30 2 L58 17 L58 47 L30 62 L2 47 L2 17 Z" fill="none" stroke="#2A63BF" strokeOpacity="0.04" strokeWidth="1" />
+              <path d="M30 54 L58 69 L58 99 L30 114 L2 99 L2 69 Z" fill="none" stroke="#f59e0b" strokeOpacity="0.04" strokeWidth="1" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#dot-grid)" />
+          <rect width="100%" height="100%" fill="url(#hex-lines)" />
+        </svg>
+        {/* Soft radial glow top-right */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-32 -right-32 w-96 h-96 rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(42,99,191,0.08) 0%, transparent 70%)' }}
+        />
+        {/* Soft radial glow bottom-left */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-32 -left-32 w-96 h-96 rounded-full"
+          style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.07) 0%, transparent 70%)' }}
+        />
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
