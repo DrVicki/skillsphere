@@ -11,6 +11,8 @@ import {
   Play, MessageSquare, BarChart3, Shield, Zap, Globe
 } from "lucide-react";
 import { Link } from "wouter";
+import { useState, useEffect, useCallback } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const LOGO_URL = "/manus-storage/skillsphere-logo_e90b0563.png";
 const LOGO_CIRCLE_URL = "/manus-storage/skillsphere-logo-circle_8ea1006a.png";
@@ -36,6 +38,114 @@ const TESTIMONIALS = [
   { name: "James K.", role: "Senior Trainer", text: "The platform is intuitive and powerful. I can create and publish courses in hours, not days.", avatar: "JK" },
   { name: "Priya R.", role: "Learner", text: "The discussion boards and live chat make learning feel personal even in an online environment.", avatar: "PR" },
 ];
+
+function TestimonialsCarousel() {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const total = TESTIMONIALS.length;
+
+  const prev = useCallback(() => setActive(i => (i - 1 + total) % total), [total]);
+  const next = useCallback(() => setActive(i => (i + 1) % total), [total]);
+
+  useEffect(() => {
+    if (paused) return;
+    const id = setInterval(next, 4500);
+    return () => clearInterval(id);
+  }, [paused, next]);
+
+  return (
+    <section
+      className="section-padding bg-gray-50"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="container">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-foreground mb-4">
+            Trusted by <span className="brand-gradient-text">Thousands</span>
+          </h2>
+        </div>
+
+        {/* Card + arrows */}
+        <div className="relative max-w-2xl mx-auto">
+          {/* Prev button */}
+          <button
+            onClick={prev}
+            aria-label="Previous testimonial"
+            className="absolute -left-5 md:-left-12 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white border border-border shadow-md flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-200 hover:scale-110 active:scale-95"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+
+          {/* Card */}
+          <div
+            key={active}
+            className="bg-white rounded-2xl p-8 border border-border shadow-md"
+            style={{ animation: 'testimonialFadeIn 0.35s cubic-bezier(0.23,1,0.32,1)' }}
+          >
+            {/* Quote mark */}
+            <div className="text-5xl font-serif leading-none text-primary/20 mb-2 select-none">&ldquo;</div>
+            {/* Stars */}
+            <div className="flex gap-1 mb-4">
+              {[...Array(5)].map((_, j) => (
+                <Star key={j} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
+            {/* Text */}
+            <p className="text-base md:text-lg text-muted-foreground italic leading-relaxed mb-6">
+              &ldquo;{TESTIMONIALS[active].text}&rdquo;
+            </p>
+            {/* Author */}
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-full bg-primary flex items-center justify-center text-white text-sm font-bold shadow">
+                {TESTIMONIALS[active].avatar}
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">{TESTIMONIALS[active].name}</p>
+                <p className="text-sm text-muted-foreground">{TESTIMONIALS[active].role}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Next button */}
+          <button
+            onClick={next}
+            aria-label="Next testimonial"
+            className="absolute -right-5 md:-right-12 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white border border-border shadow-md flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-200 hover:scale-110 active:scale-95"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Dot indicators */}
+        <div className="flex justify-center gap-2 mt-8">
+          {TESTIMONIALS.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActive(i)}
+              aria-label={`Go to testimonial ${i + 1}`}
+              className="transition-all duration-300"
+              style={{
+                width: i === active ? '28px' : '10px',
+                height: '10px',
+                borderRadius: '9999px',
+                background: i === active ? 'var(--primary)' : '#d1d5db',
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Keyframe for card entrance */}
+      <style>{`
+        @keyframes testimonialFadeIn {
+          from { opacity: 0; transform: translateY(12px) scale(0.98); }
+          to   { opacity: 1; transform: translateY(0)   scale(1); }
+        }
+      `}</style>
+    </section>
+  );
+}
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
@@ -376,37 +486,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── Testimonials ──────────────────────────────────────────────────── */}
-      <section className="section-padding bg-gray-50">
-        <div className="container">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">
-              Trusted by <span className="brand-gradient-text">Thousands</span>
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((t, i) => (
-              <div key={t.name} className={`bg-white rounded-xl p-6 border border-border shadow-sm animate-fade-in-up stagger-${i + 1}`}>
-                <div className="flex gap-1 mb-4">
-                  {[...Array(5)].map((_, j) => (
-                    <Star key={j} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <p className="text-sm text-muted-foreground italic mb-4 leading-relaxed">"{t.text}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">
-                    {t.avatar}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ─── Testimonials Carousel ─────────────────────────────────────── */}
+      <TestimonialsCarousel />
 
       <Footer />
     </div>
