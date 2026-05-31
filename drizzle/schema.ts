@@ -260,3 +260,26 @@ export const courseReviews = mysqlTable("course_reviews", {
 });
 
 export type CourseReview = typeof courseReviews.$inferSelect;
+
+// ─── Blog Posts ──────────────────────────────────────────────────────────────
+
+export const blogPosts = mysqlTable("blog_posts", {
+  id: int("id").autoincrement().primaryKey(),
+  authorId: int("authorId").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  excerpt: varchar("excerpt", { length: 500 }),
+  content: text("content").notNull(),
+  coverImageUrl: text("coverImageUrl"),
+  category: varchar("category", { length: 100 }),
+  tags: json("tags").$type<string[]>(),
+  isPublished: boolean("isPublished").default(false),
+  isFeatured: boolean("isFeatured").default(false),
+  viewCount: int("viewCount").default(0),
+  publishedAt: timestamp("publishedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = typeof blogPosts.$inferInsert;

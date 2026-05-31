@@ -570,3 +570,87 @@ export async function getTrainerAnalytics(trainerId: number) {
     courses: trainerCourses,
   };
 }
+
+// ─── Blog Posts ───────────────────────────────────────────────────────────────
+
+export async function getBlogPosts(opts: {
+  publishedOnly?: boolean; limit?: number; offset?: number; category?: string;
+} = {}) {
+  const { blogPosts } = await import("../drizzle/schema");
+  const db = await getDb();
+  if (!db) return [];
+  const conditions: any[] = [];
+  if (opts.publishedOnly) conditions.push(eq(blogPosts.isPublished, true));
+  if (opts.category) conditions.push(eq(blogPosts.category, opts.category));
+  return db.select({
+    id: blogPosts.id, title: blogPosts.title, slug: blogPosts.slug,
+    excerpt: blogPosts.excerpt, coverImageUrl: blogPosts.coverImageUrl,
+    category: blogPosts.category, tags: blogPosts.tags,
+    isPublished: blogPosts.isPublished, isFeatured: blogPosts.isFeatured,
+    viewCount: blogPosts.viewCount, publishedAt: blogPosts.publishedAt,
+    createdAt: blogPosts.createdAt, updatedAt: blogPosts.updatedAt,
+    authorId: blogPosts.authorId, authorName: users.name,
+  }).from(blogPosts).leftJoin(users, eq(blogPosts.authorId, users.id))
+    .where(conditions.length ? and(...conditions) : undefined)
+    .orderBy(desc(blogPosts.createdAt))
+    .limit(opts.limit ?? 50)
+    .offset(opts.offset ?? 0);
+}
+
+export async function getBlogPostBySlug(slug: string) {
+  const { blogPosts } = await import("../drizzle/schema");
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select({
+    id: blogPosts.id, title: blogPosts.title, slug: blogPosts.slug,
+    excerpt: blogPosts.excerpt, content: blogPosts.content,
+    coverImageUrl: blogPosts.coverImageUrl, category: blogPosts.category,
+    tags: blogPosts.tags, isPublished: blogPosts.isPublished,
+    isFeatured: blogPosts.isFeatured, viewCount: blogPosts.viewCount,
+    publishedAt: blogPosts.publishedAt, createdAt: blogPosts.createdAt,
+    updatedAt: blogPosts.updatedAt, authorId: blogPosts.authorId,
+    authorName: users.name, authorAvatar: users.avatarUrl,
+  }).from(blogPosts).leftJoin(users, eq(blogPosts.authorId, users.id))
+    .where(eq(blogPosts.slug, slug)).limit(1);
+  return result[0];
+}
+
+export async function getBlogPostById(id: number) {
+  const { blogPosts } = await import("../drizzle/schema");
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(blogPosts).where(eq(blogPosts.id, id)).limit(1);
+  return result[0];
+}
+
+export async function createBlogPost(data: {
+  authorId: number; title: string; slug: string; content: string;
+  excerpt?: string; coverImageUrl?: string; category?: string;
+  tags?: string[]; isPublished?: boolean; isFeatured?: boolean;
+}) {
+  const { blogPosts } = await import("../drizzle/schema");
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(blogPosts).values({
+    ...data,
+    isPublished: data.isPublished ?? false,
+    isFeatured: data.isFeatured ?? false,
+    publishedAt: data.isPublished ? new Date() : null,
+  });
+  return (result as any)[0]?.insertId ?? 0;
+}
+
+export async function updateBlogPost(id: number, data: Record<string, any>) {
+  const { blogPosts } = await import("../drizzle/schema");
+  const db = await getDb();
+  if (!db) return;
+  if (data.isPublished && !data.publishedAt) data.publishedAt = new Date();
+  await db.update(blogPosts).set(data).where(eq(blogPosts.id, id));
+}
+
+export async function deleteBlogPost(id: number) {
+  const { blogPosts } = await import("../drizzle/schema");
+  const db = await getDb();
+  if (!db) return;
+  await db.delete(blogPosts).where(eq(blogPosts.id, id));
+}

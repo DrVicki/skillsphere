@@ -49,6 +49,12 @@ import {
   upsertSubscription,
   updatePaymentBySessionId,
   updateUserStripeCustomerId,
+  getBlogPosts,
+  getBlogPostBySlug,
+  getBlogPostById,
+  createBlogPost,
+  updateBlogPost,
+  deleteBlogPost,
 } from "./db";
 import { storagePut } from "./storage";
 import Stripe from "stripe";
@@ -151,6 +157,7 @@ export const appRouter = router({
         previewVideoUrl: z.string().optional(),
         tags: z.array(z.string()).optional(),
         isPublished: z.boolean().optional(),
+        isFeatured: z.boolean().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const { id, ...data } = input;
@@ -426,6 +433,69 @@ export const appRouter = router({
     overview: adminProcedure.query(() => getAnalyticsOverview()),
     revenueByMonth: adminProcedure.query(() => getRevenueByMonth()),
     trainerStats: trainerProcedure.query(({ ctx }) => getTrainerAnalytics(ctx.user.id)),
+  }),
+
+  // ─── Blog ───────────────────────────────────────────────────────────────
+  blog: router({
+    list: publicProcedure
+      .input(z.object({ category: z.string().optional(), limit: z.number().optional(), offset: z.number().optional() }).optional())
+      .query(({ input }) => getBlogPosts({ ...input, publishedOnly: true })),
+
+    listAll: adminProcedure
+      .input(z.object({ limit: z.number().optional(), offset: z.number().optional() }).optional())
+      .query(({ input }) => getBlogPosts({ ...input, publishedOnly: false })),
+
+    bySlug: publicProcedure.input(z.string()).query(async ({ input }) => {
+      const post = await getBlogPostBySlug(input);
+      if (!post) throw new TRPCError({ code: "NOT_FOUND" });
+      return post;
+    }),
+
+    create: adminProcedure
+      .input(z.object({
+        title: z.string().min(3),
+        content: z.string().min(1),
+        excerpt: z.string().optional(),
+        coverImageUrl: z.string().optional(),
+        category: z.string().optional(),
+        tags: z.array(z.string()).optional(),
+        isPublished: z.boolean().optional(),
+        isFeatured: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const slug = input.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + "-" + Date.now();
+        const id = await createBlogPost({ ...input, authorId: ctx.user.id, slug });
+        return { id, slug };
+      }),
+
+    update: adminProcedure
+      .input(z.object({
+        id: z.number(),
+        title: z.string().optional(),
+        content: z.string().optional(),
+        excerpt: z.string().optional(),
+        coverImageUrl: z.string().optional(),
+        category: z.string().optional(),
+        tags: z.array(z.string()).optional(),
+        isPublished: z.boolean().optional(),
+        isFeatured: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        const post = await getBlogPostById(id);
+        if (!post) throw new TRPCError({ code: "NOT_FOUND" });
+        await updateBlogPost(id, data);
+        return { success: true };
+      }),
+
+    delete: adminProcedure
+      .input(z.number())
+      .mutation(async ({ input }) => {
+        const post = await getBlogPostById(input);
+        if (!post) throw new TRPCError({ code: "NOT_FOUND" });
+        await deleteBlogPost(input);
+        return { success: true };
+      }),
   }),
 
   // ─── File Upload ──────────────────────────────────────────────────────────

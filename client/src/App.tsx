@@ -11,6 +11,11 @@ import Dashboard from "./pages/Dashboard";
 import LearnCourse from "./pages/LearnCourse";
 import TrainerDashboard from "./pages/TrainerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminOverview from "./pages/admin/AdminOverview";
+import AdminCourses from "./pages/admin/AdminCourses";
+import AdminBlog from "./pages/admin/AdminBlog";
+import AdminBlogEditor from "./pages/admin/AdminBlogEditor";
+import AdminUsers from "./pages/admin/AdminUsers";
 import Payments from "./pages/Payments";
 import About from "./pages/About";
 
@@ -24,7 +29,12 @@ function Router() {
       <Route path="/learn/:slug" component={LearnCourse} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/trainer" component={TrainerDashboard} />
-      <Route path="/admin" component={AdminDashboard} />
+      <Route path="/admin" component={AdminOverview} />
+      <Route path="/admin/courses" component={AdminCourses} />
+      <Route path="/admin/blog" component={AdminBlog} />
+      <Route path="/admin/blog/new" component={AdminBlogEditor} />
+      <Route path="/admin/blog/edit/:id" component={AdminBlogEditor} />
+      <Route path="/admin/users" component={AdminUsers} />
       <Route path="/payments" component={Payments} />
       <Route path="/about" component={About} />
       <Route path="/404" component={NotFound} />

@@ -61,3 +61,14 @@
 - [ ] Subscription management UI
 - [ ] Bundle purchase flow
 - [ ] AI-powered course recommendations
+
+## Admin Dashboard
+- [x] Admin dashboard layout with dark sidebar navigation
+- [x] Dashboard overview with stat cards (courses, users, revenue, enrollments, blog posts)
+- [x] Courses admin page: list all courses, add/edit/delete, publish/unpublish toggle, featured toggle
+- [x] Module/lesson editor per course: add/edit/delete lessons with Markdown content editor
+- [x] Blog admin page: list all posts, publish/unpublish, feature toggle
+- [x] Blog post editor: Markdown write + live preview, metadata (category, tags, cover image, excerpt)
+- [x] Users admin page: list all users, change role (user/learner/trainer/admin)
+- [x] Auth guard: redirect unauthenticated users to login, block non-admin role
+- [x] isFeatured field added to courses.update procedure
