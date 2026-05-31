@@ -269,7 +269,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <span className="inline-block bg-blue-50 text-blue-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-4 tracking-wide uppercase">Why SkillSphere</span>
             <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
-              SkillSphere: <span style={{color: '#2A63BF'}}>Transforming</span> Workforce Potential
+              SkillSphere for Organizations: <span style={{color: '#2A63BF'}}>Transforming</span> Workforce Potential
             </h2>
             <p className="text-xl text-gray-500 font-medium">Empowering People. Elevating Organizations.</p>
             <div className="mt-6 mx-auto w-20 h-1 rounded-full" style={{background: 'linear-gradient(90deg, #2A63BF, #f59e0b)'}} />
