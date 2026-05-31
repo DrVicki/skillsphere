@@ -335,9 +335,42 @@ export default function Home() {
             <p className="text-blue-100 mb-8">Ready to invest in your team's future?</p>
             <a
               href="/courses"
-              className="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-gray-900 font-bold px-8 py-3.5 rounded-xl text-lg transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+              className="group relative inline-flex items-center gap-3 font-bold text-lg px-10 py-4 rounded-2xl overflow-hidden shadow-2xl"
+              style={{
+                background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #f59e0b 100%)',
+                backgroundSize: '200% 100%',
+                color: '#1e3a6e',
+                transition: 'transform 0.2s cubic-bezier(0.23,1,0.32,1), box-shadow 0.2s cubic-bezier(0.23,1,0.32,1), background-position 0.4s ease',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1.06) translateY(-2px)';
+                (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 20px 40px rgba(245,158,11,0.45)';
+                (e.currentTarget as HTMLAnchorElement).style.backgroundPosition = '100% 0';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1) translateY(0)';
+                (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 10px 25px rgba(0,0,0,0.25)';
+                (e.currentTarget as HTMLAnchorElement).style.backgroundPosition = '0% 0';
+              }}
+              onMouseDown={e => {
+                (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(0.97) translateY(0)';
+              }}
+              onMouseUp={e => {
+                (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1.06) translateY(-2px)';
+              }}
             >
-              Get Started with SkillSphere →
+              {/* Shimmer overlay */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"
+                style={{
+                  background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.35) 50%, transparent 100%)',
+                }}
+              />
+              <span>Get Started with SkillSphere</span>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
             </a>
           </div>
         </div>
