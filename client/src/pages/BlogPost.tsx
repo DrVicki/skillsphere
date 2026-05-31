@@ -1,5 +1,7 @@
 import { useRoute, Link } from "wouter";
 import { trpc } from "@/lib/trpc";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Calendar, Clock, ArrowLeft, User } from "lucide-react";
@@ -131,6 +133,7 @@ export default function BlogPost() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
+        <Navbar />
         <div className="max-w-3xl mx-auto px-4 py-12">
           <Skeleton className="h-64 w-full rounded-2xl mb-8" />
           <Skeleton className="h-10 w-3/4 mb-4" />
@@ -143,10 +146,13 @@ export default function BlogPost() {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-700 mb-2">Post not found</h2>
-          <Link href="/blog" className="text-blue-600 underline text-sm">← Back to Blog</Link>
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="flex items-center justify-center" style={{minHeight: 'calc(100vh - 64px)'}}>
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-700 mb-2">Post not found</h2>
+            <Link href="/blog" className="text-blue-600 underline text-sm">← Back to Blog</Link>
+          </div>
         </div>
       </div>
     );
@@ -161,6 +167,7 @@ export default function BlogPost() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Navbar />
       {/* Cover image */}
       {post.coverImageUrl && (
         <div className="w-full h-72 md:h-96 overflow-hidden">
@@ -250,6 +257,7 @@ export default function BlogPost() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

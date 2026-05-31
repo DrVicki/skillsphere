@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,6 +30,7 @@ export default function Blog() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Navbar />
       {/* Hero */}
       <div style={{ background: "linear-gradient(135deg, #1e3a6e 0%, #2A63BF 60%, #4a90d9 100%)" }} className="py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
@@ -108,6 +111,7 @@ export default function Blog() {
           ))}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
