@@ -11,8 +11,15 @@ import {
   Play, MessageSquare, BarChart3, Shield, Zap, Globe
 } from "lucide-react";
 import { Link } from "wouter";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  type CarouselApi,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 const LOGO_URL = "/manus-storage/skillsphere-logo_e90b0563.png";
 const LOGO_CIRCLE_URL = "/manus-storage/skillsphere-logo-circle_8ea1006a.png";
@@ -277,6 +284,139 @@ function TestimonialsCarousel() {
   );
 }
 
+// ─── Featured Courses Carousel ──────────────────────────────────────────────
+
+type CourseItem = {
+  id: number;
+  slug: string;
+  title: string;
+  shortDescription?: string | null;
+  thumbnailUrl?: string | null;
+  price?: string | null;
+  isFree?: boolean | null;
+  level?: string | null;
+  category?: string | null;
+  rating?: string | null;
+  ratingCount?: number | null;
+  enrollmentCount?: number | null;
+  totalModules?: number | null;
+  trainerName?: string | null;
+};
+
+function FeaturedCoursesCarousel({ courses }: { courses: CourseItem[] }) {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+  const [count, setCount] = useState(0);
+  const autoplayRef = useRef(
+    Autoplay({ delay: 4500, stopOnInteraction: true, stopOnMouseEnter: true })
+  );
+
+  useEffect(() => {
+    if (!api) return;
+    setCount(api.scrollSnapList().length);
+    setCurrent(api.selectedScrollSnap());
+    api.on("select", () => setCurrent(api.selectedScrollSnap()));
+  }, [api]);
+
+  if (courses.length === 0) {
+    return (
+      <section className="section-padding bg-gray-50">
+        <div className="container text-center py-16">
+          <BookOpen className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+          <p className="text-muted-foreground">Courses coming soon. Check back shortly!</p>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="section-padding bg-gray-50 overflow-hidden">
+      <div className="container">
+        {/* Header */}
+        <div className="text-center mb-12 animate-fade-in-up">
+          <Badge className="mb-3 bg-primary/10 text-primary border-primary/20">Featured Courses</Badge>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            Expand Your <span className="brand-gradient-text">Professional Skills</span>
+          </h2>
+          <p className="text-muted-foreground max-w-xl mx-auto">
+            Discover expert-led courses designed to advance your career and empower your organization.
+          </p>
+        </div>
+
+        {/* Carousel */}
+        <div className="relative px-8 md:px-12">
+          <Carousel
+            setApi={setApi}
+            opts={{ align: 'start', loop: true }}
+            plugins={[autoplayRef.current]}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-4 md:-ml-6">
+              {courses.map((course) => (
+                <CarouselItem
+                  key={course.id}
+                  className="pl-4 md:pl-6 basis-full sm:basis-1/2 lg:basis-1/3"
+                >
+                  <div className="h-full">
+                    <CourseCard {...course} />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+
+            {/* Prev button */}
+            <button
+              onClick={() => api?.scrollPrev()}
+              aria-label="Previous course"
+              className="absolute -left-1 md:-left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white border border-border shadow-md flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-200 hover:scale-110 active:scale-95"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+
+            {/* Next button */}
+            <button
+              onClick={() => api?.scrollNext()}
+              aria-label="Next course"
+              className="absolute -right-1 md:-right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white border border-border shadow-md flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all duration-200 hover:scale-110 active:scale-95"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </Carousel>
+        </div>
+
+        {/* Dot indicators */}
+        {count > 0 && (
+          <div className="flex justify-center gap-2 mt-8">
+            {Array.from({ length: count }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => api?.scrollTo(i)}
+                aria-label={`Go to slide ${i + 1}`}
+                className="transition-all duration-300"
+                style={{
+                  width: i === current ? '28px' : '10px',
+                  height: '10px',
+                  borderRadius: '9999px',
+                  background: i === current ? 'var(--primary)' : '#d1d5db',
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* CTA */}
+        <div className="text-center mt-10">
+          <Button variant="outline" size="lg" asChild>
+            <Link href="/courses">
+              View All Courses <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const { isAuthenticated } = useAuth();
   const { data: courses } = trpc.courses.list.useQuery({ limit: 6 });
@@ -395,43 +535,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── Featured Courses ──────────────────────────────────────────────── */}
-      <section className="section-padding bg-gray-50">
-        <div className="container">
-          <div className="text-center mb-12 animate-fade-in-up">
-            <Badge className="mb-3 bg-primary/10 text-primary border-primary/20">Featured Courses</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Expand Your <span className="brand-gradient-text">Professional Skills</span>
-            </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              Discover expert-led courses designed to advance your career and empower your organization.
-            </p>
-          </div>
-
-          {courses && courses.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map((course, i) => (
-                <div key={course.id} className={`animate-fade-in-up stagger-${Math.min(i + 1, 4)}`}>
-                  <CourseCard {...course} />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16">
-              <BookOpen className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
-              <p className="text-muted-foreground">Courses coming soon. Check back shortly!</p>
-            </div>
-          )}
-
-          <div className="text-center mt-10">
-            <Button variant="outline" size="lg" asChild>
-              <Link href="/courses">
-                View All Courses <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      {/* ─── Featured Courses Carousel ─────────────────────────────────────── */}
+      <FeaturedCoursesCarousel courses={courses ?? []} />
 
       {/* ─── Features ──────────────────────────────────────────────────────── */}
       <section className="section-padding bg-white">
