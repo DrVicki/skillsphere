@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import LessonContent from "@/components/LessonContent";
+import RichTextEditor from "@/components/RichTextEditor";
 
 const CATEGORIES = ["Career Skills", "Technology", "AI & Machine Learning", "Cybersecurity", "Web3 & Blockchain", "Game Design", "Data Science", "Business", "Education", "Workforce Development", "Other"];
 
@@ -28,7 +28,7 @@ type PostForm = {
 
 const defaultForm: PostForm = {
   title: "",
-  content: "## Introduction\n\nStart writing your post here...\n\n## Key Points\n\n- Point 1\n- Point 2\n- Point 3\n\n## Conclusion\n\nWrap up your thoughts here.",
+  content: "<h2>Introduction</h2><p>Start writing your post here...</p><h2>Key Points</h2><ul><li>Point 1</li><li>Point 2</li><li>Point 3</li></ul><h2>Conclusion</h2><p>Wrap up your thoughts here.</p>",
   excerpt: "",
   coverImageUrl: "",
   category: "",
@@ -112,7 +112,7 @@ export default function AdminBlogEditor() {
   };
 
   const isSaving = createPost.isPending || updatePost.isPending;
-  const wordCount = form.content.split(/\s+/).filter(Boolean).length;
+  const wordCount = form.content.replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
   const readTime = Math.max(1, Math.round(wordCount / 200));
 
   return (
@@ -161,19 +161,22 @@ export default function AdminBlogEditor() {
                   </TabsList>
                 </div>
                 <TabsContent value="write" className="m-0">
-                  <Textarea
+                  <RichTextEditor
                     value={form.content}
-                    onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
-                    placeholder="Write your post in Markdown..."
-                    className="min-h-[500px] border-0 rounded-none focus-visible:ring-0 font-mono text-sm resize-none p-5"
+                    onChange={html => setForm(f => ({ ...f, content: html }))}
+                    placeholder="Start writing your post..."
+                    minHeight="480px"
+                    className="border-0 rounded-none shadow-none"
                   />
-                  <div className="px-5 py-2 border-t border-gray-50 bg-gray-50/50">
-                    <p className="text-[10px] text-gray-400">Supports Markdown: **bold**, *italic*, ## headings, - lists, `code`, [link](url), ![image](url)</p>
-                  </div>
                 </TabsContent>
                 <TabsContent value="preview" className="m-0 p-5 min-h-[500px]">
-                  {form.content
-                    ? <LessonContent content={form.content} title={form.title || "Preview"} />
+                  {form.content && form.content !== "<p></p>"
+                    ? (
+                      <div className="prose prose-sm max-w-none">
+                        <h1 className="text-2xl font-bold mb-4">{form.title || "Untitled Post"}</h1>
+                        <div dangerouslySetInnerHTML={{ __html: form.content }} />
+                      </div>
+                    )
                     : <p className="text-gray-400 text-sm italic">Nothing to preview yet.</p>
                   }
                 </TabsContent>

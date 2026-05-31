@@ -72,3 +72,10 @@
 - [x] Users admin page: list all users, change role (user/learner/trainer/admin)
 - [x] Auth guard: redirect unauthenticated users to login, block non-admin role
 - [x] isFeatured field added to courses.update procedure
+
+## Rich Text Editor
+- [x] Install Tiptap and required extensions
+- [x] Build RichTextEditor component with formatting toolbar (bold, italic, underline, headings H1-H3, bullet list, ordered list, blockquote, code block, link, image, table, horizontal rule, undo/redo)
+- [x] Integrate RichTextEditor into blog post editor (replace plain textarea)
+- [x] Integrate RichTextEditor into course lesson editor (replace plain textarea)
+- [x] Ensure editor output is stored as HTML and rendered correctly in lesson viewer and blog reader

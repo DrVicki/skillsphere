@@ -6,6 +6,7 @@ import { Plus, Pencil, Trash2, Eye, EyeOff, BookOpen, ChevronDown, ChevronUp, Gr
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import RichTextEditor from "@/components/RichTextEditor";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -380,13 +381,12 @@ export default function AdminCourses() {
               </div>
             )}
             <div>
-              <Label>Content (Markdown)</Label>
-              <Textarea
+              <Label className="mb-2 block">Lesson Content</Label>
+              <RichTextEditor
                 value={moduleForm.content}
-                onChange={e => setModuleForm(f => ({ ...f, content: e.target.value }))}
-                placeholder="Write lesson content in Markdown..."
-                rows={10}
-                className="font-mono text-sm"
+                onChange={html => setModuleForm(f => ({ ...f, content: html }))}
+                placeholder="Write lesson content here..."
+                minHeight="320px"
               />
             </div>
             <div className="flex items-center gap-2">
