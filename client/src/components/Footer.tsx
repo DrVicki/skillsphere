@@ -1,10 +1,82 @@
+import { useState } from "react";
 import { Link } from "wouter";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 const LOGO_URL = "/manus-storage/skillsphere-logo-circle_8ea1006a.png";
+
+function NewsletterForm() {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  const subscribe = trpc.newsletter.subscribe.useMutation({
+    onSuccess: () => {
+      setSubmitted(true);
+      setEmail("");
+      toast.success("You're subscribed! Welcome to the SkillSphere community.");
+    },
+    onError: (err) => {
+      toast.error(err.message || "Something went wrong. Please try again.");
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    subscribe.mutate({ email: email.trim() });
+  };
+
+  if (submitted) {
+    return (
+      <div className="flex items-center gap-2 text-sm text-green-400 font-medium">
+        <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        Thanks for subscribing! We'll keep you updated.
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 w-full max-w-sm">
+      <input
+        type="email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Enter your email"
+        className="flex-1 px-3 py-2 rounded-md bg-gray-800 border border-gray-700 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+      />
+      <button
+        type="submit"
+        disabled={subscribe.isPending}
+        className="px-4 py-2 rounded-md text-sm font-semibold text-white transition-all active:scale-95 disabled:opacity-60"
+        style={{ background: "#2A63BF" }}
+      >
+        {subscribe.isPending ? "Subscribing…" : "Subscribe"}
+      </button>
+    </form>
+  );
+}
 
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300">
+      {/* Newsletter Banner */}
+      <div className="border-b border-gray-800">
+        <div className="container py-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+            <div>
+              <h3 className="text-white font-semibold text-base mb-1">Stay ahead with SkillSphere</h3>
+              <p className="text-sm text-gray-400">Get the latest courses, tips, and workforce insights delivered to your inbox.</p>
+            </div>
+            <div className="shrink-0">
+              <NewsletterForm />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}

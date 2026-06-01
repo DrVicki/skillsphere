@@ -5,6 +5,7 @@ import {
   courses, modules, enrollments, moduleProgress,
   payments, subscriptions, bundles, bundleCourses, coupons,
   discussionThreads, discussionReplies, chatMessages, courseReviews,
+  newsletterSubscribers,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -685,4 +686,24 @@ export async function getContactMessages(opts: { limit?: number; offset?: number
     .orderBy(desc(contactMessages.createdAt))
     .limit(opts.limit ?? 50)
     .offset(opts.offset ?? 0);
+}
+
+// ─── Newsletter ───────────────────────────────────────────────────────────────
+export async function subscribeToNewsletter(email: string, name?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("DB unavailable");
+  // Upsert: if already subscribed, re-activate
+  await db
+    .insert(newsletterSubscribers)
+    .values({ email, name: name ?? null, status: "active" })
+    .onDuplicateKeyUpdate({ set: { status: "active" } });
+}
+
+export async function getNewsletterSubscribers() {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(newsletterSubscribers)
+    .orderBy(desc(newsletterSubscribers.subscribedAt));
 }

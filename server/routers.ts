@@ -51,6 +51,8 @@ import {
   updateUserStripeCustomerId,
   createContactMessage,
   getContactMessages,
+  subscribeToNewsletter,
+  getNewsletterSubscribers,
   getBlogPosts,
   getBlogPostBySlug,
   getBlogPostById,
@@ -524,6 +526,27 @@ export const appRouter = router({
     list: adminProcedure
       .input(z.object({ limit: z.number().optional(), offset: z.number().optional() }).optional())
       .query(({ input }) => getContactMessages(input ?? {})),
+  }),
+
+  // ─── Newsletter ──────────────────────────────────────────────────────────
+  newsletter: router({
+    subscribe: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        name: z.string().max(255).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        await subscribeToNewsletter(input.email, input.name);
+        const { notifyOwner } = await import("./_core/notification");
+        await notifyOwner({
+          title: "New Newsletter Subscriber",
+          content: `${input.name ? input.name + " (" + input.email + ")" : input.email} just subscribed to the SkillSphere newsletter.`,
+        });
+        return { success: true };
+      }),
+
+    list: adminProcedure
+      .query(() => getNewsletterSubscribers()),
   }),
 
   // ─── File Upload ──────────────────────────────────────────────────────────
