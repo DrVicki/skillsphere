@@ -1,0 +1,11 @@
+CREATE TABLE `contact_messages` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`name` varchar(255) NOT NULL,
+	`email` varchar(320) NOT NULL,
+	`subject` varchar(255) NOT NULL,
+	`message` text NOT NULL,
+	`category` enum('general','support','billing','partnerships','other') NOT NULL DEFAULT 'general',
+	`status` enum('new','read','replied') NOT NULL DEFAULT 'new',
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	CONSTRAINT `contact_messages_id` PRIMARY KEY(`id`)
+);

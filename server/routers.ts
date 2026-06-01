@@ -49,6 +49,8 @@ import {
   upsertSubscription,
   updatePaymentBySessionId,
   updateUserStripeCustomerId,
+  createContactMessage,
+  getContactMessages,
   getBlogPosts,
   getBlogPostBySlug,
   getBlogPostById,
@@ -496,6 +498,32 @@ export const appRouter = router({
         await deleteBlogPost(input);
         return { success: true };
       }),
+  }),
+
+  // ─── Contact ───────────────────────────────────────────────────────────────
+  contact: router({
+    submit: publicProcedure
+      .input(z.object({
+        name: z.string().min(2).max(255),
+        email: z.string().email(),
+        subject: z.string().min(3).max(255),
+        message: z.string().min(10).max(5000),
+        category: z.enum(["general", "support", "billing", "partnerships", "other"]).default("general"),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await createContactMessage(input);
+        // Notify owner
+        const { notifyOwner } = await import("./_core/notification");
+        await notifyOwner({
+          title: `New Contact Message: ${input.subject}`,
+          content: `From: ${input.name} <${input.email}>\nCategory: ${input.category}\n\n${input.message}`,
+        });
+        return { id };
+      }),
+
+    list: adminProcedure
+      .input(z.object({ limit: z.number().optional(), offset: z.number().optional() }).optional())
+      .query(({ input }) => getContactMessages(input ?? {})),
   }),
 
   // ─── File Upload ──────────────────────────────────────────────────────────

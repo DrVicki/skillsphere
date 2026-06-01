@@ -29,6 +29,13 @@
       "when": 1780253846219,
       "tag": "0003_tan_gunslinger",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1780319655604,
+      "tag": "0004_omniscient_chamber",
+      "breakpoints": true
     }
   ]
 }

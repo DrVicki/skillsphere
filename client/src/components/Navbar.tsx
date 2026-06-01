@@ -27,6 +27,7 @@ export default function Navbar() {
     { href: "/courses", label: "Courses" },
     { href: "/blog", label: "Blog" },
     { href: "/about", label: "About" },
+    { href: "/contact", label: "Contact" },
   ];
 
   const getDashboardLink = () => {

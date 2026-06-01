@@ -185,3 +185,55 @@ describe("auth.updateProfile", () => {
     await expect(caller.auth.updateProfile({ name: "Hacker" })).rejects.toMatchObject({ code: "UNAUTHORIZED" });
   });
 });
+
+// ─── Contact ──────────────────────────────────────────────────────────────────
+
+function publicCaller() {
+  const { ctx } = createPublicContext();
+  return appRouter.createCaller(ctx);
+}
+
+describe("contact.submit", () => {
+  it("accepts a valid contact form submission", async () => {
+    const caller = publicCaller();
+    const result = await caller.contact.submit({
+      name: "Test User",
+      email: "test@example.com",
+      subject: "Test Subject",
+      message: "This is a test message with enough characters.",
+      category: "general",
+    });
+    expect(result).toHaveProperty("id");
+  });
+
+  it("rejects an invalid email", async () => {
+    const caller = publicCaller();
+    await expect(
+      caller.contact.submit({
+        name: "Test User",
+        email: "not-an-email",
+        subject: "Test Subject",
+        message: "This is a test message with enough characters.",
+        category: "general",
+      })
+    ).rejects.toThrow();
+  });
+
+  it("rejects a message that is too short", async () => {
+    const caller = publicCaller();
+    await expect(
+      caller.contact.submit({
+        name: "Test User",
+        email: "test@example.com",
+        subject: "Test Subject",
+        message: "Short",
+        category: "support",
+      })
+    ).rejects.toThrow();
+  });
+
+  it("blocks admin-only contact.list from unauthenticated caller", async () => {
+    const caller = publicCaller();
+    await expect(caller.contact.list()).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+  });
+});

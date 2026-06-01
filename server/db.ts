@@ -654,3 +654,33 @@ export async function deleteBlogPost(id: number) {
   if (!db) return;
   await db.delete(blogPosts).where(eq(blogPosts.id, id));
 }
+
+// ─── Contact Messages ─────────────────────────────────────────────────────────
+
+export async function createContactMessage(data: {
+  name: string; email: string; subject: string; message: string;
+  category?: "general" | "support" | "billing" | "partnerships" | "other";
+}) {
+  const { contactMessages } = await import("../drizzle/schema");
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(contactMessages).values({
+    name: data.name,
+    email: data.email,
+    subject: data.subject,
+    message: data.message,
+    category: data.category ?? "general",
+    status: "new",
+  });
+  return (result as any)[0]?.insertId ?? 0;
+}
+
+export async function getContactMessages(opts: { limit?: number; offset?: number } = {}) {
+  const { contactMessages } = await import("../drizzle/schema");
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(contactMessages)
+    .orderBy(desc(contactMessages.createdAt))
+    .limit(opts.limit ?? 50)
+    .offset(opts.offset ?? 0);
+}
