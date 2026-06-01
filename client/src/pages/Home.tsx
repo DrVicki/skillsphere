@@ -643,7 +643,7 @@ export default function Home() {
             </p>
             <p className="text-blue-100 mb-8">Ready to invest in your team's future?</p>
             <a
-              href="/courses"
+              href="/contact"
               className="group relative inline-flex items-center gap-3 font-bold text-lg px-10 py-4 rounded-2xl overflow-hidden shadow-2xl"
               style={{
                 background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #f59e0b 100%)',
