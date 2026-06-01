@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Star, Users, BookOpen, Loader2, ArrowRight } from "lucide-react";
+import { Star, Users, BookOpen, Loader2, ArrowRight, Clock, BarChart2 } from "lucide-react";
 import { useLocation } from "wouter";
 
 interface CourseCardProps {
@@ -16,6 +16,7 @@ interface CourseCardProps {
   ratingCount?: number | null;
   enrollmentCount?: number | null;
   totalModules?: number | null;
+  totalDuration?: number | null;
   trainerName?: string | null;
 }
 
@@ -32,8 +33,15 @@ export default function CourseCard({
   ratingCount,
   enrollmentCount,
   totalModules,
+  totalDuration,
   trainerName,
 }: CourseCardProps) {
+  function formatDuration(minutes: number): string {
+    if (minutes < 60) return `${minutes}m`;
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return m > 0 ? `${h}h ${m}m` : `${h}h`;
+  }
   const [enrolling, setEnrolling] = useState(false);
   const [, navigate] = useLocation();
 
@@ -135,6 +143,26 @@ export default function CourseCard({
         {trainerName && (
           <p className="text-xs text-muted-foreground mb-2">by {trainerName}</p>
         )}
+
+        {/* Difficulty + Duration tags */}
+        <div className="flex flex-wrap items-center gap-1.5 mb-2">
+          {level && (
+            <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+              level === 'beginner' ? 'bg-green-100 text-green-700' :
+              level === 'intermediate' ? 'bg-yellow-100 text-yellow-700' :
+              'bg-red-100 text-red-700'
+            }`}>
+              <BarChart2 className="h-2.5 w-2.5" />
+              {level.charAt(0).toUpperCase() + level.slice(1)}
+            </span>
+          )}
+          {totalDuration != null && totalDuration > 0 && (
+            <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">
+              <Clock className="h-2.5 w-2.5" />
+              {formatDuration(totalDuration)}
+            </span>
+          )}
+        </div>
 
         {/* Stats */}
         <div className="flex items-center gap-3 text-xs text-muted-foreground mt-auto pt-2 border-t border-border">
