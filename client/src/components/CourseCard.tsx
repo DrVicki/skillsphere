@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Star, Users, BookOpen, Loader2 } from "lucide-react";
+import { Star, Users, BookOpen, Loader2, ArrowRight } from "lucide-react";
 import { useLocation } from "wouter";
 
 interface CourseCardProps {
@@ -56,13 +56,18 @@ export default function CourseCard({
     }, 700);
   }
 
+  function handleViewDetails(e: React.MouseEvent<HTMLButtonElement>) {
+    e.stopPropagation();
+    navigate(`/courses/${slug}`);
+  }
+
   return (
     <div
       role="link"
       tabIndex={0}
       onClick={handleCardClick}
       onKeyDown={(e) => e.key === "Enter" && handleCardClick()}
-      className="group bg-card border border-border rounded-xl overflow-hidden card-hover cursor-pointer h-full flex flex-col transition-transform duration-300 ease-out hover:scale-[1.03] hover:shadow-xl will-change-transform"
+      className="group bg-card border border-border rounded-xl overflow-hidden card-hover cursor-pointer h-full flex flex-col transition-all duration-300 ease-out hover:scale-[1.03] hover:shadow-2xl hover:border-primary/30 will-change-transform relative"
     >
       {/* Thumbnail */}
       <div className="relative aspect-video bg-gradient-to-br from-primary/10 to-secondary/10 overflow-hidden">
@@ -78,8 +83,8 @@ export default function CourseCard({
           </div>
         )}
 
-        {/* Hover overlay with Enroll Now button */}
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out">
+        {/* Hover overlay on thumbnail — Enroll Now */}
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out">
           <button
             onClick={handleEnrollClick}
             disabled={enrolling}
@@ -119,17 +124,14 @@ export default function CourseCard({
         )}
       </div>
 
-      {/* Content */}
+      {/* Card body — static content */}
       <div className="p-4 flex flex-col flex-1">
         {category && (
           <p className="text-xs text-primary font-semibold uppercase tracking-wide mb-1">{category}</p>
         )}
-        <h3 className="font-semibold text-foreground text-sm leading-snug mb-1.5 line-clamp-2 group-hover:text-primary transition-colors">
+        <h3 className="font-semibold text-foreground text-sm leading-snug mb-1.5 line-clamp-2 group-hover:text-primary transition-colors duration-200">
           {title}
         </h3>
-        {shortDescription && (
-          <p className="text-xs text-muted-foreground line-clamp-2 mb-3 flex-1">{shortDescription}</p>
-        )}
         {trainerName && (
           <p className="text-xs text-muted-foreground mb-2">by {trainerName}</p>
         )}
@@ -156,6 +158,42 @@ export default function CourseCard({
             </span>
           )}
         </div>
+      </div>
+
+      {/* Hover reveal panel — slides up from bottom */}
+      <div
+        className="
+          absolute inset-x-0 bottom-0
+          bg-gradient-to-t from-primary via-primary/95 to-primary/80
+          text-white
+          px-4 pt-5 pb-4
+          flex flex-col gap-3
+          translate-y-full group-hover:translate-y-0
+          transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]
+          will-change-transform
+          rounded-b-xl
+        "
+      >
+        {shortDescription && (
+          <p className="text-xs leading-relaxed text-white/90 line-clamp-3">
+            {shortDescription}
+          </p>
+        )}
+        <button
+          onClick={handleViewDetails}
+          className="
+            inline-flex items-center justify-center gap-2
+            w-full py-2 px-4 rounded-lg
+            bg-white text-primary font-semibold text-sm
+            hover:bg-primary-foreground
+            active:scale-[0.97]
+            transition-all duration-150 ease-out
+            shadow-md
+          "
+        >
+          View Details
+          <ArrowRight className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );
