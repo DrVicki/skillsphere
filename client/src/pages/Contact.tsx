@@ -5,46 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { toast } from "sonner";
-import { Mail, Phone, MapPin, Clock, Send, MessageSquare, HeadphonesIcon, Building2, HelpCircle } from "lucide-react";
+import { Send, MessageSquare, HeadphonesIcon, Building2, HelpCircle, Clock } from "lucide-react";
+import { Turnstile } from "@marsidev/react-turnstile";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
 
-const CONTACT_INFO = [
-  {
-    icon: Mail,
-    label: "Email Us",
-    value: "hello@myskillsphere.com",
-    sub: "We reply within 24 hours",
-    color: "text-blue-500",
-    bg: "bg-blue-50",
-  },
-  {
-    icon: Phone,
-    label: "Call Us",
-    value: "+1 (800) SKILL-SP",
-    sub: "Mon–Fri, 9 AM – 6 PM EST",
-    color: "text-green-500",
-    bg: "bg-green-50",
-  },
-  {
-    icon: MapPin,
-    label: "Our Office",
-    value: "New York, NY 10001",
-    sub: "United States",
-    color: "text-orange-500",
-    bg: "bg-orange-50",
-  },
-  {
-    icon: Clock,
-    label: "Support Hours",
-    value: "24/7 Online Support",
-    sub: "Live chat available",
-    color: "text-purple-500",
-    bg: "bg-purple-50",
-  },
-];
+// Cloudflare Turnstile site key — "always passes" invisible test key for dev/staging
+// Replace with your real site key from https://dash.cloudflare.com/ once live
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY ?? "1x00000000000000000000AA";
 
 const CATEGORIES = [
   { value: "general", label: "General Inquiry", icon: MessageSquare },
@@ -92,14 +62,20 @@ const INITIAL_FORM: FormState = {
 export default function Contact() {
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [submitted, setSubmitted] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string>("");
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   const submit = trpc.contact.submit.useMutation({
     onSuccess: () => {
       setSubmitted(true);
       setForm(INITIAL_FORM);
+      setCaptchaToken("");
       toast.success("Message sent! We'll get back to you soon.");
     },
     onError: (err) => {
+      // Reset CAPTCHA on error so user can retry
+      turnstileRef.current?.reset();
+      setCaptchaToken("");
       toast.error(err.message ?? "Failed to send message. Please try again.");
     },
   });
@@ -110,7 +86,11 @@ export default function Contact() {
       toast.error("Please fill in all required fields.");
       return;
     }
-    submit.mutate(form);
+    if (!captchaToken) {
+      toast.error("Please complete the CAPTCHA verification.");
+      return;
+    }
+    submit.mutate({ ...form, captchaToken });
   };
 
   const set = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -131,26 +111,6 @@ export default function Contact() {
           <p className="text-white/80 max-w-xl mx-auto text-lg leading-relaxed">
             Have a question, feedback, or partnership idea? Our team is ready to help you every step of the way.
           </p>
-        </div>
-      </section>
-
-      {/* Contact Info Cards */}
-      <section className="py-12 bg-gray-50">
-        <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {CONTACT_INFO.map((item) => (
-              <Card key={item.label} className="border-0 shadow-sm hover:shadow-md transition-shadow duration-200">
-                <CardContent className="p-5 text-center">
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full ${item.bg} mb-3`}>
-                    <item.icon className={`w-5 h-5 ${item.color}`} />
-                  </div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">{item.label}</p>
-                  <p className="font-semibold text-foreground text-sm leading-snug">{item.value}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{item.sub}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -267,11 +227,29 @@ export default function Contact() {
                     <p className="text-xs text-muted-foreground text-right">{form.message.length} / 5000</p>
                   </div>
 
+                  {/* CAPTCHA */}
+                  <div className="space-y-1.5">
+                    <Turnstile
+                      ref={turnstileRef}
+                      siteKey={TURNSTILE_SITE_KEY}
+                      onSuccess={(token) => setCaptchaToken(token)}
+                      onExpire={() => setCaptchaToken("")}
+                      onError={() => {
+                        setCaptchaToken("");
+                        toast.error("CAPTCHA failed to load. Please refresh the page.");
+                      }}
+                      options={{ theme: "light", size: "normal" }}
+                    />
+                    {!captchaToken && (
+                      <p className="text-xs text-muted-foreground">Please complete the verification above before sending.</p>
+                    )}
+                  </div>
+
                   <Button
                     type="submit"
                     size="lg"
                     className="w-full h-12 text-base font-semibold"
-                    disabled={submit.isPending}
+                    disabled={submit.isPending || !captchaToken}
                     style={{ background: "linear-gradient(135deg, #1a3a6b 0%, #2563eb 100%)" }}
                   >
                     {submit.isPending ? (

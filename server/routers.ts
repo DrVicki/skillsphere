@@ -4,6 +4,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { ENV } from "./_core/env";
 import {
   createChatMessage,
   createCoupon,
@@ -511,9 +512,24 @@ export const appRouter = router({
         subject: z.string().min(3).max(255),
         message: z.string().min(10).max(5000),
         category: z.enum(["general", "support", "billing", "partnerships", "other"]).default("general"),
+        captchaToken: z.string().min(1, "CAPTCHA verification required"),
       }))
       .mutation(async ({ input }) => {
-        const id = await createContactMessage(input);
+        // Verify Cloudflare Turnstile token
+        const secretKey = ENV.turnstileSecretKey;
+        if (secretKey) {
+          const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ secret: secretKey, response: input.captchaToken }).toString(),
+          });
+          const verifyData = await verifyRes.json() as { success: boolean; "error-codes"?: string[] };
+          if (!verifyData.success) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "CAPTCHA verification failed. Please try again." });
+          }
+        }
+        const { captchaToken: _, ...messageData } = input;
+        const id = await createContactMessage(messageData);
         // Notify owner
         const { notifyOwner } = await import("./_core/notification");
         await notifyOwner({
