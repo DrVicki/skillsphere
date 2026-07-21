@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Download, Printer, X, CheckCircle, AlertCircle, Eye } from "lucide-react";
 
 const LOGO_URL = "/manus-storage/skillsphere-logo-circle_8ea1006a.png";
@@ -272,6 +272,7 @@ export default function CourseCertificate({
           transition: "max-width 0.3s ease",
         }}
       >
+        <DialogTitle className="sr-only">Course Certificate</DialogTitle>
         {step === "preview" ? (
           /* ── STEP 1: Verification Preview ── */
           <div className="flex flex-col" style={{ fontFamily: "'Poppins', sans-serif" }}>
