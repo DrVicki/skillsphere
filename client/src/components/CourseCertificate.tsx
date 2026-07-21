@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Download, Printer, X, CheckCircle, AlertCircle, Eye } from "lucide-react";
+import { Download, Printer, X, CheckCircle, AlertCircle, Eye, Share2 } from "lucide-react";
 
 const LOGO_URL = "/manus-storage/skillsphere-logo-circle_8ea1006a.png";
 
@@ -130,6 +130,9 @@ export default function CourseCertificate({
   certificateId,
 }: CourseCertificateProps) {
   const [step, setStep] = useState<"preview" | "ready">("preview");
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const certRef = useRef<HTMLDivElement>(null);
   const displayName = (learnerName ?? "").trim() || "Learner";
 
   const formattedDate = completionDate.toLocaleDateString("en-US", {
@@ -137,6 +140,63 @@ export default function CourseCertificate({
     month: "long",
     day: "numeric",
   });
+
+  async function handleDownloadPdf() {
+    setIsDownloading(true);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const { jsPDF } = await import("jspdf");
+      // Render the certificate at full 900×636 resolution
+      const node = document.createElement("div");
+      node.style.position = "fixed";
+      node.style.left = "-9999px";
+      node.style.top = "0";
+      node.style.zIndex = "-1";
+      document.body.appendChild(node);
+      const { createRoot } = await import("react-dom/client");
+      const { createElement } = await import("react");
+      const root = createRoot(node);
+      root.render(createElement(CertPreview, { displayName, courseTitle, formattedDate, certificateId, scale: 1 }));
+      await new Promise(r => setTimeout(r, 600));
+      const canvas = await html2canvas(node.firstElementChild as HTMLElement, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null,
+        logging: false,
+      });
+      root.unmount();
+      document.body.removeChild(node);
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [900, 636] });
+      pdf.addImage(imgData, "PNG", 0, 0, 900, 636);
+      pdf.save(`SkillSphere-Certificate-${displayName.replace(/\s+/g, "-")}.pdf`);
+    } catch (err) {
+      console.error("PDF generation failed:", err);
+      // Fallback to print
+      handlePrint();
+    } finally {
+      setIsDownloading(false);
+    }
+  }
+
+  async function handleShare() {
+    setIsSharing(true);
+    const shareText = `🎓 I just completed "${courseTitle}" on SkillSphere! Empowering skills, building futures. #SkillSphere #LearningAndDevelopment #AI`;
+    const shareUrl = window.location.origin + "/courses";
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: `Certificate: ${courseTitle}`, text: shareText, url: shareUrl });
+      } else {
+        // Fallback: open LinkedIn share
+        const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&summary=${encodeURIComponent(shareText)}`;
+        window.open(linkedInUrl, "_blank", "width=600,height=500");
+      }
+    } catch {
+      // User cancelled share — no-op
+    } finally {
+      setIsSharing(false);
+    }
+  }
 
   // Reset to preview step when modal opens
   const handleOpen = (isOpen: boolean) => {
@@ -371,12 +431,24 @@ export default function CourseCertificate({
                   <Eye className="h-3.5 w-3.5 mr-1.5" /> Full Preview
                 </Button>
                 <Button
+                  variant="outline"
                   size="sm"
-                  onClick={() => { setStep("ready"); setTimeout(handlePrint, 100); }}
+                  disabled={isSharing}
+                  className="text-white border-white/20 bg-white/5 hover:bg-white/10"
+                  onClick={handleShare}
+                >
+                  <Share2 className="h-3.5 w-3.5 mr-1.5" />
+                  {isSharing ? "Sharing…" : "Share"}
+                </Button>
+                <Button
+                  size="sm"
+                  disabled={isDownloading}
+                  onClick={handleDownloadPdf}
                   style={{ background: "linear-gradient(90deg, #2A63BF, #1a4fa0)", color: "white" }}
                   className="hover:opacity-90 transition-opacity"
                 >
-                  <Download className="h-3.5 w-3.5 mr-1.5" /> Download PDF
+                  <Download className="h-3.5 w-3.5 mr-1.5" />
+                  {isDownloading ? "Generating…" : "Download PDF"}
                 </Button>
               </div>
             </div>
@@ -408,11 +480,20 @@ export default function CourseCertificate({
                 <Printer className="h-3 w-3" /> Print
               </button>
               <button
-                onClick={handlePrint}
-                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full transition-opacity hover:opacity-90"
+                onClick={handleShare}
+                disabled={isSharing}
+                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full transition-opacity hover:opacity-90 disabled:opacity-60"
+                style={{ background: "linear-gradient(90deg, #6366f1, #4f46e5)", color: "white" }}
+              >
+                <Share2 className="h-3 w-3" /> {isSharing ? "Sharing…" : "Share"}
+              </button>
+              <button
+                onClick={handleDownloadPdf}
+                disabled={isDownloading}
+                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full transition-opacity hover:opacity-90 disabled:opacity-60"
                 style={{ background: "linear-gradient(90deg, #2A63BF, #1a4fa0)", color: "white" }}
               >
-                <Download className="h-3 w-3" /> Download PDF
+                <Download className="h-3 w-3" /> {isDownloading ? "Generating…" : "Download PDF"}
               </button>
               <button
                 onClick={onClose}
