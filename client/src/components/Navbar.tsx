@@ -25,7 +25,6 @@ export default function Navbar() {
 
   const navLinks = [
     { href: "/courses", label: "Courses" },
-    { href: "/blog", label: "Blog" },
     { href: "https://www.drvickitechtalk.org/", label: "Dr. Vicki's Tech Talk", external: true },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },

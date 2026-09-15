@@ -1,4 +1,4 @@
-import { and, desc, eq, like, or, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, like, or, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   InsertUser, users,
@@ -252,6 +252,19 @@ export async function createEnrollment(data: { userId: number; courseId: number;
   });
   await db.update(courses).set({ enrollmentCount: sql`${courses.enrollmentCount} + 1` }).where(eq(courses.id, data.courseId));
   return (result as any)[0]?.insertId ?? 0;
+}
+
+export async function markEnrollmentComplete(userId: number, courseId: number) {
+  const db = await getDb();
+  if (!db) return false;
+  const result = await db.update(enrollments)
+    .set({ completedAt: new Date(), progressPercent: 100, lastAccessedAt: new Date() })
+    .where(and(
+      eq(enrollments.userId, userId),
+      eq(enrollments.courseId, courseId),
+      isNull(enrollments.completedAt),
+    ));
+  return Number((result as any)[0]?.affectedRows ?? 0) > 0;
 }
 
 // ─── Module Progress ──────────────────────────────────────────────────────────

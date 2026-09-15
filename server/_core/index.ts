@@ -9,8 +9,9 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import Stripe from "stripe";
-import { createEnrollment, createPayment, getEnrollment, updatePaymentBySessionId, updateUserStripeCustomerId, upsertSubscription } from "../db";
+import { createEnrollment, createPayment, getCourseById, getEnrollment, getUserById, updatePaymentBySessionId, updateUserStripeCustomerId, upsertSubscription } from "../db";
 import { storagePut } from "../storage";
+import { sendEnrollmentEmail } from "../email";
 import multer from "multer";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
@@ -74,6 +75,10 @@ async function startServer() {
           const existing = await getEnrollment(userId, courseId);
           if (!existing) {
             await createEnrollment({ userId, courseId, amountPaid: ((session.amount_total ?? 0) / 100).toFixed(2), stripePaymentIntentId: session.payment_intent as string });
+            const [learner, course] = await Promise.all([getUserById(userId), getCourseById(courseId)]);
+            if (learner && course) {
+              await sendEnrollmentEmail(learner, course, session.metadata?.site_origin);
+            }
           }
           if (session.customer) await updateUserStripeCustomerId(userId, session.customer as string);
         }

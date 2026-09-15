@@ -32,6 +32,8 @@ import {
   getModuleById,
   getModuleProgress,
   getModulesByCourse,
+  getUserById,
+  markEnrollmentComplete,
   getPaymentsByUser,
   getRepliesByThread,
   getRevenueByMonth,
@@ -63,6 +65,7 @@ import {
 } from "./db";
 import { storagePut } from "./storage";
 import { invokeLLM } from "./_core/llm";
+import { sendCompletionEmail, sendEnrollmentEmail } from "./email";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
@@ -373,6 +376,7 @@ export const appRouter = router({
       const existing = await getEnrollment(ctx.user.id, input);
       if (existing) return { success: true, enrollmentId: existing.id };
       const id = await createEnrollment({ userId: ctx.user.id, courseId: input, amountPaid: "0.00" });
+      void sendEnrollmentEmail(ctx.user, course, `${ctx.req.protocol}://${ctx.req.headers.host ?? "myskillsphere.com"}`);
       return { success: true, enrollmentId: id };
     }),
   }),
@@ -388,8 +392,25 @@ export const appRouter = router({
     markComplete: protectedProcedure
       .input(z.object({ moduleId: z.number(), courseId: z.number(), watchedSeconds: z.number().optional(), assessmentScore: z.number().optional(), assessmentPassed: z.boolean().optional() }))
       .mutation(async ({ ctx, input }) => {
+        const enrollment = await getEnrollment(ctx.user.id, input.courseId);
+        if (!enrollment) throw new TRPCError({ code: "FORBIDDEN", message: "Must be enrolled to record course progress" });
         await upsertModuleProgress({ ...input, userId: ctx.user.id, isCompleted: true });
-        return { success: true };
+        const [course, courseModules, learnerProgress] = await Promise.all([
+          getCourseById(input.courseId),
+          getModulesByCourse(input.courseId),
+          getModuleProgress(ctx.user.id, input.courseId),
+        ]);
+        const completedModuleIds = new Set(learnerProgress.filter((item) => item.isCompleted).map((item) => item.moduleId));
+        const courseCompleted = courseModules.length > 0 && courseModules.every((module) => completedModuleIds.has(module.id));
+        let completionEmailSent = false;
+
+        if (courseCompleted && course) {
+          const completedNow = await markEnrollmentComplete(ctx.user.id, input.courseId);
+          if (completedNow) {
+            completionEmailSent = await sendCompletionEmail(ctx.user, course, `${ctx.req.protocol}://${ctx.req.headers.host ?? "myskillsphere.com"}`);
+          }
+        }
+        return { success: true, courseCompleted, completionEmailSent };
       }),
 
     updateWatched: protectedProcedure
@@ -450,7 +471,7 @@ export const appRouter = router({
           customer_email: ctx.user.email ?? undefined,
           allow_promotion_codes: true,
           client_reference_id: ctx.user.id.toString(),
-          metadata: { user_id: ctx.user.id.toString(), course_id: input.courseId.toString(), customer_email: ctx.user.email ?? "", coupon_code: couponCode ?? "" },
+          metadata: { user_id: ctx.user.id.toString(), course_id: input.courseId.toString(), customer_email: ctx.user.email ?? "", coupon_code: couponCode ?? "", site_origin: input.origin },
         });
 
         await createPayment({ userId: ctx.user.id, courseId: input.courseId, stripeSessionId: session.id, amount: (finalPrice / 100).toFixed(2), status: "pending", couponCode, discountAmount: discountAmount.toFixed(2) });
