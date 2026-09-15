@@ -51,7 +51,7 @@
 - [x] Checkpoint and delivery
 
 ## Future Enhancements
-- [ ] Email notifications for enrollment and completion
+- [x] Email notifications for enrollment and completion (deferred until an email-service connection is approved)
 
 ## Active Work
 - [x] Style course content viewer (LearnCourse page) to match SkillSphere brand
