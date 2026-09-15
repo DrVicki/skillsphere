@@ -10,7 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Play, FileText, ClipboardList, CheckCircle, ChevronRight, MessageSquare,
-  Send, BookOpen, Users, Star, ArrowLeft, Award
+  Send, BookOpen, Users, Star, ArrowLeft, Award, Lock
 } from "lucide-react";
 import CourseCertificate from "@/components/CourseCertificate";
 import LessonContent from "@/components/LessonContent";
@@ -35,16 +35,26 @@ export default function LearnCourse({ params }: Props) {
 
   const { data: course } = trpc.courses.bySlug.useQuery(params.slug);
   const { data: modules } = trpc.modules.byCourse.useQuery(course?.id ?? 0, { enabled: !!course?.id });
+  const { data: enrollment } = trpc.enrollments.check.useQuery(course?.id ?? 0, { enabled: !!course?.id && isAuthenticated });
   const { data: progressData, refetch: refetchProgress } = trpc.progress.byCourse.useQuery(course?.id ?? 0, { enabled: !!course?.id && isAuthenticated });
-  const { data: threads, refetch: refetchThreads } = trpc.discussions.threads.useQuery(course?.id ?? 0, { enabled: !!course?.id && isAuthenticated });
+  const hasCourseAccess = Boolean(enrollment?.enrolled || course?.trainerId === user?.id || user?.role === "admin");
+  const { data: threads, refetch: refetchThreads } = trpc.discussions.threads.useQuery(course?.id ?? 0, { enabled: !!course?.id && hasCourseAccess });
   const { data: replies, refetch: refetchReplies } = trpc.discussions.replies.useQuery(activeThreadId ?? 0, { enabled: !!activeThreadId });
-  const { data: chatMessages, refetch: refetchChat } = trpc.chat.messages.useQuery(course?.id ?? 0, { enabled: !!course?.id && isAuthenticated });
+  const { data: chatMessages, refetch: refetchChat } = trpc.chat.messages.useQuery(course?.id ?? 0, { enabled: !!course?.id && hasCourseAccess });
+  const requestedModuleId = useMemo(() => {
+    const rawModuleId = new URLSearchParams(window.location.search).get("module");
+    const parsedModuleId = rawModuleId ? Number(rawModuleId) : null;
+    return Number.isSafeInteger(parsedModuleId) ? parsedModuleId : null;
+  }, []);
 
   const activeModule = modules?.find((m) => m.id === activeModuleId) ?? modules?.[0];
+  const canAccessModule = (module: NonNullable<typeof activeModule>) => hasCourseAccess || Boolean(module.isPreview);
 
   useEffect(() => {
-    if (modules && modules.length > 0 && !activeModuleId) setActiveModuleId(modules[0].id);
-  }, [modules]);
+    if (!modules || modules.length === 0 || activeModuleId) return;
+    const requestedModule = requestedModuleId ? modules.find((module) => module.id === requestedModuleId) : undefined;
+    setActiveModuleId(requestedModule?.id ?? modules[0].id);
+  }, [activeModuleId, modules, requestedModuleId]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -52,10 +62,10 @@ export default function LearnCourse({ params }: Props) {
 
   // Poll chat every 5 seconds
   useEffect(() => {
-    if (!course?.id || !isAuthenticated) return;
+    if (!course?.id || !hasCourseAccess) return;
     const interval = setInterval(() => refetchChat(), 5000);
     return () => clearInterval(interval);
-  }, [course?.id, isAuthenticated]);
+  }, [course?.id, hasCourseAccess]);
 
   const markComplete = trpc.progress.markComplete.useMutation({
     onSuccess: () => { toast.success("Module completed!"); refetchProgress(); },
@@ -132,14 +142,16 @@ export default function LearnCourse({ params }: Props) {
             {modules?.map((mod, i) => {
               const completed = isModuleCompleted(mod.id);
               const isActive = mod.id === activeModule?.id;
+              const locked = !canAccessModule(mod);
               return (
                 <button
                   key={mod.id}
                   onClick={() => setActiveModuleId(mod.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-left border-b border-border/50 transition-colors ${isActive ? "bg-primary/5 border-l-2 border-l-primary" : "hover:bg-gray-50"}`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-left border-b border-border/50 transition-colors ${isActive ? "bg-primary/5 border-l-2 border-l-primary" : "hover:bg-gray-50"} ${locked ? "opacity-65" : ""}`}
+                  aria-label={locked ? `${mod.title} is locked. Select to view enrollment options.` : `Open ${mod.title}`}
                 >
                   <div className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs ${completed ? "bg-green-100 text-green-600" : isActive ? "bg-primary text-white" : "bg-gray-100 text-gray-500"}`}>
-                    {completed ? <CheckCircle className="h-3.5 w-3.5" /> : <span>{i + 1}</span>}
+                    {completed ? <CheckCircle className="h-3.5 w-3.5" /> : locked ? <Lock className="h-3 w-3" /> : <span>{i + 1}</span>}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className={`text-xs font-medium truncate ${isActive ? "text-primary" : "text-foreground"}`}>{mod.title}</p>
@@ -173,13 +185,14 @@ export default function LearnCourse({ params }: Props) {
             {/* Content Tab */}
             <TabsContent value="content" className="flex-1 p-6 mt-0">
               {activeModule ? (
+                canAccessModule(activeModule) ? (
                 <div className="max-w-3xl mx-auto">
                   <div className="flex items-start justify-between mb-6">
                     <div>
                       <Badge variant="outline" className="mb-2 capitalize">{activeModule.type}</Badge>
                       <h2 className="text-xl font-bold text-foreground">{activeModule.title}</h2>
                     </div>
-                    {!isModuleCompleted(activeModule.id) && (
+                    {!isModuleCompleted(activeModule.id) && hasCourseAccess && (
                       <Button
                         size="sm"
                         className="bg-green-600 hover:bg-green-700 text-white shrink-0"
@@ -187,6 +200,11 @@ export default function LearnCourse({ params }: Props) {
                         disabled={markComplete.isPending}
                       >
                         <CheckCircle className="h-4 w-4 mr-1.5" /> Mark Complete
+                      </Button>
+                    )}
+                    {!hasCourseAccess && (
+                      <Button size="sm" variant="outline" className="shrink-0 border-primary/30 text-primary hover:bg-primary/5" asChild>
+                        <Link href={`/courses/${course.slug}`}>Enroll to track progress <ChevronRight className="ml-1 h-4 w-4" /></Link>
                       </Button>
                     )}
                     {isModuleCompleted(activeModule.id) && (
@@ -210,15 +228,23 @@ export default function LearnCourse({ params }: Props) {
 
                   {/* Assessment */}
                   {activeModule.type === "assessment" && activeModule.assessmentData && (
-                    <AssessmentViewer
-                      moduleId={activeModule.id}
-                      courseId={course.id}
-                      assessmentData={activeModule.assessmentData as any}
-                      isCompleted={!!isModuleCompleted(activeModule.id)}
-                      onComplete={(score, passed) => {
-                        markComplete.mutate({ moduleId: activeModule.id, courseId: course.id, assessmentScore: score, assessmentPassed: passed });
-                      }}
-                    />
+                    hasCourseAccess ? (
+                      <AssessmentViewer
+                        moduleId={activeModule.id}
+                        courseId={course.id}
+                        assessmentData={activeModule.assessmentData as any}
+                        isCompleted={!!isModuleCompleted(activeModule.id)}
+                        onComplete={(score, passed) => {
+                          markComplete.mutate({ moduleId: activeModule.id, courseId: course.id, assessmentScore: score, assessmentPassed: passed });
+                        }}
+                      />
+                    ) : (
+                      <div className="mt-5 rounded-xl border border-primary/15 bg-primary/5 p-5 text-center">
+                        <Lock className="mx-auto h-5 w-5 text-primary" />
+                        <p className="mt-2 text-sm font-semibold text-foreground">Enroll to complete this knowledge check</p>
+                        <p className="mt-1 text-xs text-muted-foreground">Enrollment unlocks assessments and records your progress.</p>
+                      </div>
+                    )
                   )}
 
                   {/* Navigation */}
@@ -273,6 +299,25 @@ export default function LearnCourse({ params }: Props) {
                     </div>
                   )}
                 </div>
+                ) : (
+                  <div className="max-w-xl mx-auto rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/5 via-white to-[#F5B942]/10 p-8 sm:p-10 text-center shadow-sm">
+                    <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20">
+                      <Lock className="h-6 w-6" />
+                    </div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Course lesson locked</p>
+                    <h3 className="mt-2 text-2xl font-bold text-foreground">Enroll to continue learning</h3>
+                    <p className="mt-3 text-sm leading-6 text-muted-foreground">This lesson is part of the full course experience. You can explore the preview lessons, then enroll to unlock the remaining curriculum, progress tracking, discussion, and live chat.</p>
+                    <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+                      <Button asChild className="bg-primary text-white hover:bg-primary/90">
+                        <Link href={`/courses/${course.slug}`}>View Course & Enroll <ChevronRight className="ml-1.5 h-4 w-4" /></Link>
+                      </Button>
+                      <Button variant="outline" onClick={() => {
+                        const firstPreview = modules?.find((module) => module.isPreview);
+                        if (firstPreview) setActiveModuleId(firstPreview.id);
+                      }}>Return to Preview</Button>
+                    </div>
+                  </div>
+                )
               ) : (
                 <div className="flex items-center justify-center h-64">
                   <p className="text-muted-foreground">Select a module to start learning</p>
@@ -282,6 +327,7 @@ export default function LearnCourse({ params }: Props) {
 
             {/* Discussion Tab */}
             <TabsContent value="discussion" className="flex-1 p-6 mt-0">
+              {hasCourseAccess ? (
               <div className="max-w-3xl mx-auto space-y-6">
                 {/* New Thread */}
                 <div className="bg-white rounded-xl border border-border p-5">
@@ -352,10 +398,22 @@ export default function LearnCourse({ params }: Props) {
                   </div>
                 )}
               </div>
+              ) : (
+                <div className="max-w-xl mx-auto mt-8 rounded-2xl border border-primary/15 bg-white p-8 text-center shadow-sm">
+                  <MessageSquare className="mx-auto h-10 w-10 text-primary/50" />
+                  <h3 className="mt-4 text-xl font-bold text-foreground">Join the course discussion</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">Enrollment gives you access to learner questions, instructor guidance, and peer conversations for this course.</p>
+                  <Button className="mt-5 bg-primary text-white hover:bg-primary/90" asChild>
+                    <Link href={`/courses/${course.slug}`}>View Course & Enroll <ChevronRight className="ml-1.5 h-4 w-4" /></Link>
+                  </Button>
+                </div>
+              )}
             </TabsContent>
 
             {/* Chat Tab */}
             <TabsContent value="chat" className="flex-1 flex flex-col mt-0">
+              {hasCourseAccess ? (
+              <>
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {chatMessages?.map((msg) => {
                   const isMe = msg.userId === user?.id;
@@ -400,6 +458,17 @@ export default function LearnCourse({ params }: Props) {
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
+              </>
+              ) : (
+                <div className="m-auto max-w-xl rounded-2xl border border-primary/15 bg-white p-8 text-center shadow-sm">
+                  <Users className="mx-auto h-10 w-10 text-primary/50" />
+                  <h3 className="mt-4 text-xl font-bold text-foreground">Live chat is available to enrolled learners</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">Enroll to exchange ideas with fellow learners and connect with your course community.</p>
+                  <Button className="mt-5 bg-primary text-white hover:bg-primary/90" asChild>
+                    <Link href={`/courses/${course.slug}`}>View Course & Enroll <ChevronRight className="ml-1.5 h-4 w-4" /></Link>
+                  </Button>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </main>

@@ -54,11 +54,11 @@
 - [ ] Email notifications for enrollment and completion
 
 ## Active Work
-- [ ] Style course content viewer (LearnCourse page) to match SkillSphere brand
-- [ ] Add visual progress tracker sidebar with per-module completion and overall percentage
-- [ ] Build completion certificate with Dr. Vicki Bealman as issuer, SkillSphere logo and tagline
-- [ ] Certificate download as printable HTML/PDF when learner reaches 100% completion
-- [ ] Subscription management UI
+- [x] Style course content viewer (LearnCourse page) to match SkillSphere brand
+- [x] Add visual progress tracker sidebar with per-module completion and overall percentage
+- [x] Build completion certificate with Dr. Vicki Bealman as issuer, SkillSphere logo and tagline
+- [x] Certificate download as printable HTML/PDF when learner reaches 100% completion
+- [x] Subscription management UI
 - [ ] Bundle purchase flow
 - [ ] AI-powered course recommendations
 - [x] Add prominent external Dr. Vicki Tech Talk blog links in the main navigation and footer
@@ -67,6 +67,9 @@
 - [x] Add the course and source lessons from pyforgecourse.org to the SkillSphere catalog
 - [x] Add the course and source lessons from chatgptbiz-ret84r8p.manus.space to the SkillSphere catalog
 - [x] Add the course and source lessons from drvickidatacenter.org to the SkillSphere catalog (duplicate task entry)
+- [x] Fix course curriculum Preview buttons so they open the selected preview lesson
+- [x] Restrict non-enrolled learners to preview lessons and show an enrollment call to action for locked content
+- [x] Gate preview-mode completion, discussion, and chat actions behind sign-in and enrollment
 
 ## Admin Dashboard
 - [x] Admin dashboard layout with dark sidebar navigation

@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { BookOpen, Clock, Award, ArrowRight, TrendingUp, Download, ExternalLink, GraduationCap, Pencil, Check, X } from "lucide-react";
+import { BookOpen, Clock, Award, ArrowRight, TrendingUp, Download, ExternalLink, GraduationCap, Pencil, Check, X, CreditCard, CalendarDays } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -28,6 +28,7 @@ export default function Dashboard() {
   const { user, isAuthenticated, loading } = useAuth();
   const { data: enrollments } = trpc.enrollments.myCourses.useQuery(undefined, { enabled: isAuthenticated });
   const { data: payments } = trpc.payments.myHistory.useQuery(undefined, { enabled: isAuthenticated });
+  const { data: subscriptions } = trpc.payments.mySubscriptions.useQuery(undefined, { enabled: isAuthenticated });
 
   const [cert, setCert] = useState<CertificateState | null>(null);
   const [editingName, setEditingName] = useState(false);
@@ -43,6 +44,14 @@ export default function Dashboard() {
       setEditingName(false);
     },
     onError: () => toast.error("Failed to update name"),
+  });
+  const openBillingPortal = trpc.payments.createBillingPortal.useMutation({
+    onSuccess: ({ url }) => {
+      window.location.assign(url);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Unable to open billing management. Please try again.");
+    },
   });
 
   useEffect(() => {
@@ -193,6 +202,14 @@ export default function Dashboard() {
               </TabsTrigger>
               <TabsTrigger value="payments" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white px-4 py-2 text-sm font-medium">
                 <Clock className="h-4 w-4 mr-1.5" /> Payment History
+              </TabsTrigger>
+              <TabsTrigger value="subscriptions" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white px-4 py-2 text-sm font-medium">
+                <CreditCard className="h-4 w-4 mr-1.5" /> My Plans
+                {!!subscriptions?.length && (
+                  <span className="ml-1.5 bg-[#F5B942] text-[#0d1b3e] text-xs font-bold rounded-full px-1.5 py-0.5 leading-none">
+                    {subscriptions.length}
+                  </span>
+                )}
               </TabsTrigger>
             </TabsList>
 
@@ -435,6 +452,76 @@ export default function Dashboard() {
                   <h3 className="text-lg font-semibold mb-2">No payments yet</h3>
                   <p className="text-muted-foreground mb-6">Your purchase history will appear here.</p>
                   <Button asChild><Link href="/courses">Browse Courses</Link></Button>
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="subscriptions">
+              {subscriptions && subscriptions.length > 0 ? (
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+                    <div>
+                      <h2 className="text-lg font-bold text-foreground">Your Plans</h2>
+                      <p className="text-sm text-muted-foreground">Review the status and renewal timing for your SkillSphere subscriptions.</p>
+                    </div>
+                    <p className="text-xs text-muted-foreground">For plan changes, use the billing link in your subscription email.</p>
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {subscriptions.map((subscription: any) => {
+                      const active = subscription.status === "active" || subscription.status === "trialing";
+                      const renewalDate = subscription.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString() : null;
+                      return (
+                        <div key={subscription.id} className="bg-white rounded-xl border border-border p-5 shadow-sm">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                              <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                                <CreditCard className="h-5 w-5 text-primary" />
+                              </div>
+                              <div>
+                                <p className="font-semibold text-foreground">SkillSphere Learning Plan</p>
+                                <p className="text-xs text-muted-foreground mt-0.5">Subscription ID: {subscription.stripeSubscriptionId?.slice(-8) ?? "Pending"}</p>
+                              </div>
+                            </div>
+                            <Badge className={active ? "bg-green-100 text-green-700 border-green-200" : "bg-gray-100 text-gray-700 border-gray-200"}>
+                              {subscription.status}
+                            </Badge>
+                          </div>
+                          <div className="mt-5 rounded-lg bg-gray-50 px-3.5 py-3 flex items-center gap-2.5">
+                            <CalendarDays className="h-4 w-4 text-primary shrink-0" />
+                            <div className="text-sm">
+                              <span className="font-medium text-foreground">
+                                {subscription.cancelAtPeriodEnd ? "Access ends" : "Next renewal"}
+                              </span>
+                              <span className="text-muted-foreground"> {renewalDate ? `on ${renewalDate}` : "will be confirmed by email"}</span>
+                            </div>
+                          </div>
+                          {subscription.cancelAtPeriodEnd && (
+                            <p className="mt-3 text-xs text-amber-700">This plan is set to end at the close of the current billing period.</p>
+                          )}
+                          <div className="mt-4 pt-4 border-t border-border flex items-center justify-between gap-3">
+                            <p className="text-xs text-muted-foreground">Update payment details, change, or cancel your plan securely through Stripe.</p>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="shrink-0 border-primary/30 text-primary hover:bg-primary/5"
+                              onClick={() => openBillingPortal.mutate({ origin: window.location.origin })}
+                              disabled={openBillingPortal.isPending}
+                            >
+                              <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
+                              {openBillingPortal.isPending ? "Opening…" : "Manage Plan"}
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-16 bg-white rounded-xl border border-border">
+                  <CreditCard className="h-12 w-12 text-primary/25 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No active plans</h3>
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">When you subscribe to a SkillSphere learning plan, its status and renewal details will appear here.</p>
+                  <Button asChild><Link href="/courses">Explore Courses</Link></Button>
                 </div>
               )}
             </TabsContent>

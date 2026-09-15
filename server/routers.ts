@@ -345,6 +345,23 @@ export const appRouter = router({
 
     mySubscriptions: protectedProcedure.query(({ ctx }) => getSubscriptionsByUser(ctx.user.id)),
 
+    createBillingPortal: protectedProcedure
+      .input(z.object({ origin: z.string().url() }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user.stripeCustomerId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "No Stripe billing profile is available for this account.",
+          });
+        }
+        const returnUrl = new URL("/dashboard", input.origin).toString();
+        const session = await stripe.billingPortal.sessions.create({
+          customer: ctx.user.stripeCustomerId,
+          return_url: returnUrl,
+        });
+        return { url: session.url };
+      }),
+
     allCoupons: adminProcedure.query(() => getAllCoupons()),
 
     createCoupon: adminProcedure

@@ -140,6 +140,18 @@ describe("protected procedures", () => {
     await expect(caller.payments.myHistory()).rejects.toMatchObject({ code: "UNAUTHORIZED" });
   });
 
+  it("throws UNAUTHORIZED when unauthenticated user calls payments.mySubscriptions", async () => {
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+    await expect(caller.payments.mySubscriptions()).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+  });
+
+  it("throws UNAUTHORIZED when unauthenticated user opens the billing portal", async () => {
+    const { ctx } = createPublicContext();
+    const caller = appRouter.createCaller(ctx);
+    await expect(caller.payments.createBillingPortal({ origin: "https://myskillsphere.com" })).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+  });
+
   it("allows authenticated learner to call enrollments.myCourses", async () => {
     const { ctx } = createContext({ role: "learner" });
     const caller = appRouter.createCaller(ctx);

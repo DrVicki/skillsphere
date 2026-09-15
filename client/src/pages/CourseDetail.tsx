@@ -219,7 +219,11 @@ export default function CourseDetail({ params }: Props) {
                         </div>
                         <div className="shrink-0">
                           {isEnrolled || mod.isPreview ? (
-                            <Badge variant="outline" className="text-xs">{mod.isPreview ? "Preview" : "Unlock"}</Badge>
+                            <Button variant="outline" size="sm" className="h-7 px-2.5 text-xs" asChild>
+                              <Link href={`/learn/${course.slug}?module=${mod.id}`}>
+                                {mod.isPreview ? "Preview" : "Open"}
+                              </Link>
+                            </Button>
                           ) : (
                             <Lock className="h-4 w-4 text-muted-foreground" />
                           )}
