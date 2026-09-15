@@ -61,6 +61,12 @@
 - [ ] Subscription management UI
 - [ ] Bundle purchase flow
 - [ ] AI-powered course recommendations
+- [x] Add prominent external Dr. Vicki Tech Talk blog links in the main navigation and footer
+- [x] Add the course and source lessons from drvickidatacenter.org to the SkillSphere catalog
+- [x] Add the course and source lessons from gamedesigncert.org to the SkillSphere catalog (verified existing course with 24 lessons)
+- [x] Add the course and source lessons from pyforgecourse.org to the SkillSphere catalog
+- [x] Add the course and source lessons from chatgptbiz-ret84r8p.manus.space to the SkillSphere catalog
+- [x] Add the course and source lessons from drvickidatacenter.org to the SkillSphere catalog (duplicate task entry)
 
 ## Admin Dashboard
 - [x] Admin dashboard layout with dark sidebar navigation

@@ -202,6 +202,7 @@ describe("contact.submit", () => {
       subject: "Test Subject",
       message: "This is a test message with enough characters.",
       category: "general",
+      captchaToken: "1x00000000000000000000AA",
     });
     expect(result).toHaveProperty("id");
   });

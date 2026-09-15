@@ -85,6 +85,18 @@ export default function Footer() {
             <p className="text-sm text-gray-400 max-w-xs leading-relaxed">
               Empowering professionals and organizations to learn, collaborate, and advance workforce capabilities through world-class online education.
             </p>
+            <a
+              href="https://www.drvickitechtalk.org/"
+              target="_blank"
+              rel="noreferrer"
+              className="group mt-5 inline-flex max-w-xs items-center gap-3 rounded-xl border border-blue-400/25 bg-blue-500/10 px-3.5 py-3 text-left transition-all hover:-translate-y-0.5 hover:border-blue-300/45 hover:bg-blue-500/15"
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-400/15 text-sm font-bold text-blue-200">V.</span>
+              <span className="min-w-0">
+                <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-blue-200/70">More from Dr. Vicki</span>
+                <span className="flex items-center gap-1 text-sm font-semibold text-white">Tech Talk <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">↗</span></span>
+              </span>
+            </a>
             <div className="flex gap-3 mt-4">
               <div className="h-1 w-8 rounded-full" style={{ background: "#2A63BF" }} />
               <div className="h-1 w-4 rounded-full" style={{ background: "#F5B942" }} />
@@ -99,6 +111,7 @@ export default function Footer() {
               <li><Link href="/dashboard" className="hover:text-white transition-colors">My Learning</Link></li>
               <li><Link href="/trainer" className="hover:text-white transition-colors">Teach on SkillSphere</Link></li>
               <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
+              <li><a href="https://www.drvickitechtalk.org/" target="_blank" rel="noreferrer" className="font-medium text-blue-300 hover:text-blue-200 transition-colors">Dr. Vicki's Tech Talk ↗</a></li>
             </ul>
           </div>
 

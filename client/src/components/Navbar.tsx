@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Menu, X, ChevronDown, BookOpen, LayoutDashboard, Users, BarChart3, LogOut } from "lucide-react";
+import { Menu, X, ChevronDown, BookOpen, LayoutDashboard, Users, BarChart3, LogOut, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 
@@ -26,6 +26,7 @@ export default function Navbar() {
   const navLinks = [
     { href: "/courses", label: "Courses" },
     { href: "/blog", label: "Blog" },
+    { href: "https://www.drvickitechtalk.org/", label: "Dr. Vicki's Tech Talk", external: true },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
   ];
@@ -57,17 +58,29 @@ export default function Navbar() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  isActive(link.href) ? "text-primary" : "text-foreground/70"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) =>
+              link.external ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 rounded-full bg-primary/8 px-3 py-1.5 text-sm font-semibold text-primary transition-all hover:bg-primary hover:text-white active:scale-[0.97]"
+                >
+                  {link.label} <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    isActive(link.href) ? "text-primary" : "text-foreground/70"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              )
+            )}
           </div>
 
           {/* Desktop Auth */}
@@ -152,16 +165,29 @@ export default function Navbar() {
       {mobileOpen && (
         <div className="md:hidden border-t border-border bg-white animate-fade-in">
           <div className="container py-4 flex flex-col gap-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium py-2 text-foreground/70 hover:text-primary transition-colors"
-                onClick={() => setMobileOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) =>
+              link.external ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary/8 px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary/15"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {link.label} <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm font-medium py-2 text-foreground/70 hover:text-primary transition-colors"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              )
+            )}
             <div className="border-t border-border pt-3 flex flex-col gap-2">
               {isAuthenticated ? (
                 <>
