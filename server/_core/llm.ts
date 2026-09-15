@@ -56,6 +56,7 @@ export type ToolChoice =
   | ToolChoiceExplicit;
 
 export type InvokeParams = {
+  model?: string;
   messages: Message[];
   tools?: Tool[];
   toolChoice?: ToolChoice;
@@ -275,12 +276,15 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     tool_choice,
     outputSchema,
     output_schema,
+    model,
+    maxTokens,
+    max_tokens,
     responseFormat,
     response_format,
   } = params;
 
   const payload: Record<string, unknown> = {
-    model: "gemini-2.5-flash",
+    model: model ?? "gpt-5-mini",
     messages: messages.map(normalizeMessage),
   };
 
@@ -296,10 +300,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.tool_choice = normalizedToolChoice;
   }
 
-  payload.max_tokens = 32768
-  payload.thinking = {
-    "budget_tokens": 128
-  }
+  payload.max_tokens = maxTokens ?? max_tokens ?? 2048;
 
   const normalizedResponseFormat = normalizeResponseFormat({
     responseFormat,

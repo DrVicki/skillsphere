@@ -59,8 +59,9 @@
 - [x] Build completion certificate with Dr. Vicki Bealman as issuer, SkillSphere logo and tagline
 - [x] Certificate download as printable HTML/PDF when learner reaches 100% completion
 - [x] Subscription management UI
-- [ ] Bundle purchase flow
-- [ ] AI-powered course recommendations
+- [x] Bundle purchase flow (deferred at user request; individual-course enrollment remains the only purchase option)
+- [x] AI-powered course recommendations
+- [x] Make AI recommendation cards independent of catalog search and filter state
 - [x] Add prominent external Dr. Vicki Tech Talk blog links in the main navigation and footer
 - [x] Add the course and source lessons from drvickidatacenter.org to the SkillSphere catalog
 - [x] Add the course and source lessons from gamedesigncert.org to the SkillSphere catalog (verified existing course with 24 lessons)
