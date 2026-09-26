@@ -12,9 +12,8 @@ import { Send, MessageSquare, HeadphonesIcon, Building2, HelpCircle, Clock } fro
 import { Turnstile } from "@marsidev/react-turnstile";
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
 
-// Cloudflare Turnstile site key — "always passes" invisible test key for dev/staging
-// Replace with your real site key from https://dash.cloudflare.com/ once live
-const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY ?? "1x00000000000000000000AA";
+// Production Cloudflare Turnstile site key. No test-key fallback is permitted.
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
 const CATEGORIES = [
   { value: "general", label: "General Inquiry", icon: MessageSquare },
@@ -64,6 +63,7 @@ export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string>("");
   const turnstileRef = useRef<TurnstileInstance>(null);
+  const isCaptchaConfigured = Boolean(TURNSTILE_SITE_KEY);
 
   const submit = trpc.contact.submit.useMutation({
     onSuccess: () => {
@@ -229,17 +229,23 @@ export default function Contact() {
 
                   {/* CAPTCHA */}
                   <div className="space-y-1.5">
-                    <Turnstile
-                      ref={turnstileRef}
-                      siteKey={TURNSTILE_SITE_KEY}
-                      onSuccess={(token) => setCaptchaToken(token)}
-                      onExpire={() => setCaptchaToken("")}
-                      onError={() => {
-                        setCaptchaToken("");
-                        toast.error("CAPTCHA failed to load. Please refresh the page.");
-                      }}
-                      options={{ theme: "light", size: "normal" }}
-                    />
+                    {isCaptchaConfigured ? (
+                      <Turnstile
+                        ref={turnstileRef}
+                        siteKey={TURNSTILE_SITE_KEY}
+                        onSuccess={(token) => setCaptchaToken(token)}
+                        onExpire={() => setCaptchaToken("")}
+                        onError={() => {
+                          setCaptchaToken("");
+                          toast.error("CAPTCHA failed to load. Please refresh the page.");
+                        }}
+                        options={{ theme: "light", size: "normal" }}
+                      />
+                    ) : (
+                      <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                        CAPTCHA verification is temporarily unavailable. Please try again shortly.
+                      </p>
+                    )}
                     {!captchaToken && (
                       <p className="text-xs text-muted-foreground">Please complete the verification above before sending.</p>
                     )}
@@ -249,7 +255,7 @@ export default function Contact() {
                     type="submit"
                     size="lg"
                     className="w-full h-12 text-base font-semibold"
-                    disabled={submit.isPending || !captchaToken}
+                    disabled={submit.isPending || !captchaToken || !isCaptchaConfigured}
                     style={{ background: "linear-gradient(135deg, #1a3a6b 0%, #2563eb 100%)" }}
                   >
                     {submit.isPending ? (

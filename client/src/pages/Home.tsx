@@ -25,10 +25,10 @@ const LOGO_URL = "/manus-storage/skillsphere-logo_e90b0563.png";
 const LOGO_CIRCLE_URL = "/manus-storage/skillsphere-logo-circle_8ea1006a.png";
 
 const STATS = [
-  { label: "Active Learners", value: "10,000+", icon: Users },
-  { label: "Expert Courses", value: "200+", icon: BookOpen },
-  { label: "Completion Rate", value: "94%", icon: Award },
-  { label: "Organizations", value: "500+", icon: Globe },
+  { label: "", value: "", icon: Users },
+  { label: "", value: "", icon: BookOpen },
+  { label: "Completion Rate", value: "", icon: Award },
+  { label: "", value: "", icon: Globe },
 ];
 
 const FEATURES = [

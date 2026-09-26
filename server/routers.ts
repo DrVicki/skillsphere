@@ -670,16 +670,17 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         // Verify Cloudflare Turnstile token
         const secretKey = ENV.turnstileSecretKey;
-        if (secretKey) {
-          const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({ secret: secretKey, response: input.captchaToken }).toString(),
-          });
-          const verifyData = await verifyRes.json() as { success: boolean; "error-codes"?: string[] };
-          if (!verifyData.success) {
-            throw new TRPCError({ code: "BAD_REQUEST", message: "CAPTCHA verification failed. Please try again." });
-          }
+        if (!secretKey) {
+          throw new TRPCError({ code: "PRECONDITION_FAILED", message: "CAPTCHA verification is temporarily unavailable. Please try again later." });
+        }
+        const verifyRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({ secret: secretKey, response: input.captchaToken }).toString(),
+        });
+        const verifyData = await verifyRes.json() as { success: boolean; "error-codes"?: string[] };
+        if (!verifyData.success) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "CAPTCHA verification failed. Please try again." });
         }
         const { captchaToken: _, ...messageData } = input;
         const id = await createContactMessage(messageData);

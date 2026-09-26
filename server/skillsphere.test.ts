@@ -1,7 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { appRouter } from "./routers";
 import { COOKIE_NAME } from "../shared/const";
 import type { TrpcContext } from "./_core/context";
+import { ENV } from "./_core/env";
+
+vi.mock("./_core/notification", () => ({
+  notifyOwner: vi.fn().mockResolvedValue(false),
+}));
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -206,7 +211,19 @@ function publicCaller() {
 }
 
 describe("contact.submit", () => {
+  const originalTurnstileSecret = ENV.turnstileSecretKey;
+
+  afterEach(() => {
+    ENV.turnstileSecretKey = originalTurnstileSecret;
+    vi.unstubAllGlobals();
+  });
+
   it("accepts a valid contact form submission", async () => {
+    ENV.turnstileSecretKey = "test-server-secret";
+    const fetchMock = vi.fn().mockResolvedValue({
+      json: async () => ({ success: true }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
     const caller = publicCaller();
     const result = await caller.contact.submit({
       name: "Test User",
@@ -214,9 +231,46 @@ describe("contact.submit", () => {
       subject: "Test Subject",
       message: "This is a test message with enough characters.",
       category: "general",
-      captchaToken: "1x00000000000000000000AA",
+      captchaToken: "mock-production-turnstile-token",
     });
     expect(result).toHaveProperty("id");
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      expect.objectContaining({ method: "POST" }),
+    );
+  });
+
+  it("fails closed when a Turnstile secret is not configured", async () => {
+    ENV.turnstileSecretKey = "";
+    const caller = publicCaller();
+    await expect(
+      caller.contact.submit({
+        name: "Test User",
+        email: "test@example.com",
+        subject: "Test Subject",
+        message: "This is a test message with enough characters.",
+        category: "general",
+        captchaToken: "mock-production-turnstile-token",
+      }),
+    ).rejects.toMatchObject({ code: "PRECONDITION_FAILED" });
+  });
+
+  it("rejects a token Cloudflare does not validate", async () => {
+    ENV.turnstileSecretKey = "test-server-secret";
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      json: async () => ({ success: false, "error-codes": ["invalid-input-response"] }),
+    }));
+    const caller = publicCaller();
+    await expect(
+      caller.contact.submit({
+        name: "Test User",
+        email: "test@example.com",
+        subject: "Test Subject",
+        message: "This is a test message with enough characters.",
+        category: "general",
+        captchaToken: "invalid-turnstile-token",
+      }),
+    ).rejects.toMatchObject({ code: "BAD_REQUEST" });
   });
 
   it("rejects an invalid email", async () => {

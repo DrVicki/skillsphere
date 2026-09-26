@@ -54,6 +54,7 @@
 - [x] Email notifications for enrollment and completion (deferred until an email-service connection is approved)
 - [x] Integrate an approved transactional email provider for enrollment and course-completion emails (Resend API configured; set a verified sender before broad production delivery)
 - [x] Remove the Blog link from the main navigation while retaining other primary navigation items
+- [ ] Replace Cloudflare Turnstile test credentials with production credentials for the Contact form
 
 ## Active Work
 - [x] Style course content viewer (LearnCourse page) to match SkillSphere brand
