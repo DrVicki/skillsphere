@@ -1,0 +1,276 @@
+[
+  {
+    "id": "see-the-cube",
+    "number": "01",
+    "module": "Module 1",
+    "title": "See the system, not the scramble",
+    "shortTitle": "See the cube",
+    "minutes": 6,
+    "kicker": "Orientation",
+    "objective": "Identify the pieces that move, the centers that do not, and the color frame you will use for the entire solve.",
+    "accent": "yellow",
+    "sections": [
+      {
+        "title": "A huge puzzle with a small set of ideas",
+        "body": "A 3×3 cube has 8 corners, 12 edges, and 6 centers. The centers define each face; they rotate, but never trade places. That fixed frame turns 4.3 × 10¹⁹ possible states into a navigation problem rather than a guessing game."
+      },
+      {
+        "title": "Lock your viewpoint",
+        "body": "Use the same orientation throughout the Roux solve: green in front, red left, orange right, yellow up, white down, blue back. A fixed viewpoint reduces mental load and makes piece destinations easier to see."
+      }
+    ],
+    "practice": [
+      "Point to all six fixed center pieces.",
+      "Find one edge (two colors) and one corner (three colors).",
+      "Hold green front and yellow up without rotating the whole cube."
+    ],
+    "reflection": "Without turning the cube, how can the center colors tell you where a red–white edge belongs?"
+  },
+  {
+    "id": "speak-cube",
+    "number": "02",
+    "module": "Module 1",
+    "title": "Learn the cube’s tiny language",
+    "shortTitle": "Move language",
+    "minutes": 7,
+    "kicker": "Notation",
+    "objective": "Read R, U, M, primes, and double turns as physical movements—not mysterious symbols.",
+    "accent": "blue",
+    "sections": [
+      {
+        "title": "Read from the face you are turning",
+        "body": "R turns the right face 90° clockwise. U turns the upper face 90° clockwise. A prime mark means reverse that turn: R′ and U′ are counter-clockwise. A 2 means a half-turn, such as U2."
+      },
+      {
+        "title": "Meet the middle slice",
+        "body": "M moves the vertical middle slice down; M′ moves it up. Roux keeps the left and right blocks intact near the end, so M and U become your steering wheel for the last six edges."
+      }
+    ],
+    "moves": [
+      {
+        "sequence": "R",
+        "label": "Right face",
+        "note": "Quarter-turn clockwise"
+      },
+      {
+        "sequence": "U′",
+        "label": "Upper face",
+        "note": "Quarter-turn counter-clockwise"
+      },
+      {
+        "sequence": "M2",
+        "label": "Middle slice",
+        "note": "Half-turn"
+      }
+    ],
+    "practice": [
+      "Do R, then R′. Confirm that everything returns.",
+      "Compare R U with U R. Notice that order changes the result.",
+      "Practice M and M′ while keeping your viewpoint fixed."
+    ],
+    "reflection": "What does the prime mark change—and what stays the same?"
+  },
+  {
+    "id": "commutator",
+    "number": "03",
+    "module": "Module 2",
+    "title": "Open. Act. Close. Restore.",
+    "shortTitle": "Commutator logic",
+    "minutes": 8,
+    "kicker": "Core idea",
+    "objective": "Understand A B A⁻¹ B⁻¹ as a reusable way to move a target while restoring its surroundings.",
+    "accent": "red",
+    "sections": [
+      {
+        "title": "The elevator mental model",
+        "body": "A person enters an elevator (A), rides up (B), steps out (A⁻¹), and the elevator returns (B⁻¹). The environment resets, but the passenger has changed position. On the cube, the same logic isolates a useful change."
+      },
+      {
+        "title": "Your atomic exchange",
+        "body": "R U R′ U′ is the most intuitive example: move a layer aside, insert the target, restore the layer, restore the top. You are not memorizing four letters; you are learning a four-beat story you can adapt anywhere."
+      }
+    ],
+    "moves": [
+      {
+        "sequence": "R U R′ U′",
+        "label": "Atomic exchange",
+        "note": "Open → act → close → restore"
+      },
+      {
+        "sequence": "U R U′ R′",
+        "label": "Same idea, rotated",
+        "note": "Change the setup, keep the logic"
+      },
+      {
+        "sequence": "M U M′ U′",
+        "label": "Middle-slice version",
+        "note": "Useful in the last-six-edges stage"
+      }
+    ],
+    "practice": [
+      "Run R U R′ U′ slowly and track one corner only.",
+      "Repeat it while saying: open, act, close, restore.",
+      "Undo the full sequence and notice which turns are inverses."
+    ],
+    "reflection": "In your own words, why does A A⁻¹ B B⁻¹ change nothing while A B A⁻¹ B⁻¹ can move pieces?"
+  },
+  {
+    "id": "bridges",
+    "number": "04",
+    "module": "Module 2",
+    "title": "Build two sturdy side bridges",
+    "shortTitle": "Side bridges",
+    "minutes": 10,
+    "kicker": "Roux · First blocks",
+    "objective": "Build 1×2×3 blocks on the red and orange sides by observation, preserving finished work as you go.",
+    "accent": "green",
+    "sections": [
+      {
+        "title": "Left bridge: red side first",
+        "body": "Place the white–red edge as the bottom-left pillar, add the blue–red back edge, then connect the two front red corners. Work in small modules; look for a corner and its matching edge before inserting them together."
+      },
+      {
+        "title": "Mirror the logic on orange",
+        "body": "Build the right bridge by replacing red with orange. If a turn would disturb the solved left bridge, move that bridge to safety first, do the useful work, then restore it—the commutator idea at block scale."
+      }
+    ],
+    "moves": [
+      {
+        "sequence": "F′ L",
+        "label": "Left foundation",
+        "note": "Example from the guided scramble"
+      },
+      {
+        "sequence": "M2 F2 U2 B",
+        "label": "Back edge setup",
+        "note": "Place pieces by tracking colors"
+      },
+      {
+        "sequence": "U′ M U′ R2",
+        "label": "Right bridge middle",
+        "note": "Keep the left bridge protected"
+      }
+    ],
+    "practice": [
+      "Load the course scramble in the 3D lab.",
+      "Build the left red bridge while naming each target piece.",
+      "Build the orange bridge without breaking the red block."
+    ],
+    "reflection": "When a needed move threatens your finished bridge, what three-part strategy lets you protect it?"
+  },
+  {
+    "id": "top-corners",
+    "number": "05",
+    "module": "Module 3",
+    "title": "Make the yellow corners agree",
+    "shortTitle": "Top corners",
+    "minutes": 9,
+    "kicker": "Roux · Corners",
+    "objective": "Use a three-corner cycle to orient yellow upward, then align the side colors without disturbing orientation.",
+    "accent": "yellow",
+    "sections": [
+      {
+        "title": "Orient before you position",
+        "body": "Count the yellow-up corners: 0, 1, 2, or 4. With 0 or 2, place a bad corner at the protected bottom-left position and run a three-cycle to reach the familiar one-corner ‘fish’. Repeat while watching the corners, not the letters."
+      },
+      {
+        "title": "Then align the side colors",
+        "body": "Once all four yellow stickers face up, use the position swap to exchange the two right-hand corners while preserving yellow orientation. Turn U to bring the pair you want to swap into that zone."
+      }
+    ],
+    "moves": [
+      {
+        "sequence": "R U′ L′ U R′ U′ L U",
+        "label": "Corner 3-cycle",
+        "note": "Bottom-left corner stays put"
+      },
+      {
+        "sequence": "L′ U R U′ L U R′ U′",
+        "label": "Mirrored 3-cycle",
+        "note": "Bottom-right corner stays put"
+      },
+      {
+        "sequence": "R U2 R′ U′ R U2 L′ U R′ U′ L",
+        "label": "Position swap",
+        "note": "Swaps the two right-hand corners"
+      }
+    ],
+    "practice": [
+      "Count yellow-up corners before touching the cube.",
+      "Choose the protected corner and predict which three will move.",
+      "After yellow faces up, align two neighboring side colors."
+    ],
+    "reflection": "Why is it helpful to solve corner orientation before corner position?"
+  },
+  {
+    "id": "last-six-edges",
+    "number": "06",
+    "module": "Module 4",
+    "title": "Steer the last six edges",
+    "shortTitle": "Last six edges",
+    "minutes": 10,
+    "kicker": "Roux · LSE",
+    "objective": "Use only M and U moves to orient edges, place red/orange edges, and finish blue/green.",
+    "accent": "orange",
+    "sections": [
+      {
+        "title": "First, make every edge ‘good’",
+        "body": "An edge is good when its white or yellow sticker faces up or down; sideways means bad. Use M′ U M to change the pattern. With four bad edges, look for the three-on-top arrow and point it toward the one bad edge below before applying the move."
+      },
+      {
+        "title": "Place sides, then finish the middle",
+        "body": "Sink the red–yellow and orange–yellow edges into their side positions with M′ U2 M. The remaining blue and green edges have only three outcomes: already solved, one M2 away, or a final three-edge cycle away."
+      }
+    ],
+    "moves": [
+      {
+        "sequence": "M′ U M",
+        "label": "Flip bad edges",
+        "note": "Search for the arrow pattern"
+      },
+      {
+        "sequence": "M′ U2 M",
+        "label": "Swap top and bottom",
+        "note": "A reusable edge 3-cycle"
+      },
+      {
+        "sequence": "M′ U2 M U2",
+        "label": "Final edge cycle",
+        "note": "Finish, then align by observation"
+      }
+    ],
+    "practice": [
+      "Classify each remaining edge as good or bad.",
+      "Create the arrow and point it toward the lower bad edge.",
+      "Finish with only M, M′, M2, U, U′, and U2."
+    ],
+    "reflection": "What visual test tells you an edge is oriented correctly before you worry about its exact position?"
+  },
+  {
+    "id": "full-solve",
+    "number": "07",
+    "module": "Module 4",
+    "title": "Solve, explain, then solve again",
+    "shortTitle": "Full solve",
+    "minutes": 7,
+    "kicker": "Capstone",
+    "objective": "Complete the standard scramble and narrate the logic behind each stage without leaning on rote recall.",
+    "accent": "blue",
+    "sections": [
+      {
+        "title": "Your solve mantra",
+        "body": "Fix the viewpoint. Build left and right bridges. Orient yellow corners. Position those corners. Orient the last six edges. Place the side edges. Finish blue and green. At every stage: move solved work aside, act on the target, then restore."
+      },
+      {
+        "title": "Understanding is the win",
+        "body": "Speed can come later. For this solve, pause before each sequence and predict what should move and what should stay protected. If you can explain that aloud, you own the idea—and can reconstruct it when memory fades."
+      }
+    ],
+    "practice": [
+      "Scramble with the provided sequence and complete one full solve.",
+      "Narrate every stage using the solve mantra.",
+      "Repeat tomorrow, consulting the move cards only when needed."
+    ],
+    "reflection": "Which stage now feels most intuitive, and which single pattern will you practice next?"
+  }
+]
