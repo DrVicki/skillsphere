@@ -2,6 +2,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Components } from "react-markdown";
 import DOMPurify from "dompurify";
+import CubeInteractiveLab from "@/components/CubeInteractiveLab";
+import { splitCubePracticeContent } from "@/lib/cubeLabPlacement";
 
 interface LessonContentProps {
   content: string;
@@ -218,8 +220,9 @@ function injectStyles() {
   stylesInjected = true;
 }
 
-export default function LessonContent({ content }: LessonContentProps) {
+export default function LessonContent({ content, title }: LessonContentProps) {
   const contentIsHTML = isHTML(content);
+  const cubePracticeContent = contentIsHTML ? splitCubePracticeContent(content, title) : null;
 
   if (contentIsHTML) {
     injectStyles();
@@ -238,7 +241,19 @@ export default function LessonContent({ content }: LessonContentProps) {
 
       {/* Content area */}
       <div style={{ padding: "2rem 2.25rem" }}>
-        {contentIsHTML ? (
+        {cubePracticeContent ? (
+          <>
+            <div
+              className="lesson-html-content"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(cubePracticeContent.beforeLab, { ADD_TAGS: ["iframe"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"] }) }}
+            />
+            <CubeInteractiveLab />
+            <div
+              className="lesson-html-content"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(cubePracticeContent.afterLab, { ADD_TAGS: ["iframe"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"] }) }}
+            />
+          </>
+        ) : contentIsHTML ? (
           <div
             className="lesson-html-content"
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content, { ADD_TAGS: ["iframe"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"] }) }}
