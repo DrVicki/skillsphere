@@ -84,11 +84,15 @@ describe("source course catalog", () => {
     const cubeModuleByTitle = new Map(cubeModules.map((module) => [module.title.toLocaleLowerCase(), module]));
     const cubeModule = (title: string) => cubeModuleByTitle.get(title.toLocaleLowerCase());
     expect(cubeModule("01 · See the system, not the scramble")).toMatchObject({
-      duration: 360,
+      duration: 180,
       isPreview: true,
     });
     expect(cubeModule("01 · See the system, not the scramble")?.content).toEqual(expect.any(String));
-    expect(cubeModule("03 · Open. Act. Close. Restore.")).toMatchObject({ isPreview: true });
+    expect(cubeModule("02 · Learn the cube’s tiny language")).toMatchObject({
+      isPreview: true,
+      content: expect.stringContaining("Guided Move Cards"),
+    });
+    expect(cubeModule("03 · Open. Act. Close. Restore.")?.content).not.toContain("Guided Move Cards");
     expect(cubeModule("07 · Solve, explain, then solve again")).toBeDefined();
   });
 });
