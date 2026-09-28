@@ -14,6 +14,8 @@ import { Play, FileText, ClipboardList, CheckCircle, ChevronRight, MessageSquare
 } from "lucide-react";
 import CourseCertificate from "@/components/CourseCertificate";
 import LessonContent from "@/components/LessonContent";
+import CubeMoveLabs from "@/components/CubeMoveLabs";
+import { parseGuidedMoveLabs, stripGuidedMoveLabs } from "@/lib/cubeMoveLabs";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Link } from "wouter";
 
@@ -49,6 +51,8 @@ export default function LearnCourse({ params }: Props) {
 
   const activeModule = modules?.find((m) => m.id === activeModuleId) ?? modules?.[0];
   const canAccessModule = (module: NonNullable<typeof activeModule>) => hasCourseAccess || Boolean(module.isPreview);
+  const guidedMoveLabs = parseGuidedMoveLabs(activeModule?.content);
+  const lessonContent = activeModule?.content ? stripGuidedMoveLabs(activeModule.content) : "";
 
   useEffect(() => {
     if (!modules || modules.length === 0 || activeModuleId) return;
@@ -222,9 +226,12 @@ export default function LearnCourse({ params }: Props) {
                   )}
 
                   {/* Text/Assessment Content */}
-                  {activeModule.content && (
-                    <LessonContent content={activeModule.content} title={activeModule.title} />
+                  {lessonContent && (
+                    <LessonContent content={lessonContent} title={activeModule.title} />
                   )}
+
+                  {/* Source-authored Cube move cards become interactive step-by-step practice labs. */}
+                  {guidedMoveLabs.length > 0 && <CubeMoveLabs labs={guidedMoveLabs} />}
 
                   {/* Assessment */}
                   {activeModule.type === "assessment" && activeModule.assessmentData && (

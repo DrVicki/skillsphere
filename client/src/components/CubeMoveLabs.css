@@ -1,0 +1,254 @@
+.move-labs {
+  margin-top: 1.5rem;
+  border: 1px solid #d6e2f7;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f9f6eb;
+  box-shadow: 0 8px 24px rgba(30, 58, 110, 0.08);
+}
+
+.move-labs__heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-top: 4px solid #2a63bf;
+  border-bottom: 1px solid #d9d2bf;
+  background: #fffdf5;
+}
+
+.move-labs__heading p {
+  margin: 0;
+  color: #c2412d;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.move-labs__heading h3 {
+  margin: 0.25rem 0 0;
+  color: #1e293b;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.08rem;
+  line-height: 1.25;
+}
+
+.move-labs__heading a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #145ad8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.move-labs__heading a:hover { text-decoration: underline; }
+
+.move-labs__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.move-lab {
+  overflow: hidden;
+  border: 1px solid #b5ad99;
+  background: #fffdf5;
+  box-shadow: 0 2px 6px rgba(36, 35, 31, 0.12);
+}
+
+.move-lab__sequence {
+  padding: 0.7rem 0.8rem;
+  border-bottom: 1px solid #b5ad99;
+  color: #1f2937;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+}
+
+.move-lab__stage {
+  position: relative;
+  min-height: 185px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1rem 0.65rem;
+  background: #22292e;
+  overflow: hidden;
+}
+
+.move-lab__stage::after {
+  content: "";
+  position: absolute;
+  inset: auto -16% -52px;
+  height: 105px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.4) 0%, transparent 68%);
+}
+
+.move-lab__cube-scene {
+  position: relative;
+  z-index: 1;
+  width: 118px;
+  height: 130px;
+  perspective: 420px;
+}
+
+.move-lab__cube {
+  position: absolute;
+  top: 24px;
+  left: 34px;
+  width: 58px;
+  height: 58px;
+  transform-style: preserve-3d;
+  transform: rotateX(-26deg) rotateY(37deg);
+  animation: move-lab-idle 2.4s ease-in-out infinite;
+}
+
+.move-lab__cube-face {
+  position: absolute;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 58px;
+  height: 58px;
+  gap: 2px;
+  padding: 2px;
+  box-sizing: border-box;
+  background: #121212;
+  border: 2px solid #090909;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+}
+
+.move-lab__cube-face span { min-width: 0; min-height: 0; }
+.move-lab__cube-face--front { transform: translateZ(29px); }
+.move-lab__cube-face--right { transform: rotateY(90deg) translateZ(29px); }
+.move-lab__cube-face--top { transform: rotateX(90deg) translateZ(29px); }
+
+.move-lab__cube--r { animation: move-lab-r 730ms cubic-bezier(0.23, 1, 0.32, 1); }
+.move-lab__cube--l { animation: move-lab-l 730ms cubic-bezier(0.23, 1, 0.32, 1); }
+.move-lab__cube--u { animation: move-lab-u 730ms cubic-bezier(0.23, 1, 0.32, 1); }
+.move-lab__cube--d { animation: move-lab-d 730ms cubic-bezier(0.23, 1, 0.32, 1); }
+.move-lab__cube--f { animation: move-lab-f 730ms cubic-bezier(0.23, 1, 0.32, 1); }
+.move-lab__cube--b { animation: move-lab-b 730ms cubic-bezier(0.23, 1, 0.32, 1); }
+.move-lab__cube--m { animation: move-lab-m 730ms cubic-bezier(0.23, 1, 0.32, 1); }
+.move-lab__cube.reverse { animation-direction: reverse; }
+.move-lab__cube.half { animation-iteration-count: 2; animation-duration: 470ms; }
+
+.move-lab__orbit {
+  position: absolute;
+  inset: 9px -3px 18px;
+  border: 2px solid rgba(255, 213, 31, 0.9);
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  transform: rotate(-17deg);
+}
+
+.move-lab__orbit span {
+  position: absolute;
+  right: 3px;
+  top: -5px;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 8px solid #ffd51f;
+  transform: rotate(15deg);
+}
+
+.move-lab__active-move {
+  position: absolute;
+  left: 0.8rem;
+  bottom: 0.72rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: #f8f3e7;
+}
+
+.move-lab__active-move strong {
+  color: #ffd51f;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 1.1rem;
+}
+
+.move-lab__active-move span { font-size: 0.68rem; line-height: 1.25; }
+
+.move-lab__steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  padding: 0.55rem 0.65rem;
+  border-bottom: 1px solid #b5ad99;
+  background: #f3eee0;
+}
+
+.move-lab__steps button,
+.move-lab__controls button {
+  appearance: none;
+  cursor: pointer;
+  border: 1px solid #8d8779;
+  color: #1f2937;
+  background: #fffdf5;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), background 160ms ease-out, color 160ms ease-out;
+}
+
+.move-lab__steps button {
+  min-width: 39px;
+  padding: 0.35rem 0.42rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.69rem;
+  font-weight: 800;
+}
+
+.move-lab__steps button span { display: block; margin-bottom: 0.14rem; color: #7c7566; font-size: 0.55rem; }
+.move-lab__steps button.is-active { border-color: #d7a900; background: #ffd51f; color: #1e293b; }
+.move-lab__steps button.is-past { background: #e8e2d4; }
+.move-lab__steps button:hover, .move-lab__controls button:hover { transform: translateY(-1px); }
+.move-lab__steps button:active, .move-lab__controls button:active { transform: scale(0.97); }
+
+.move-lab__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.55rem 0.65rem;
+  background: #fffdf5;
+}
+
+.move-lab__footer > div:first-child { display: grid; gap: 0.08rem; }
+.move-lab__footer strong { color: #1f2937; font-size: 0.7rem; }
+.move-lab__footer span { color: #6f6a5e; font-size: 0.58rem; }
+.move-lab__controls { display: flex; gap: 0.35rem; }
+.move-lab__controls button { width: 28px; height: 26px; display: grid; place-items: center; }
+.move-lab__controls .move-lab__play { background: #1e293b; border-color: #1e293b; color: #fffdf5; }
+.move-lab__note { margin: 0; padding: 0.4rem 0.65rem 0.65rem; color: #6f6251; font-family: Georgia, "Times New Roman", serif; font-size: 0.67rem; font-style: italic; line-height: 1.35; background: #fffdf5; }
+.move-labs__credit { margin: 0; padding: 0 1rem 1rem; color: #6b7280; font-size: 0.68rem; text-align: right; }
+
+@keyframes move-lab-idle { 0%, 100% { transform: rotateX(-26deg) rotateY(37deg) translateY(0); } 50% { transform: rotateX(-26deg) rotateY(37deg) translateY(-3px); } }
+@keyframes move-lab-r { 0%, 100% { transform: rotateX(-26deg) rotateY(37deg); } 50% { transform: rotateX(-26deg) rotateY(37deg) rotateZ(22deg) scale(1.05); } }
+@keyframes move-lab-l { 0%, 100% { transform: rotateX(-26deg) rotateY(37deg); } 50% { transform: rotateX(-26deg) rotateY(37deg) rotateZ(-22deg) scale(1.05); } }
+@keyframes move-lab-u { 0%, 100% { transform: rotateX(-26deg) rotateY(37deg); } 50% { transform: rotateX(-5deg) rotateY(37deg) scale(1.05); } }
+@keyframes move-lab-d { 0%, 100% { transform: rotateX(-26deg) rotateY(37deg); } 50% { transform: rotateX(-47deg) rotateY(37deg) scale(1.05); } }
+@keyframes move-lab-f { 0%, 100% { transform: rotateX(-26deg) rotateY(37deg); } 50% { transform: rotateX(-26deg) rotateY(12deg) scale(1.05); } }
+@keyframes move-lab-b { 0%, 100% { transform: rotateX(-26deg) rotateY(37deg); } 50% { transform: rotateX(-26deg) rotateY(60deg) scale(1.05); } }
+@keyframes move-lab-m { 0%, 100% { transform: rotateX(-26deg) rotateY(37deg); } 50% { transform: rotateX(-26deg) rotateY(37deg) rotateZ(15deg) translateX(4px) scale(1.05); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .move-lab__cube, .move-lab__cube--r, .move-lab__cube--l, .move-lab__cube--u, .move-lab__cube--d, .move-lab__cube--f, .move-lab__cube--b, .move-lab__cube--m { animation: none; }
+  .move-lab__steps button, .move-lab__controls button { transition: none; }
+}
+
+@media (max-width: 520px) {
+  .move-labs__heading { align-items: flex-start; flex-direction: column; }
+  .move-labs__grid { grid-template-columns: 1fr; padding: 0.75rem; }
+  .move-lab__stage { min-height: 200px; }
+}
