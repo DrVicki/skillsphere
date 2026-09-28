@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Eye, EyeOff, BookOpen, ChevronDown, ChevronUp, GripVertical, X, Save, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import RichTextEditor from "@/components/RichTextEditor";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
@@ -285,8 +284,16 @@ export default function AdminCourses() {
               <Input value={courseForm.shortDescription} onChange={e => setCourseForm(f => ({ ...f, shortDescription: e.target.value }))} placeholder="One-line summary" />
             </div>
             <div>
-              <Label>Full Description</Label>
-              <Textarea value={courseForm.description} onChange={e => setCourseForm(f => ({ ...f, description: e.target.value }))} placeholder="Detailed course description" rows={4} />
+              <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                <Label>Full Description</Label>
+                <span className="text-xs text-gray-500">Use the video button to embed a video, slide deck, form, or secure website.</span>
+              </div>
+              <RichTextEditor
+                value={courseForm.description}
+                onChange={html => setCourseForm(f => ({ ...f, description: html }))}
+                placeholder="Write the course overview, outcomes, and supporting embeds..."
+                minHeight="220px"
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -381,7 +388,10 @@ export default function AdminCourses() {
               </div>
             )}
             <div>
-              <Label className="mb-2 block">Lesson Content</Label>
+              <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                <Label>Lesson Content</Label>
+                <span className="text-xs text-gray-500">Use the video button to embed a video, slide deck, form, or secure website.</span>
+              </div>
               <RichTextEditor
                 value={moduleForm.content}
                 onChange={html => setModuleForm(f => ({ ...f, content: html }))}

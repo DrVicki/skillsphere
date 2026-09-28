@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import DOMPurify from "dompurify";
 import {
   Star, Users, BookOpen, Clock, Award, CheckCircle, Play, FileText,
   ClipboardList, Lock, ArrowRight, Tag
@@ -96,6 +97,7 @@ export default function CourseDetail({ params }: Props) {
 
   const isEnrolled = enrollment?.enrolled;
   const price = getDiscountedPrice();
+  const descriptionIsHTML = /<[a-z][\s\S]*>/i.test(course.description?.trim() ?? "");
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -201,7 +203,19 @@ export default function CourseDetail({ params }: Props) {
               {course.description && (
                 <div>
                   <h2 className="text-xl font-bold mb-3">About This Course</h2>
-                  <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{course.description}</p>
+                  {descriptionIsHTML ? (
+                    <div
+                      className="course-html-content"
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(course.description, {
+                          ADD_TAGS: ["iframe"],
+                          ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "loading", "referrerpolicy", "data-embed-provider", "data-embed-kind"],
+                        }),
+                      }}
+                    />
+                  ) : (
+                    <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{course.description}</p>
+                  )}
                 </div>
               )}
 

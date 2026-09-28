@@ -245,18 +245,18 @@ export default function LessonContent({ content, title }: LessonContentProps) {
           <>
             <div
               className="lesson-html-content"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(cubePracticeContent.beforeLab, { ADD_TAGS: ["iframe"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"] }) }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(cubePracticeContent.beforeLab, { ADD_TAGS: ["iframe"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "loading", "referrerpolicy", "data-embed-provider", "data-embed-kind"] }) }}
             />
             <CubeInteractiveLab />
             <div
               className="lesson-html-content"
-              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(cubePracticeContent.afterLab, { ADD_TAGS: ["iframe"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"] }) }}
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(cubePracticeContent.afterLab, { ADD_TAGS: ["iframe"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "loading", "referrerpolicy", "data-embed-provider", "data-embed-kind"] }) }}
             />
           </>
         ) : contentIsHTML ? (
           <div
             className="lesson-html-content"
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content, { ADD_TAGS: ["iframe"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"] }) }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content, { ADD_TAGS: ["iframe"], ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "loading", "referrerpolicy", "data-embed-provider", "data-embed-kind"] }) }}
           />
         ) : (
           <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>

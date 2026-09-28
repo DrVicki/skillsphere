@@ -238,7 +238,7 @@ export default function BlogPost() {
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(htmlContent, {
                     ADD_TAGS: ["iframe"],
-                    ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"],
+                    ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling", "loading", "referrerpolicy", "data-embed-provider", "data-embed-kind"],
                   }),
                 }}
               />

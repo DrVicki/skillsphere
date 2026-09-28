@@ -1,4 +1,5 @@
 import { useEditor, EditorContent } from "@tiptap/react";
+import { Node, mergeAttributes } from "@tiptap/core";
 import { marked } from "marked";
 
 // Convert Markdown to HTML if the content is not already HTML
@@ -23,6 +24,7 @@ import TableHeader from "@tiptap/extension-table-header";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { normalizeEmbedContent } from "@/lib/embedContent";
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   Heading1, Heading2, Heading3,
@@ -30,7 +32,7 @@ import {
   AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Link as LinkIcon, Image as ImageIcon, Table as TableIcon,
   Minus, Undo, Redo, Highlighter,
-  Pilcrow, Upload, Loader2,
+  Pilcrow, Upload, Loader2, Video,
 } from "lucide-react";
 import { Toggle } from "@/components/ui/toggle";
 import { Separator } from "@/components/ui/separator";
@@ -47,6 +49,60 @@ interface RichTextEditorProps {
   minHeight?: string;
   className?: string;
 }
+
+const Embed = Node.create({
+  name: "embed",
+  group: "block",
+  atom: true,
+
+  addAttributes() {
+    return {
+      src: {
+        default: null,
+        parseHTML: (element) => element.querySelector("iframe")?.getAttribute("src"),
+      },
+      title: {
+        default: "Embedded content",
+        parseHTML: (element) => element.querySelector("iframe")?.getAttribute("title") ?? "Embedded content",
+      },
+      provider: {
+        default: "Website",
+        parseHTML: (element) => element.getAttribute("data-embed-provider") ?? "Website",
+      },
+      kind: {
+        default: "website",
+        parseHTML: (element) => element.getAttribute("data-embed-kind") ?? "website",
+      },
+    };
+  },
+
+  parseHTML() {
+    return [{ tag: "div.rich-embed" }];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    const { src, title, provider, kind } = HTMLAttributes;
+    return [
+      "div",
+      mergeAttributes({
+        class: "rich-embed",
+        "data-embed-provider": provider,
+        "data-embed-kind": kind,
+      }),
+      [
+        "iframe",
+        {
+          src,
+          title,
+          loading: "lazy",
+          referrerpolicy: "strict-origin-when-cross-origin",
+          allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+          allowfullscreen: "true",
+        },
+      ],
+    ];
+  },
+});
 
 function ToolbarButton({
   onClick, active, disabled, title, children,
@@ -90,6 +146,9 @@ export default function RichTextEditor({
   const [imageAlt, setImageAlt] = useState("");
   const [imageUploading, setImageUploading] = useState(false);
   const [imageTab, setImageTab] = useState<"upload" | "url">("upload");
+  const [embedDialogOpen, setEmbedDialogOpen] = useState(false);
+  const [embedCode, setEmbedCode] = useState("");
+  const [embedTitle, setEmbedTitle] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
@@ -114,6 +173,7 @@ export default function RichTextEditor({
       TableRow,
       TableHeader,
       TableCell,
+      Embed,
     ],
     content: normalizeToHTML(value),
     onUpdate: ({ editor }) => {
@@ -201,6 +261,24 @@ export default function RichTextEditor({
     if (!editor) return;
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   }, [editor]);
+
+  const insertEmbed = useCallback(() => {
+    if (!editor) return;
+    try {
+      const embed = normalizeEmbedContent(embedCode, embedTitle);
+      editor.chain().focus().insertContent({
+        type: "embed",
+        attrs: embed,
+      }).run();
+      editor.chain().focus().insertContent("<p></p>").run();
+      setEmbedDialogOpen(false);
+      setEmbedCode("");
+      setEmbedTitle("");
+      toast.success(`${embed.provider} embed inserted`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to add that embed.");
+    }
+  }, [editor, embedCode, embedTitle]);
 
   if (!editor) return null;
 
@@ -396,6 +474,12 @@ export default function RichTextEditor({
         >
           <ImageIcon className="h-3.5 w-3.5" />
         </ToolbarButton>
+        <ToolbarButton
+          onClick={() => { setEmbedCode(""); setEmbedTitle(""); setEmbedDialogOpen(true); }}
+          title="Embed Video, Slide, Form, or Website"
+        >
+          <Video className="h-3.5 w-3.5" />
+        </ToolbarButton>
         <ToolbarButton onClick={insertTable} title="Insert Table">
           <TableIcon className="h-3.5 w-3.5" />
         </ToolbarButton>
@@ -458,6 +542,41 @@ export default function RichTextEditor({
             )}
             <Button variant="outline" onClick={() => setLinkDialogOpen(false)}>Cancel</Button>
             <Button onClick={insertLink} disabled={!linkUrl}>Insert</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Embed dialog */}
+      <Dialog open={embedDialogOpen} onOpenChange={setEmbedDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle>Embed Interactive Content</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2.5 text-xs leading-5 text-blue-900">
+              Paste a public YouTube or Vimeo video, Google Slides or Google Forms link, a secure website URL, or the provider’s iframe snippet. The editor creates a responsive, privacy-conscious embed.
+            </div>
+            <div>
+              <Label className="text-xs mb-1.5 block">Embed URL or iframe code *</Label>
+              <textarea
+                value={embedCode}
+                onChange={e => setEmbedCode(e.target.value)}
+                placeholder={'https://www.youtube.com/watch?v=...\n\nor paste <iframe ...></iframe>'}
+                className="min-h-28 w-full resize-y rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                autoFocus
+              />
+            </div>
+            <div>
+              <Label className="text-xs mb-1.5 block">Accessible title (optional)</Label>
+              <Input
+                value={embedTitle}
+                onChange={e => setEmbedTitle(e.target.value)}
+                placeholder="e.g. Module 1 walkthrough video"
+                onKeyDown={e => e.key === "Enter" && insertEmbed()}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEmbedDialogOpen(false)}>Cancel</Button>
+            <Button onClick={insertEmbed} disabled={!embedCode.trim()}>Insert Embed</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

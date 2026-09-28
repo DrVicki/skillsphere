@@ -344,3 +344,55 @@
   left: 0; right: 0; top: 0; bottom: 0;
   background: rgba(42, 99, 191, 0.08); pointer-events: none;
 }
+
+/* Responsive embeds authored through the course content editor */
+.rich-embed {
+  width: 100%;
+  margin: 1.25rem 0;
+  overflow: hidden;
+  border: 1px solid #dbe7f7;
+  border-radius: 0.75rem;
+  background: #f8fbff;
+  box-shadow: 0 4px 14px rgba(30, 58, 110, 0.08);
+}
+.rich-embed iframe,
+.lesson-html-content iframe,
+.course-html-content iframe,
+.blog-html-content iframe {
+  display: block;
+  width: 100%;
+  min-height: 22rem;
+  border: 0;
+}
+.rich-embed[data-embed-kind="video"] iframe {
+  aspect-ratio: 16 / 9;
+  min-height: 0;
+}
+.rich-embed[data-embed-kind="form"] iframe {
+  min-height: 38rem;
+}
+.course-html-content p,
+.course-html-content li {
+  color: var(--muted-foreground);
+  line-height: 1.75;
+}
+.course-html-content p { margin-bottom: 1rem; }
+.course-html-content ul,
+.course-html-content ol { margin: 0 0 1rem 1.5rem; }
+.course-html-content ul { list-style: disc; }
+.course-html-content ol { list-style: decimal; }
+.course-html-content h1,
+.course-html-content h2,
+.course-html-content h3 { color: #1e3a6e; margin: 1.5rem 0 0.75rem; }
+.course-html-content h1 { font-size: 1.5rem; }
+.course-html-content h2 { font-size: 1.25rem; }
+.course-html-content h3 { font-size: 1.1rem; }
+.course-html-content a { color: #2A63BF; text-decoration: underline; text-underline-offset: 3px; }
+.course-html-content img { max-width: 100%; border-radius: 0.625rem; margin: 1rem 0; }
+@media (max-width: 640px) {
+  .rich-embed iframe,
+  .lesson-html-content iframe,
+  .course-html-content iframe,
+  .blog-html-content iframe { min-height: 18rem; }
+  .rich-embed[data-embed-kind="form"] iframe { min-height: 32rem; }
+}
