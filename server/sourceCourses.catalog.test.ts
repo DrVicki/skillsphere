@@ -88,7 +88,7 @@ describe("source course catalog", () => {
       isPreview: true,
     });
     expect(cubeModule("01 · See the system, not the scramble")?.content).toEqual(expect.any(String));
-    expect(cubeModule("03 · Open. Act. Close. Restore.")).toBeDefined();
+    expect(cubeModule("03 · Open. Act. Close. Restore.")).toMatchObject({ isPreview: true });
     expect(cubeModule("07 · Solve, explain, then solve again")).toBeDefined();
   });
 });
