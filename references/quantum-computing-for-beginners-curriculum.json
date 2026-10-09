@@ -1,0 +1,533 @@
+{
+  "modules": [
+    {
+      "id": "m1",
+      "number": 1,
+      "title": "Introduction to Quantum Computing",
+      "description": "Discover what makes quantum computers fundamentally different from classical computers and why they matter.",
+      "icon": "⚛️",
+      "color": "blue",
+      "lessons": [
+        {
+          "id": "m1l1",
+          "title": "What is Quantum Computing?",
+          "duration": "8 min",
+          "content": "## What is Quantum Computing?\n\nQuantum computing is a fundamentally new paradigm of computation that harnesses the principles of **quantum mechanics** — the physics governing subatomic particles — to process information in ways that classical computers cannot.\n\n### Classical vs. Quantum\n\nA classical computer stores information as **bits** — each bit is either a 0 or a 1. Every operation your laptop performs, every email sent, every video streamed, is ultimately a sequence of these binary decisions.\n\nA quantum computer, by contrast, uses **qubits** (quantum bits). Thanks to the quantum mechanical principle of **superposition**, a qubit can exist as 0, 1, or any combination of both simultaneously — until it is measured.\n\n> \"Quantum computers are not simply faster classical computers. They are a completely different kind of machine, capable of exploring exponentially many possibilities at once.\"\n\n### Why Does It Matter?\n\nCertain problems are computationally intractable for classical computers — they would take longer than the age of the universe to solve. Quantum computers offer the potential to solve some of these problems efficiently:\n\n| Problem Domain | Classical Difficulty | Quantum Advantage |\n|---|---|---|\n| Drug discovery & molecular simulation | Exponential time | Polynomial time (potential) |\n| Cryptography (factoring large numbers) | Computationally hard | Shor's algorithm breaks it |\n| Optimization (logistics, finance) | NP-hard | Quantum speedup possible |\n| Machine learning | Slow for large datasets | Quantum ML algorithms |\n| Weather & climate modeling | Limited precision | Higher fidelity simulations |\n\n### A Brief History\n\nThe idea of quantum computing was first proposed by physicist **Richard Feynman** in 1982, who suggested that simulating quantum systems would require a quantum computer. **David Deutsch** formalized the concept of a universal quantum computer in 1985. Since then, progress has accelerated dramatically — IBM, Google, and others now operate quantum computers with hundreds of qubits.\n\nIn 2019, Google claimed **quantum supremacy** — completing a specific computation in 200 seconds that would take a classical supercomputer approximately 10,000 years.",
+          "quiz": [
+            {
+              "id": "m1l1q1",
+              "question": "What is the fundamental unit of information in a quantum computer?",
+              "options": [
+                "Bit",
+                "Qubit",
+                "Byte",
+                "Photon"
+              ],
+              "correctIndex": 1,
+              "explanation": "A qubit (quantum bit) is the fundamental unit of quantum information. Unlike a classical bit which is either 0 or 1, a qubit can exist in a superposition of both states simultaneously."
+            },
+            {
+              "id": "m1l1q2",
+              "question": "Who first proposed the idea of quantum computing?",
+              "options": [
+                "Alan Turing",
+                "John von Neumann",
+                "Richard Feynman",
+                "David Deutsch"
+              ],
+              "correctIndex": 2,
+              "explanation": "Richard Feynman proposed in 1982 that simulating quantum systems would require a quantum computer, laying the conceptual groundwork for the field."
+            }
+          ]
+        },
+        {
+          "id": "m1l2",
+          "title": "Classical vs. Quantum: Key Differences",
+          "duration": "6 min",
+          "content": "## Classical vs. Quantum: Key Differences\n\nUnderstanding quantum computing requires appreciating the deep differences between classical and quantum information processing.\n\n### Information Representation\n\n**Classical bits** are definite: a transistor is either on (1) or off (0). This determinism is what makes classical computers reliable and predictable.\n\n**Qubits** are probabilistic: before measurement, they exist in a superposition — a weighted combination of |0⟩ and |1⟩. The notation |0⟩ and |1⟩ is called **Dirac notation** (or bra-ket notation), the standard language of quantum mechanics.\n\n### Processing Power\n\nThe power difference is exponential. With *n* classical bits, you can represent exactly **one** of 2ⁿ possible states at a time. With *n* qubits, you can represent a superposition of **all** 2ⁿ states simultaneously.\n\n| Number of Bits/Qubits | Classical States | Quantum Superposition |\n|---|---|---|\n| 2 | 1 of 4 | All 4 simultaneously |\n| 10 | 1 of 1,024 | All 1,024 simultaneously |\n| 50 | 1 of ~10¹⁵ | All ~10¹⁵ simultaneously |\n| 300 | 1 of ~10⁹⁰ | All ~10⁹⁰ simultaneously |\n\nNote: 10⁹⁰ exceeds the estimated number of atoms in the observable universe!\n\n### Operations\n\nClassical computers use **logic gates** (AND, OR, NOT) that are irreversible — you can't always recover the input from the output.\n\nQuantum computers use **quantum gates** that are always **reversible** (unitary operations). This is a fundamental requirement of quantum mechanics.\n\n### Error Rates\n\nClassical bits are extremely reliable — modern computers have error rates of roughly 1 in 10¹⁷ operations. Qubits are fragile; current quantum computers have error rates of 0.1–1% per operation. This is why **quantum error correction** is an active research area.",
+          "quiz": [
+            {
+              "id": "m1l2q1",
+              "question": "With 10 qubits in superposition, how many states can be represented simultaneously?",
+              "options": [
+                "10",
+                "20",
+                "100",
+                "1,024"
+              ],
+              "correctIndex": 3,
+              "explanation": "With n qubits, you can represent 2ⁿ states simultaneously. With 10 qubits, that's 2¹⁰ = 1,024 states all at once."
+            },
+            {
+              "id": "m1l2q2",
+              "question": "Which property of quantum gates distinguishes them from classical logic gates?",
+              "options": [
+                "They are faster",
+                "They are reversible",
+                "They use less energy",
+                "They work at room temperature"
+              ],
+              "correctIndex": 1,
+              "explanation": "Quantum gates must be reversible (unitary operations) — a fundamental requirement of quantum mechanics. Classical gates like AND are irreversible because you can't recover the inputs from the output."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "number": 2,
+      "title": "Quantum Mechanics Fundamentals",
+      "description": "Master the three core quantum phenomena: superposition, entanglement, and interference.",
+      "icon": "🌊",
+      "color": "purple",
+      "lessons": [
+        {
+          "id": "m2l1",
+          "title": "Superposition: Being in Two Places at Once",
+          "duration": "10 min",
+          "content": "## Superposition: Being in Two Places at Once\n\n**Superposition** is perhaps the most counterintuitive principle of quantum mechanics. It states that a quantum system can exist in multiple states simultaneously — until it is observed (measured).\n\n### The Coin Analogy\n\nImagine flipping a coin. While it's spinning in the air, it's neither heads nor tails — it's in a superposition of both. The moment it lands and you look at it, the superposition \"collapses\" to one definite state.\n\nA qubit works similarly. Before measurement, it exists in a superposition:\n\n**|ψ⟩ = α|0⟩ + β|1⟩**\n\nWhere:\n- **α** and **β** are complex numbers called **probability amplitudes**\n- **|α|²** is the probability of measuring 0\n- **|β|²** is the probability of measuring 1\n- **|α|² + |β|²= 1** (probabilities must sum to 1)\n\n### The Bloch Sphere\n\nThe state of a single qubit can be visualized as a point on the surface of a **Bloch sphere** — a unit sphere where:\n- The **north pole** represents |0⟩\n- The **south pole** represents |1⟩\n- Any point on the surface represents a valid superposition state\n\nThis elegant geometric representation captures all possible single-qubit states.\n\n### Why Superposition Matters\n\nSuperposition allows quantum computers to explore many solutions simultaneously. When you apply a quantum gate to a qubit in superposition, you're effectively performing the operation on all superposed states at once — this is called **quantum parallelism**.\n\n> Important: You cannot read out all the superposed states directly. Measurement collapses the superposition to a single outcome. The art of quantum algorithm design is structuring computations so that the correct answer has the highest probability of being measured.",
+          "hasVisualization": "superposition",
+          "quiz": [
+            {
+              "id": "m2l1q1",
+              "question": "What happens to a qubit's superposition when it is measured?",
+              "options": [
+                "It remains in superposition",
+                "It collapses to a definite 0 or 1",
+                "It splits into two qubits",
+                "It becomes entangled"
+              ],
+              "correctIndex": 1,
+              "explanation": "Measurement causes the superposition to 'collapse' — the qubit takes on a definite value of 0 or 1, with probabilities determined by the probability amplitudes α and β."
+            },
+            {
+              "id": "m2l1q2",
+              "question": "In the qubit state |ψ⟩ = α|0⟩ + β|1⟩, what does |α|² represent?",
+              "options": [
+                "The phase of the qubit",
+                "The energy of the qubit",
+                "The probability of measuring 0",
+                "The probability of measuring 1"
+              ],
+              "correctIndex": 2,
+              "explanation": "|α|² gives the probability of measuring the qubit in state |0⟩. Similarly, |β|² gives the probability of measuring |1⟩, and they must sum to 1."
+            }
+          ]
+        },
+        {
+          "id": "m2l2",
+          "title": "Entanglement: Spooky Action at a Distance",
+          "duration": "10 min",
+          "content": "## Entanglement: Spooky Action at a Distance\n\n**Quantum entanglement** is a phenomenon where two or more qubits become correlated in such a way that the quantum state of each particle cannot be described independently of the others — no matter how far apart they are.\n\nAlbert Einstein famously called this \"**spooky action at a distance**\" — he found it so disturbing that he believed quantum mechanics must be incomplete. Decades of experiments have proven that entanglement is real.\n\n### How Entanglement Works\n\nWhen two qubits are entangled, measuring one instantly determines the state of the other. The classic example is a **Bell state**:\n\n**|Φ⁺⟩ = (|00⟩ + |11⟩) / √2**\n\nThis means the two qubits are in an equal superposition of both being 0 and both being 1. If you measure the first qubit and get 0, the second qubit is instantly 0. If you get 1, the second is instantly 1 — regardless of the distance between them.\n\n### Key Properties of Entanglement\n\n| Property | Description |\n|---|---|\n| **Non-locality** | Correlations persist regardless of distance |\n| **No faster-than-light communication** | You can't control which outcome occurs |\n| **Monogamy** | A qubit can only be maximally entangled with one other qubit |\n| **Fragility** | Entanglement is destroyed by decoherence |\n\n### Why Entanglement is Powerful\n\nEntanglement is a key resource in quantum computing and quantum communication:\n\n**Quantum Teleportation** — Transferring quantum states between locations using entanglement (not matter or energy, just quantum information).\n\n**Quantum Cryptography** — Any eavesdropping on an entangled communication channel disturbs the entanglement and is detectable.\n\n**Quantum Algorithms** — Many quantum speedups rely on carefully engineered entanglement between qubits to correlate computations.\n\n> Entanglement has no classical analogue. It is genuinely quantum — a resource that gives quantum computers capabilities beyond anything classical systems can achieve.",
+          "hasVisualization": "entanglement",
+          "quiz": [
+            {
+              "id": "m2l2q1",
+              "question": "What is the Bell state |Φ⁺⟩ = (|00⟩ + |11⟩)/√2?",
+              "options": [
+                "Two qubits that are always 0",
+                "Two qubits in superposition but not correlated",
+                "Two maximally entangled qubits",
+                "Two qubits that are always opposite"
+              ],
+              "correctIndex": 2,
+              "explanation": "The Bell state |Φ⁺⟩ represents two maximally entangled qubits. Measuring one instantly determines the other — both will be 0 or both will be 1, with equal probability."
+            },
+            {
+              "id": "m2l2q2",
+              "question": "Why can't quantum entanglement be used for faster-than-light communication?",
+              "options": [
+                "The speed of light limits the correlation",
+                "You cannot control which outcome occurs when measuring",
+                "Entanglement only works over short distances",
+                "The qubits must be physically transported"
+              ],
+              "correctIndex": 1,
+              "explanation": "While entangled particles are correlated instantly, you cannot control which outcome you get when measuring. The result is random, so no information can be transmitted — only after comparing results through classical channels do the correlations become apparent."
+            }
+          ]
+        },
+        {
+          "id": "m2l3",
+          "title": "Interference: Amplifying the Right Answers",
+          "duration": "8 min",
+          "content": "## Interference: Amplifying the Right Answers\n\n**Quantum interference** is the mechanism by which quantum algorithms actually compute useful results. It's the tool that allows quantum computers to amplify the probability of correct answers while canceling out wrong ones.\n\n### Wave Nature of Quantum States\n\nQuantum states behave like waves. Just as water waves can add together (**constructive interference**) or cancel out (**destructive interference**), quantum probability amplitudes can interfere with each other.\n\n- **Constructive interference**: Amplitudes add up → higher probability of that outcome\n- **Destructive interference**: Amplitudes cancel → lower probability of that outcome\n\n### The Double-Slit Experiment\n\nThe famous double-slit experiment demonstrates interference beautifully. When electrons (or photons) are fired at a barrier with two slits, they create an interference pattern on the screen behind — as if each particle went through both slits simultaneously and interfered with itself.\n\nThis is superposition + interference in action.\n\n### Interference in Quantum Algorithms\n\nThe power of quantum computing comes from carefully designing circuits so that:\n\n1. **Initialize** qubits in superposition (all possible answers simultaneously)\n2. **Compute** — apply gates that encode the problem\n3. **Interfere** — use interference to amplify correct answers and suppress wrong ones\n4. **Measure** — the correct answer has high probability\n\nThis is the blueprint for algorithms like **Grover's search** (quadratic speedup for searching) and **Shor's factoring algorithm** (exponential speedup for factoring).\n\n| Algorithm | Problem | Classical Complexity | Quantum Complexity |\n|---|---|---|---|\n| Grover's | Unstructured search | O(N) | O(√N) |\n| Shor's | Integer factoring | Exponential | Polynomial |\n| HHL | Linear systems | O(N³) | O(log N) |",
+          "quiz": [
+            {
+              "id": "m2l3q1",
+              "question": "What is the purpose of quantum interference in a quantum algorithm?",
+              "options": [
+                "To create entanglement between qubits",
+                "To amplify correct answers and suppress wrong ones",
+                "To measure the qubits faster",
+                "To reduce the number of qubits needed"
+              ],
+              "correctIndex": 1,
+              "explanation": "Quantum interference is used to amplify the probability amplitudes of correct answers (constructive interference) while canceling out wrong answers (destructive interference), making the correct result highly likely when measured."
+            },
+            {
+              "id": "m2l3q2",
+              "question": "What speedup does Grover's algorithm provide for searching an unsorted database?",
+              "options": [
+                "Linear speedup — O(N) vs O(N)",
+                "Quadratic speedup — O(√N) vs O(N)",
+                "Exponential speedup — O(log N) vs O(N)",
+                "No speedup"
+              ],
+              "correctIndex": 1,
+              "explanation": "Grover's algorithm provides a quadratic speedup: searching N items takes O(√N) quantum operations versus O(N) classical operations. For a billion items, that's ~31,623 vs 1,000,000,000 operations."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "number": 3,
+      "title": "Qubits and Quantum Gates",
+      "description": "Learn how qubits are physically realized and how quantum gates manipulate them.",
+      "icon": "🔬",
+      "color": "cyan",
+      "lessons": [
+        {
+          "id": "m3l1",
+          "title": "Physical Implementations of Qubits",
+          "duration": "9 min",
+          "content": "## Physical Implementations of Qubits\n\nA qubit is an abstract concept — any two-level quantum system can serve as one. The challenge is finding physical systems that are well-isolated from the environment (to prevent decoherence) yet controllable enough to perform operations.\n\n### Major Qubit Technologies\n\n**Superconducting Qubits** (IBM, Google, Rigetti)\nTiny superconducting circuits cooled to near absolute zero (~15 millikelvin — colder than outer space). The two energy levels of the circuit serve as |0⟩ and |1⟩. Currently the most mature technology with the highest qubit counts.\n\n**Trapped Ion Qubits** (IonQ, Honeywell/Quantinuum)\nIndividual ions (charged atoms) are trapped using electromagnetic fields and manipulated with lasers. Trapped ions have the highest gate fidelities (lowest error rates) but are harder to scale.\n\n**Photonic Qubits** (PsiQuantum, Xanadu)\nPhotons (particles of light) encode quantum information. Photonic qubits can operate at room temperature and are naturally suited for quantum communication.\n\n**Topological Qubits** (Microsoft)\nExotic quasiparticles called Majorana fermions that are theoretically much more resistant to errors. Still largely experimental.\n\n### Comparison\n\n| Technology | Gate Fidelity | Scalability | Operating Temp | Maturity |\n|---|---|---|---|---|\n| Superconducting | ~99.5% | High | ~15 mK | Most mature |\n| Trapped Ion | ~99.9% | Medium | Room temp | Mature |\n| Photonic | ~99% | High potential | Room temp | Emerging |\n| Topological | Theoretical >99.99% | High potential | Near 0 K | Early stage |\n\n### Decoherence: The Enemy of Quantum Computing\n\nThe biggest challenge in building quantum computers is **decoherence** — the loss of quantum properties due to interaction with the environment. Even tiny vibrations, temperature fluctuations, or electromagnetic noise can destroy a qubit's superposition.\n\nThis is why quantum computers are kept in extreme isolation and why **quantum error correction** is essential for practical quantum computing.",
+          "quiz": [
+            {
+              "id": "m3l1q1",
+              "question": "Which qubit technology currently has the highest gate fidelity?",
+              "options": [
+                "Superconducting qubits",
+                "Trapped ion qubits",
+                "Photonic qubits",
+                "Topological qubits"
+              ],
+              "correctIndex": 1,
+              "explanation": "Trapped ion qubits currently achieve the highest gate fidelities (~99.9%), though they are harder to scale than superconducting qubits. Companies like IonQ and Quantinuum use this technology."
+            },
+            {
+              "id": "m3l1q2",
+              "question": "What is decoherence in the context of quantum computing?",
+              "options": [
+                "The process of entangling two qubits",
+                "The loss of quantum properties due to environmental interaction",
+                "A type of quantum gate operation",
+                "The measurement of a qubit's state"
+              ],
+              "correctIndex": 1,
+              "explanation": "Decoherence is the process by which a qubit loses its quantum properties (superposition, entanglement) due to unwanted interactions with the environment. It is the primary challenge in building practical quantum computers."
+            }
+          ]
+        },
+        {
+          "id": "m3l2",
+          "title": "Quantum Gates: The Building Blocks",
+          "duration": "12 min",
+          "content": "## Quantum Gates: The Building Blocks\n\nQuantum gates are the quantum analogue of classical logic gates. They are **unitary operations** — reversible transformations that rotate the qubit state on the Bloch sphere.\n\n### Single-Qubit Gates\n\n**Pauli-X Gate (NOT gate)**\nFlips |0⟩ to |1⟩ and vice versa. The quantum equivalent of a classical NOT gate.\n- |0⟩ → |1⟩\n- |1⟩ → |0⟩\n\n**Hadamard Gate (H)**\nThe most important gate in quantum computing. Creates an equal superposition from a basis state.\n- |0⟩ → (|0⟩ + |1⟩)/√2\n- |1⟩ → (|0⟩ − |1⟩)/√2\n\n**Pauli-Z Gate**\nFlips the phase of |1⟩ while leaving |0⟩ unchanged.\n- |0⟩ → |0⟩\n- |1⟩ → −|1⟩\n\n**Phase Gate (S, T)**\nRotates the phase of the |1⟩ component by 90° (S gate) or 45° (T gate).\n\n### Two-Qubit Gates\n\n**CNOT Gate (Controlled-NOT)**\nThe most important two-qubit gate. Flips the **target** qubit if and only if the **control** qubit is |1⟩.\n\n| Control | Target In | Target Out |\n|---|---|---|\n| |0⟩ | |0⟩ | |0⟩ |\n| |0⟩ | |1⟩ | |1⟩ |\n| |1⟩ | |0⟩ | |1⟩ |\n| |1⟩ | |1⟩ | |0⟩ |\n\n**CNOT + Hadamard = Entanglement!**\nApplying a Hadamard gate to a qubit and then a CNOT gate creates a Bell state — two maximally entangled qubits.\n\n### Universal Gate Sets\n\nJust as classical computers can be built from NAND gates alone, quantum computers can implement any quantum computation using a small **universal gate set**. One common universal set is {H, T, CNOT}.",
+          "hasVisualization": "gates",
+          "quiz": [
+            {
+              "id": "m3l2q1",
+              "question": "What does the Hadamard (H) gate do to the state |0⟩?",
+              "options": [
+                "Leaves it unchanged",
+                "Flips it to |1⟩",
+                "Creates an equal superposition (|0⟩ + |1⟩)/√2",
+                "Creates the state |1⟩ only"
+              ],
+              "correctIndex": 2,
+              "explanation": "The Hadamard gate transforms |0⟩ into (|0⟩ + |1⟩)/√2 — an equal superposition of 0 and 1. This is why H is the most important gate: it's how we put qubits into superposition."
+            },
+            {
+              "id": "m3l2q2",
+              "question": "What happens when you apply a Hadamard gate followed by a CNOT gate to two qubits starting in |00⟩?",
+              "options": [
+                "Both qubits remain in state |0⟩",
+                "The qubits become entangled in a Bell state",
+                "Both qubits flip to |1⟩",
+                "The qubits become independent superpositions"
+              ],
+              "correctIndex": 1,
+              "explanation": "H on the first qubit creates (|0⟩+|1⟩)/√2 ⊗ |0⟩ = (|00⟩+|10⟩)/√2. Then CNOT creates (|00⟩+|11⟩)/√2 — the Bell state Φ⁺, a maximally entangled pair."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "number": 4,
+      "title": "Quantum Algorithms",
+      "description": "Explore the landmark quantum algorithms that demonstrate quantum advantage.",
+      "icon": "⚡",
+      "color": "amber",
+      "lessons": [
+        {
+          "id": "m4l1",
+          "title": "Deutsch-Jozsa: The First Quantum Speedup",
+          "duration": "8 min",
+          "content": "## Deutsch-Jozsa: The First Quantum Speedup\n\nThe **Deutsch-Jozsa algorithm** (1992) was the first algorithm to demonstrate an exponential quantum speedup over classical computing. While the problem it solves is artificial, it elegantly illustrates the power of quantum parallelism and interference.\n\n### The Problem\n\nYou are given a black-box function f(x) that takes an n-bit input and returns either 0 or 1. You are promised that f is either:\n- **Constant**: returns the same value (all 0s or all 1s) for every input\n- **Balanced**: returns 0 for exactly half the inputs and 1 for the other half\n\n**Task**: Determine which type f is.\n\n### Classical Solution\n\nClassically, in the worst case, you need to query f for **2ⁿ⁻¹ + 1** inputs to be certain. For n=100, that's more than 10²⁹ queries.\n\n### Quantum Solution\n\nThe Deutsch-Jozsa algorithm determines the answer with **exactly 1 query**, regardless of n.\n\n**Steps:**\n1. Initialize n+1 qubits: n input qubits in |0⟩, 1 output qubit in |1⟩\n2. Apply Hadamard to all qubits → creates superposition of all inputs\n3. Query the oracle f once (on all inputs simultaneously)\n4. Apply Hadamard to input qubits again\n5. Measure input qubits\n\n**Result:**\n- If all measurements are 0 → f is constant\n- If any measurement is 1 → f is balanced\n\nThe quantum speedup comes from superposition (querying all inputs at once) and interference (the Hadamard at the end cancels out balanced contributions).\n\n### Significance\n\nWhile this specific problem isn't practically important, Deutsch-Jozsa established the principle that quantum computers can solve certain problems exponentially faster than classical computers — a profound theoretical result.",
+          "quiz": [
+            {
+              "id": "m4l1q1",
+              "question": "How many oracle queries does the Deutsch-Jozsa algorithm need to determine if a function is constant or balanced?",
+              "options": [
+                "2ⁿ queries",
+                "n queries",
+                "√n queries",
+                "1 query"
+              ],
+              "correctIndex": 3,
+              "explanation": "The Deutsch-Jozsa algorithm requires exactly 1 oracle query to determine with certainty whether the function is constant or balanced, regardless of the input size n. Classically, up to 2ⁿ⁻¹ + 1 queries are needed."
+            },
+            {
+              "id": "m4l1q2",
+              "question": "What quantum phenomena enable the Deutsch-Jozsa speedup?",
+              "options": [
+                "Entanglement and decoherence",
+                "Superposition and interference",
+                "Tunneling and teleportation",
+                "Measurement and collapse"
+              ],
+              "correctIndex": 1,
+              "explanation": "Superposition allows querying all inputs simultaneously, and interference (via Hadamard gates) allows the algorithm to distinguish constant from balanced functions in a single query."
+            }
+          ]
+        },
+        {
+          "id": "m4l2",
+          "title": "Shor's Algorithm: Breaking Encryption",
+          "duration": "10 min",
+          "content": "## Shor's Algorithm: Breaking Encryption\n\n**Shor's algorithm** (1994), developed by Peter Shor at Bell Labs, is arguably the most famous quantum algorithm. It can factor large integers exponentially faster than any known classical algorithm — and this has profound implications for cybersecurity.\n\n### Why Factoring Matters\n\nMost of today's internet security (RSA encryption, used for banking, email, HTTPS) relies on the fact that **factoring large numbers is computationally hard** for classical computers.\n\nFor example, multiplying two large primes is easy:\n- 15,485,863 × 15,485,867 = 239,812,079,076,221 (fast)\n\nBut factoring the result back into its prime components is extremely hard:\n- 239,812,079,076,221 = ? × ? (takes a classical computer a very long time for large numbers)\n\nRSA-2048 (commonly used today) uses 2048-bit numbers. The best classical algorithm would take longer than the age of the universe to factor them.\n\n### Shor's Quantum Speedup\n\nShor's algorithm factors an N-digit number in roughly **O(N³)** operations — polynomial time. The best classical algorithm takes **O(e^(N^(1/3)))** — sub-exponential but still much worse.\n\n| Number Size | Classical Time | Shor's Quantum Time |\n|---|---|---|\n| 512-bit | ~2 months (supercomputer) | Minutes |\n| 1024-bit | ~300 trillion years | Hours |\n| 2048-bit | Astronomical | Days |\n\n### How It Works (Conceptually)\n\nShor's algorithm reduces factoring to **period finding** — finding the period of a modular function. This period-finding step is solved exponentially faster using:\n1. **Quantum Fourier Transform (QFT)** — the quantum analogue of the Fast Fourier Transform\n2. **Quantum parallelism** — evaluating the function on all inputs simultaneously\n\n### Current Status\n\nToday's quantum computers don't yet have enough error-free qubits to run Shor's algorithm on cryptographically relevant numbers. However, this threat is taken seriously — governments and companies are already transitioning to **post-quantum cryptography** algorithms that are resistant to quantum attacks.",
+          "quiz": [
+            {
+              "id": "m4l2q1",
+              "question": "What mathematical problem does Shor's algorithm solve efficiently?",
+              "options": [
+                "Sorting large datasets",
+                "Searching unsorted databases",
+                "Factoring large integers",
+                "Solving differential equations"
+              ],
+              "correctIndex": 2,
+              "explanation": "Shor's algorithm efficiently factors large integers — a problem that is computationally intractable for classical computers. This threatens RSA encryption which relies on the hardness of factoring."
+            },
+            {
+              "id": "m4l2q2",
+              "question": "What is the key quantum subroutine that gives Shor's algorithm its power?",
+              "options": [
+                "Quantum error correction",
+                "Quantum teleportation",
+                "Quantum Fourier Transform",
+                "Quantum annealing"
+              ],
+              "correctIndex": 2,
+              "explanation": "The Quantum Fourier Transform (QFT) is the key subroutine in Shor's algorithm. It efficiently finds the period of a modular function, which is then used to factor the number."
+            }
+          ]
+        },
+        {
+          "id": "m4l3",
+          "title": "Grover's Algorithm: Quantum Search",
+          "duration": "8 min",
+          "content": "## Grover's Algorithm: Quantum Search\n\n**Grover's algorithm** (1996), developed by Lov Grover, provides a quadratic speedup for searching unsorted databases. While less dramatic than Shor's exponential speedup, it applies to a much broader class of problems.\n\n### The Search Problem\n\nGiven an unsorted list of N items, find the one item that satisfies a given condition (the \"marked\" item).\n\n**Classical approach**: Check items one by one. On average, you'll find it after N/2 checks. Worst case: N checks.\n\n**Grover's approach**: Find it in approximately **√N** checks.\n\n### The Grover Iteration\n\nThe algorithm works by repeatedly applying a two-step operation called the **Grover iteration** (or Grover diffusion operator):\n\n1. **Oracle step**: Apply a phase flip to the marked item (flips its amplitude sign)\n2. **Diffusion step**: Apply inversion about the average (amplifies the marked item's amplitude)\n\nAfter approximately **π√N/4** iterations, the marked item has amplitude close to 1 and will be found with high probability upon measurement.\n\n### Visualizing the Speedup\n\n| Database Size | Classical Checks | Grover's Checks |\n|---|---|---|\n| 100 | 50 (avg) | 8 |\n| 10,000 | 5,000 (avg) | 79 |\n| 1,000,000 | 500,000 (avg) | 785 |\n| 10¹² | 5 × 10¹¹ (avg) | ~785,000 |\n\n### Broader Applications\n\nGrover's algorithm is a general-purpose tool. Any problem that can be formulated as \"find an input that satisfies this condition\" can benefit from a Grover-style speedup:\n- Solving NP-complete problems (quadratic speedup)\n- Cryptographic attacks (halves effective key length)\n- Optimization problems\n- Machine learning\n\n> Grover's algorithm is provably optimal — no quantum algorithm can search an unsorted database faster than O(√N).",
+          "hasVisualization": "grover",
+          "quiz": [
+            {
+              "id": "m4l3q1",
+              "question": "How many operations does Grover's algorithm need to search a database of N items?",
+              "options": [
+                "O(N)",
+                "O(N²)",
+                "O(√N)",
+                "O(log N)"
+              ],
+              "correctIndex": 2,
+              "explanation": "Grover's algorithm finds the marked item in O(√N) operations — a quadratic speedup over the classical O(N). This is also proven to be optimal; no quantum algorithm can do better."
+            },
+            {
+              "id": "m4l3q2",
+              "question": "What does the oracle step in Grover's algorithm do?",
+              "options": [
+                "Measures all qubits simultaneously",
+                "Creates a superposition of all items",
+                "Applies a phase flip to the marked item",
+                "Entangles all qubits together"
+              ],
+              "correctIndex": 2,
+              "explanation": "The oracle step applies a phase flip (negates the amplitude) to the marked item. Combined with the diffusion step, this gradually amplifies the marked item's probability amplitude over multiple iterations."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "number": 5,
+      "title": "Quantum Hardware & Real Systems",
+      "description": "Explore real quantum computers, error correction, and the path to fault-tolerant quantum computing.",
+      "icon": "🖥️",
+      "color": "green",
+      "lessons": [
+        {
+          "id": "m5l1",
+          "title": "Quantum Error Correction",
+          "duration": "10 min",
+          "content": "## Quantum Error Correction\n\nQuantum computers are inherently noisy. Qubits are fragile — they decohere, gates have errors, and measurements are imperfect. **Quantum error correction (QEC)** is the set of techniques that allow quantum computers to perform reliable computations despite these imperfections.\n\n### Why Classical Error Correction Doesn't Work\n\nClassical computers use simple repetition codes — store each bit three times (0 → 000, 1 → 111) and take a majority vote. If one bit flips, the majority still gives the right answer.\n\nQuantum error correction faces unique challenges:\n1. **No-cloning theorem**: You cannot copy an unknown quantum state\n2. **Measurement destroys superposition**: You can't check a qubit's state without collapsing it\n3. **Continuous errors**: Quantum errors are continuous (rotations), not just bit flips\n\n### How Quantum Error Correction Works\n\nQEC encodes one **logical qubit** into multiple **physical qubits**. Errors are detected by measuring **syndromes** — special observables that reveal error information without collapsing the logical qubit's state.\n\nThe **Shor code** (1995) was the first quantum error-correcting code, encoding 1 logical qubit in 9 physical qubits, protecting against both bit-flip and phase-flip errors.\n\n### The Surface Code\n\nThe most promising near-term QEC code is the **surface code**:\n- Arranges qubits in a 2D grid\n- Requires only nearest-neighbor interactions\n- Can tolerate error rates up to ~1% (the threshold)\n- Requires roughly **1,000 physical qubits per logical qubit**\n\n### The Overhead Problem\n\n| Logical Qubits Needed | Physical Qubits Required (Surface Code) |\n|---|---|\n| 1 | ~1,000 |\n| 100 | ~100,000 |\n| 1,000 | ~1,000,000 |\n| Shor's algorithm (2048-bit RSA) | ~4,000,000 |\n\nThis enormous overhead is why today's \"NISQ\" (Noisy Intermediate-Scale Quantum) devices with 50-1000 physical qubits cannot yet run fault-tolerant algorithms. The path to practical quantum computing runs through solving the error correction overhead problem.",
+          "quiz": [
+            {
+              "id": "m5l1q1",
+              "question": "Why can't classical error correction techniques be directly applied to quantum computers?",
+              "options": [
+                "Quantum computers are too fast for classical error correction",
+                "The no-cloning theorem prevents copying quantum states",
+                "Quantum errors are always corrected automatically",
+                "Classical error correction uses too much memory"
+              ],
+              "correctIndex": 1,
+              "explanation": "The no-cloning theorem states that an unknown quantum state cannot be copied. Classical repetition codes rely on copying bits, so they cannot be directly applied to qubits. Quantum error correction uses clever encoding and syndrome measurements instead."
+            },
+            {
+              "id": "m5l1q2",
+              "question": "Approximately how many physical qubits does the surface code require per logical qubit?",
+              "options": [
+                "10",
+                "100",
+                "1,000",
+                "1,000,000"
+              ],
+              "correctIndex": 2,
+              "explanation": "The surface code requires approximately 1,000 physical qubits to encode one error-corrected logical qubit. This enormous overhead is why millions of physical qubits are needed for practical fault-tolerant quantum computing."
+            }
+          ]
+        },
+        {
+          "id": "m5l2",
+          "title": "NISQ Era and Quantum Advantage",
+          "duration": "9 min",
+          "content": "## NISQ Era and Quantum Advantage\n\nWe currently live in the **NISQ era** — Noisy Intermediate-Scale Quantum — a term coined by physicist John Preskill in 2018. NISQ devices have 50–1000 qubits but are too noisy for full quantum error correction.\n\n### What NISQ Computers Can Do Today\n\nDespite their limitations, NISQ devices are being explored for:\n\n**Variational Quantum Algorithms**\nHybrid classical-quantum algorithms that use shallow quantum circuits to estimate properties of quantum systems. Examples:\n- **VQE** (Variational Quantum Eigensolver) — quantum chemistry\n- **QAOA** (Quantum Approximate Optimization Algorithm) — combinatorial optimization\n\n**Quantum Simulation**\nSimulating quantum systems (molecules, materials) that are intractable for classical computers. This is arguably the most near-term practical application.\n\n**Quantum Machine Learning**\nExploring whether quantum circuits can provide advantages for certain ML tasks.\n\n### Quantum Advantage vs. Quantum Supremacy\n\n| Term | Definition |\n|---|---|\n| **Quantum supremacy** | A quantum computer performs a specific task faster than any classical computer (even if the task is artificial) |\n| **Quantum advantage** | A quantum computer solves a practically useful problem faster than classical computers |\n\nGoogle's 2019 supremacy claim (Sycamore processor) was for a sampling problem with no practical application. True **quantum advantage** for useful problems remains an active research goal.\n\n### The Roadmap\n\n| Era | Qubits | Error Rate | Status |\n|---|---|---|---|\n| NISQ | 50–1000 | ~0.1–1% | Now |\n| Early fault-tolerant | 1,000–100,000 | <0.01% | ~2027–2030 |\n| Fault-tolerant | >1,000,000 | <0.001% | ~2030+ |\n\n### Leading Quantum Computers (2024–2025)\n\nIBM's **Condor** processor has 1,121 qubits. Google's **Willow** chip (2024) demonstrated significant error correction milestones. The race to fault-tolerant quantum computing is intensifying.",
+          "quiz": [
+            {
+              "id": "m5l2q1",
+              "question": "What does NISQ stand for?",
+              "options": [
+                "Non-Isolated Superconducting Quantum",
+                "Noisy Intermediate-Scale Quantum",
+                "Near-Infinite Superposition Quantum",
+                "Novel Integrated Semiconductor Quantum"
+              ],
+              "correctIndex": 1,
+              "explanation": "NISQ stands for Noisy Intermediate-Scale Quantum, a term coined by John Preskill in 2018 to describe current quantum devices with 50–1000 qubits that are too noisy for full quantum error correction."
+            },
+            {
+              "id": "m5l2q2",
+              "question": "What is the difference between quantum supremacy and quantum advantage?",
+              "options": [
+                "They mean the same thing",
+                "Supremacy is for artificial tasks; advantage is for practically useful problems",
+                "Advantage requires more qubits than supremacy",
+                "Supremacy requires error correction; advantage does not"
+              ],
+              "correctIndex": 1,
+              "explanation": "Quantum supremacy means outperforming classical computers on any task (even artificial ones). Quantum advantage specifically means solving a practically useful problem faster than classical computers — a much higher bar that hasn't been definitively demonstrated yet."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m6",
+      "number": 6,
+      "title": "Quantum Applications & Future",
+      "description": "Survey the real-world applications of quantum computing and the path forward.",
+      "icon": "🚀",
+      "color": "pink",
+      "lessons": [
+        {
+          "id": "m6l1",
+          "title": "Quantum Applications Across Industries",
+          "duration": "10 min",
+          "content": "## Quantum Applications Across Industries\n\nQuantum computing is not a solution looking for a problem — it has clear, well-defined application domains where it offers genuine advantages over classical computing.\n\n### Pharmaceuticals & Drug Discovery\n\nSimulating molecular interactions at the quantum level is one of the most promising near-term applications. Classical computers struggle to simulate even moderately sized molecules accurately.\n\n**Key applications:**\n- Simulating protein folding and drug-protein interactions\n- Discovering new materials for batteries and solar cells\n- Optimizing chemical reactions for industrial processes\n\nA quantum computer with ~1,000 error-corrected qubits could simulate caffeine accurately. ~10,000 qubits could simulate penicillin. This could revolutionize drug discovery timelines from decades to years.\n\n### Finance & Optimization\n\nFinancial institutions are exploring quantum computing for:\n- **Portfolio optimization**: Finding optimal asset allocations across thousands of securities\n- **Risk analysis**: Monte Carlo simulations with quantum speedup\n- **Fraud detection**: Pattern recognition in transaction data\n- **Derivative pricing**: Quantum amplitude estimation for option pricing\n\n### Cryptography & Security\n\n**Threat**: Shor's algorithm will eventually break RSA and ECC encryption.\n\n**Response**: Post-quantum cryptography (PQC) — NIST finalized the first PQC standards in 2024, including CRYSTALS-Kyber and CRYSTALS-Dilithium, which are resistant to quantum attacks.\n\n**Opportunity**: Quantum Key Distribution (QKD) uses quantum mechanics to create provably secure communication channels.\n\n### Logistics & Supply Chain\n\nQuantum optimization algorithms could solve complex routing and scheduling problems:\n- Airline scheduling (billions of variables)\n- Supply chain optimization\n- Traffic flow optimization in smart cities\n\n### Climate & Energy\n\n- Simulating new materials for more efficient solar cells\n- Optimizing power grid distribution\n- Discovering new catalysts for carbon capture\n- Designing better batteries for energy storage",
+          "quiz": [
+            {
+              "id": "m6l1q1",
+              "question": "Which near-term quantum application is considered most promising?",
+              "options": [
+                "Breaking all current encryption",
+                "Replacing classical computers entirely",
+                "Simulating molecular interactions for drug discovery",
+                "Solving all NP-complete problems instantly"
+              ],
+              "correctIndex": 2,
+              "explanation": "Molecular simulation for drug discovery and materials science is considered the most near-term practical application of quantum computing. Even modest quantum computers could simulate molecules that are intractable for classical computers."
+            },
+            {
+              "id": "m6l1q2",
+              "question": "What is Post-Quantum Cryptography (PQC)?",
+              "options": [
+                "Encryption that uses quantum computers to encrypt data",
+                "Classical encryption algorithms resistant to quantum attacks",
+                "A type of quantum key distribution",
+                "Encryption that only works after quantum computers are built"
+              ],
+              "correctIndex": 1,
+              "explanation": "Post-Quantum Cryptography (PQC) refers to classical cryptographic algorithms designed to be resistant to attacks by quantum computers. NIST finalized the first PQC standards in 2024 to replace RSA and ECC before large quantum computers arrive."
+            }
+          ]
+        },
+        {
+          "id": "m6l2",
+          "title": "The Quantum Future: What's Next?",
+          "duration": "7 min",
+          "content": "## The Quantum Future: What's Next?\n\nWe stand at an extraordinary moment in the history of computing. Quantum computers are transitioning from laboratory curiosities to engineering challenges to, eventually, practical tools that will reshape industries.\n\n### The Quantum Stack\n\nLike classical computing, quantum computing is developing a full technology stack:\n\n| Layer | Classical Analogy | Quantum Example |\n|---|---|---|\n| Hardware | Transistors | Superconducting qubits |\n| Control | CPU | Microwave pulse controllers |\n| Compiler | GCC/LLVM | Qiskit, Cirq, PennyLane |\n| Algorithms | Software | Shor's, Grover's, VQE |\n| Applications | Apps | Drug discovery, finance |\n\n### Quantum Cloud Computing\n\nYou don't need to own a quantum computer to use one. Major providers offer cloud access:\n- **IBM Quantum** — Free access to 127-qubit processors via IBM Quantum Network\n- **Amazon Braket** — Access to multiple quantum hardware providers\n- **Google Quantum AI** — Research access programs\n- **Azure Quantum** — Microsoft's quantum cloud platform\n\n### Quantum Workforce\n\nThe quantum computing industry is growing rapidly and needs:\n- Quantum algorithm developers\n- Quantum hardware engineers\n- Quantum error correction specialists\n- Quantum software engineers\n- Domain experts who understand both quantum computing and their industry\n\n### Timeline Predictions\n\n| Milestone | Estimated Timeline |\n|---|---|\n| 1,000+ qubit NISQ devices | Already here (2024) |\n| First fault-tolerant logical qubit | 2025–2027 |\n| Quantum advantage in chemistry | 2027–2030 |\n| Quantum advantage in optimization | 2030–2035 |\n| Cryptographically relevant quantum computer | 2030–2040 |\n\n### Getting Started\n\nThe best way to learn quantum computing is to do it:\n- **IBM Quantum Learning** — Free courses and hands-on labs\n- **Qiskit** — Open-source quantum SDK in Python\n- **Quirk** — Browser-based quantum circuit simulator\n- **PennyLane** — Quantum machine learning library\n\nThe quantum revolution is coming. The question is not whether quantum computers will transform computing — it's when, and whether you'll be ready.",
+          "quiz": [
+            {
+              "id": "m6l2q1",
+              "question": "Which platform offers free cloud access to real quantum computers?",
+              "options": [
+                "Only private research labs",
+                "IBM Quantum (via IBM Quantum Network)",
+                "Only government agencies",
+                "Quantum computers are not yet accessible remotely"
+              ],
+              "correctIndex": 1,
+              "explanation": "IBM Quantum offers free cloud access to real quantum processors (up to 127 qubits) through the IBM Quantum Network. Amazon Braket, Google Quantum AI, and Azure Quantum also offer cloud quantum access."
+            },
+            {
+              "id": "m6l2q2",
+              "question": "When is quantum advantage in practical chemistry applications estimated to arrive?",
+              "options": [
+                "It's already here (2024)",
+                "2025–2026",
+                "2027–2030",
+                "After 2050"
+              ],
+              "correctIndex": 2,
+              "explanation": "Most experts estimate quantum advantage in practical chemistry and drug discovery applications will arrive around 2027–2030, when fault-tolerant quantum computers with thousands of logical qubits become available."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "lessonCount": 14,
+  "lessonTitles": [
+    "What is Quantum Computing?",
+    "Classical vs. Quantum: Key Differences",
+    "Superposition: Being in Two Places at Once",
+    "Entanglement: Spooky Action at a Distance",
+    "Interference: Amplifying the Right Answers",
+    "Physical Implementations of Qubits",
+    "Quantum Gates: The Building Blocks",
+    "Deutsch-Jozsa: The First Quantum Speedup",
+    "Shor's Algorithm: Breaking Encryption",
+    "Grover's Algorithm: Quantum Search",
+    "Quantum Error Correction",
+    "NISQ Era and Quantum Advantage",
+    "Quantum Applications Across Industries",
+    "The Quantum Future: What's Next?"
+  ]
+}

@@ -1,0 +1,182 @@
+[
+  {
+    "id": "fe1",
+    "question": "What is the fundamental difference between a classical bit and a qubit?",
+    "options": [
+      "A qubit is faster than a classical bit",
+      "A qubit can exist in a superposition of 0 and 1 simultaneously",
+      "A qubit uses less energy than a classical bit",
+      "A qubit can only store more data than a classical bit"
+    ],
+    "correctIndex": 1,
+    "explanation": "A qubit can exist in a superposition of both 0 and 1 simultaneously (until measured), while a classical bit is always definitively either 0 or 1. This superposition is the foundation of quantum computing's power."
+  },
+  {
+    "id": "fe2",
+    "question": "With 50 qubits in superposition, how many states can be represented simultaneously?",
+    "options": [
+      "50",
+      "100",
+      "2,500",
+      "2⁵⁰ (over 1 quadrillion)"
+    ],
+    "correctIndex": 3,
+    "explanation": "With n qubits, you can represent 2ⁿ states simultaneously. 2⁵⁰ ≈ 1.1 × 10¹⁵ (over 1 quadrillion states). This exponential scaling is the source of quantum computing's power."
+  },
+  {
+    "id": "fe3",
+    "question": "What does the Hadamard gate do?",
+    "options": [
+      "Measures a qubit's state",
+      "Entangles two qubits",
+      "Creates an equal superposition from a basis state",
+      "Flips a qubit from |0⟩ to |1⟩"
+    ],
+    "correctIndex": 2,
+    "explanation": "The Hadamard gate transforms |0⟩ into (|0⟩+|1⟩)/√2 and |1⟩ into (|0⟩-|1⟩)/√2, creating equal superpositions. It's the most important single-qubit gate for initializing quantum algorithms."
+  },
+  {
+    "id": "fe4",
+    "question": "What is quantum entanglement?",
+    "options": [
+      "A qubit being in superposition",
+      "Two qubits that are correlated such that measuring one instantly determines the other",
+      "The process of measuring a qubit",
+      "A type of quantum error"
+    ],
+    "correctIndex": 1,
+    "explanation": "Quantum entanglement is a correlation between two or more qubits such that the state of each cannot be described independently. Measuring one entangled qubit instantly determines the state of its partner, regardless of distance."
+  },
+  {
+    "id": "fe5",
+    "question": "What quantum phenomenon allows algorithms to amplify correct answers and suppress wrong ones?",
+    "options": [
+      "Superposition",
+      "Entanglement",
+      "Decoherence",
+      "Interference"
+    ],
+    "correctIndex": 3,
+    "explanation": "Quantum interference allows probability amplitudes to add constructively (amplifying correct answers) or destructively (canceling wrong answers). This is the mechanism by which quantum algorithms extract useful results from superposition."
+  },
+  {
+    "id": "fe6",
+    "question": "Which algorithm threatens RSA encryption?",
+    "options": [
+      "Grover's algorithm",
+      "Deutsch-Jozsa algorithm",
+      "Shor's algorithm",
+      "VQE"
+    ],
+    "correctIndex": 2,
+    "explanation": "Shor's algorithm can factor large integers in polynomial time, which would break RSA encryption that relies on the computational hardness of factoring. This is why post-quantum cryptography is being developed."
+  },
+  {
+    "id": "fe7",
+    "question": "What speedup does Grover's algorithm provide for searching N items?",
+    "options": [
+      "O(N) → O(N/2)",
+      "O(N) → O(√N)",
+      "O(N) → O(log N)",
+      "O(N) → O(1)"
+    ],
+    "correctIndex": 1,
+    "explanation": "Grover's algorithm provides a quadratic speedup, reducing search from O(N) to O(√N). For 1 million items, that's 1,000,000 classical operations vs ~1,000 quantum operations."
+  },
+  {
+    "id": "fe8",
+    "question": "What is decoherence?",
+    "options": [
+      "A type of quantum gate",
+      "The process of entangling qubits",
+      "The loss of quantum properties due to environmental interaction",
+      "A quantum error correction technique"
+    ],
+    "correctIndex": 2,
+    "explanation": "Decoherence is the process by which a qubit loses its quantum properties (superposition, entanglement) due to unwanted interactions with the environment. It is the primary challenge in building practical quantum computers."
+  },
+  {
+    "id": "fe9",
+    "question": "What does NISQ stand for?",
+    "options": [
+      "Non-Isolated Superconducting Quantum",
+      "Noisy Intermediate-Scale Quantum",
+      "Near-Infinite Superposition Quantum",
+      "Novel Integrated Semiconductor Quantum"
+    ],
+    "correctIndex": 1,
+    "explanation": "NISQ stands for Noisy Intermediate-Scale Quantum, describing current quantum devices with 50–1000 qubits that are too noisy for full quantum error correction but are being explored for near-term applications."
+  },
+  {
+    "id": "fe10",
+    "question": "Approximately how many physical qubits does the surface code require per logical qubit?",
+    "options": [
+      "10",
+      "100",
+      "1,000",
+      "1,000,000"
+    ],
+    "correctIndex": 2,
+    "explanation": "The surface code requires approximately 1,000 physical qubits to encode one error-corrected logical qubit. This overhead means millions of physical qubits are needed for fault-tolerant quantum computing."
+  },
+  {
+    "id": "fe11",
+    "question": "Which qubit technology currently achieves the highest gate fidelity?",
+    "options": [
+      "Superconducting qubits",
+      "Trapped ion qubits",
+      "Photonic qubits",
+      "Topological qubits"
+    ],
+    "correctIndex": 1,
+    "explanation": "Trapped ion qubits currently achieve the highest gate fidelities (~99.9%), though they are harder to scale. Superconducting qubits (used by IBM and Google) have lower fidelity but are more scalable."
+  },
+  {
+    "id": "fe12",
+    "question": "What is Post-Quantum Cryptography (PQC)?",
+    "options": [
+      "Encryption that uses quantum computers",
+      "Classical encryption algorithms resistant to quantum attacks",
+      "Quantum Key Distribution",
+      "Encryption that breaks quantum computers"
+    ],
+    "correctIndex": 1,
+    "explanation": "Post-Quantum Cryptography refers to classical cryptographic algorithms designed to resist attacks from quantum computers. NIST finalized the first PQC standards in 2024 to replace RSA and ECC."
+  },
+  {
+    "id": "fe13",
+    "question": "What is the Bell state (|00⟩ + |11⟩)/√2?",
+    "options": [
+      "Two qubits both in state |0⟩",
+      "Two qubits in independent superpositions",
+      "Two maximally entangled qubits",
+      "Two qubits that are always opposite"
+    ],
+    "correctIndex": 2,
+    "explanation": "The Bell state (|00⟩+|11⟩)/√2 represents two maximally entangled qubits. Measuring one gives 0 or 1 with equal probability, but the other is always the same — they are perfectly correlated."
+  },
+  {
+    "id": "fe14",
+    "question": "What is the Bloch sphere used for?",
+    "options": [
+      "Representing the state of a single qubit geometrically",
+      "Visualizing quantum circuits",
+      "Measuring qubit error rates",
+      "Designing quantum processors"
+    ],
+    "correctIndex": 0,
+    "explanation": "The Bloch sphere is a unit sphere used to geometrically represent all possible states of a single qubit. The north pole is |0⟩, the south pole is |1⟩, and any point on the surface is a valid superposition."
+  },
+  {
+    "id": "fe15",
+    "question": "Which of the following is the most promising near-term practical application of quantum computing?",
+    "options": [
+      "Breaking all current encryption immediately",
+      "Replacing classical computers for all tasks",
+      "Molecular simulation for drug discovery and materials science",
+      "Solving all optimization problems instantly"
+    ],
+    "correctIndex": 2,
+    "explanation": "Molecular simulation for drug discovery and materials science is the most promising near-term application. Even modest quantum computers can simulate molecules that are intractable for classical computers, potentially revolutionizing drug development."
+  }
+]

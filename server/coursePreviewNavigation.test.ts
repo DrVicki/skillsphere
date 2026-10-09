@@ -29,4 +29,9 @@ describe("course curriculum preview navigation", () => {
     expect(learnCourse).toContain("Join the course discussion");
     expect(learnCourse).toContain("Live chat is available to enrolled learners");
   });
+
+  it("requires a passing score before an assessment records course completion", () => {
+    expect(learnCourse).toContain("if (!passed)");
+    expect(learnCourse).toContain("Reach the passing score to complete this assessment.");
+  });
 });

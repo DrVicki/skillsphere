@@ -15,7 +15,9 @@ import { Play, FileText, ClipboardList, CheckCircle, ChevronRight, MessageSquare
 import CourseCertificate from "@/components/CourseCertificate";
 import LessonContent from "@/components/LessonContent";
 import CubeMoveLabs from "@/components/CubeMoveLabs";
+import QuantumVisualizations from "@/components/QuantumVisualizations";
 import { parseGuidedMoveLabs, stripGuidedMoveLabs } from "@/lib/cubeMoveLabs";
+import { getQuantumVisualizationForModule } from "@/lib/quantumVisualizations";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Link } from "wouter";
 
@@ -53,6 +55,7 @@ export default function LearnCourse({ params }: Props) {
   const canAccessModule = (module: NonNullable<typeof activeModule>) => hasCourseAccess || Boolean(module.isPreview);
   const guidedMoveLabs = parseGuidedMoveLabs(activeModule?.content);
   const lessonContent = activeModule?.content ? stripGuidedMoveLabs(activeModule.content) : "";
+  const quantumVisualization = getQuantumVisualizationForModule(course?.slug, activeModule?.title);
 
   useEffect(() => {
     if (!modules || modules.length === 0 || activeModuleId) return;
@@ -233,6 +236,9 @@ export default function LearnCourse({ params }: Props) {
                   {/* Source-authored Cube move cards become interactive step-by-step practice labs. */}
                   {guidedMoveLabs.length > 0 && <CubeMoveLabs labs={guidedMoveLabs} />}
 
+                  {/* Source-authored Quantum lessons include their matching interactive visualization. */}
+                  {quantumVisualization && <QuantumVisualizations visualization={quantumVisualization} />}
+
                   {/* Assessment */}
                   {activeModule.type === "assessment" && activeModule.assessmentData && (
                     hasCourseAccess ? (
@@ -242,6 +248,10 @@ export default function LearnCourse({ params }: Props) {
                         assessmentData={activeModule.assessmentData as any}
                         isCompleted={!!isModuleCompleted(activeModule.id)}
                         onComplete={(score, passed) => {
+                          if (!passed) {
+                            toast.error("Reach the passing score to complete this assessment.");
+                            return;
+                          }
                           markComplete.mutate({ moduleId: activeModule.id, courseId: course.id, assessmentScore: score, assessmentPassed: passed });
                         }}
                       />
