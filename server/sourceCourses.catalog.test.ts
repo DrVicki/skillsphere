@@ -22,7 +22,7 @@ describe("source course catalog", () => {
       isPublished: true,
     });
     expect(bySlug.get("python-forge-learn-by-building")).toMatchObject({
-      title: "Python Forge — Learn by Building",
+      title: "Python Forge Bootcamp — Learn by Building",
       totalModules: 30,
       isPublished: true,
     });
