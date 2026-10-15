@@ -74,6 +74,7 @@
 - [x] Fix course curriculum Preview buttons so they open the selected preview lesson
 - [x] Restrict non-enrolled learners to preview lessons and show an enrollment call to action for locked content
 - [x] Gate preview-mode completion, discussion, and chat actions behind sign-in and enrollment
+- [x] Import the complete Using AI in Data Analytics source curriculum, knowledge checks, capstone, source visual assets, and interactive workflow visualizations
 
 ## Admin Dashboard
 - [x] Admin dashboard layout with dark sidebar navigation

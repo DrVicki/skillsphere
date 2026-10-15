@@ -16,8 +16,10 @@ import CourseCertificate from "@/components/CourseCertificate";
 import LessonContent from "@/components/LessonContent";
 import CubeMoveLabs from "@/components/CubeMoveLabs";
 import QuantumVisualizations from "@/components/QuantumVisualizations";
+import AIDataAnalyticsVisualizations from "@/components/AIDataAnalyticsVisualizations";
 import { parseGuidedMoveLabs, stripGuidedMoveLabs } from "@/lib/cubeMoveLabs";
 import { getQuantumVisualizationForModule } from "@/lib/quantumVisualizations";
+import { getAIDataAnalyticsVisualizationForModule } from "@/lib/aiDataAnalyticsVisualizations";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Link } from "wouter";
 
@@ -56,6 +58,7 @@ export default function LearnCourse({ params }: Props) {
   const guidedMoveLabs = parseGuidedMoveLabs(activeModule?.content);
   const lessonContent = activeModule?.content ? stripGuidedMoveLabs(activeModule.content) : "";
   const quantumVisualization = getQuantumVisualizationForModule(course?.slug, activeModule?.title);
+  const aiDataAnalyticsVisualization = getAIDataAnalyticsVisualizationForModule(course?.slug, activeModule?.title);
 
   useEffect(() => {
     if (!modules || modules.length === 0 || activeModuleId) return;
@@ -238,6 +241,9 @@ export default function LearnCourse({ params }: Props) {
 
                   {/* Source-authored Quantum lessons include their matching interactive visualization. */}
                   {quantumVisualization && <QuantumVisualizations visualization={quantumVisualization} />}
+
+                  {/* The AI data analytics curriculum pairs source lessons with standalone interactive workflow visualizations. */}
+                  {aiDataAnalyticsVisualization && <AIDataAnalyticsVisualizations visualization={aiDataAnalyticsVisualization} />}
 
                   {/* Assessment */}
                   {activeModule.type === "assessment" && activeModule.assessmentData && (

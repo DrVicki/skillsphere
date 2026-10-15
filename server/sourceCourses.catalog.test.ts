@@ -39,6 +39,14 @@ describe("source course catalog", () => {
       price: "9.99",
     });
     expect(bySlug.get("cube-unlocked-visual-rubiks-cube-course")?.totalModules).toBeGreaterThanOrEqual(7);
+    expect(bySlug.get("ai-in-data-analytics")).toMatchObject({
+      title: "Using AI in Data Analytics",
+      totalModules: 26,
+      totalDuration: 435,
+      isPublished: true,
+      isFree: false,
+      price: "297.00",
+    });
   });
 
   it("preserves source lesson content and knowledge checks for the imported curricula", async () => {
@@ -89,6 +97,7 @@ describe("source course catalog", () => {
     expect(cubeModule("02 · Learn the cube’s tiny language")?.content).toContain("Guided Move Cards");
     expect(cubeModule("03 · Open. Act. Close. Restore.")?.content).not.toContain("Guided Move Cards");
     expect(cubeModule("07 · Solve, explain, then solve again")).toBeDefined();
+
 
   });
 });

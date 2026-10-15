@@ -1,0 +1,659 @@
+{
+  "modules": [
+    {
+      "id": "m1",
+      "number": 1,
+      "title": "Foundations of AI in Data Analytics",
+      "description": "Understand the core concepts of AI and how they intersect with modern data analytics workflows.",
+      "icon": "Brain",
+      "color": "teal",
+      "lessons": [
+        {
+          "id": "m1-l1",
+          "type": "lesson",
+          "title": "What Is AI in the Context of Data Analytics?",
+          "duration": "8 min",
+          "content": "## What Is AI in the Context of Data Analytics?\n\nArtificial Intelligence (AI) has fundamentally transformed how organizations extract value from data. At its core, AI in data analytics refers to the use of machine learning algorithms, statistical models, and automated reasoning systems to analyze datasets, identify patterns, and generate actionable insights — often at a scale and speed impossible for human analysts alone.\n\n### The Spectrum of AI Techniques\n\nAI is not a single technology but a broad family of methods:\n\n| Technique | Description | Analytics Use Case |\n|---|---|---|\n| **Machine Learning (ML)** | Algorithms that learn from data without explicit programming | Predictive modeling, classification |\n| **Deep Learning (DL)** | Neural networks with many layers | Image recognition, NLP on text data |\n| **Natural Language Processing (NLP)** | Understanding and generating human language | Analyzing customer feedback, reports |\n| **Computer Vision** | Interpreting visual information | Quality control, satellite data analysis |\n| **Reinforcement Learning** | Learning through reward/penalty feedback | Dynamic pricing, recommendation systems |\n\n### Why AI Matters for Data Analytics\n\nTraditional analytics relied on human-defined rules and static dashboards. AI introduces **adaptive intelligence** — systems that improve with more data and can surface non-obvious relationships. Key advantages include:\n\n- **Scale**: Process millions of records in seconds\n- **Pattern Detection**: Identify correlations invisible to the human eye\n- **Automation**: Reduce repetitive data wrangling tasks\n- **Prediction**: Shift from descriptive to predictive and prescriptive analytics\n\n### The Analytics Maturity Model\n\nOrganizations typically progress through four stages:\n\n1. **Descriptive Analytics** — What happened? (Reports, dashboards)\n2. **Diagnostic Analytics** — Why did it happen? (Drill-down analysis)\n3. **Predictive Analytics** — What will happen? (ML forecasting)\n4. **Prescriptive Analytics** — What should we do? (AI-driven recommendations)\n\nAI primarily powers the upper two stages, but also dramatically accelerates the first two through automation.\n\n> **Key Insight**: The goal of AI in analytics is not to replace analysts but to amplify their capabilities — handling the computational heavy lifting so humans can focus on interpretation and strategy."
+        },
+        {
+          "id": "m1-l2",
+          "type": "lesson",
+          "title": "Key AI Technologies for Analysts",
+          "duration": "10 min",
+          "content": "## Key AI Technologies for Analysts\n\nTo effectively leverage AI in your analytics work, you need a working understanding of the core technologies. This lesson provides a practical overview of each.\n\n### 1. Machine Learning Fundamentals\n\nMachine learning (ML) is the backbone of AI-driven analytics. ML algorithms learn patterns from historical data and apply those patterns to new data.\n\n**Supervised Learning** trains on labeled examples:\n- **Regression**: Predicts continuous values (e.g., revenue forecasting)\n- **Classification**: Assigns categories (e.g., customer churn: yes/no)\n\n**Unsupervised Learning** discovers hidden structure:\n- **Clustering**: Groups similar records (e.g., customer segmentation)\n- **Dimensionality Reduction**: Simplifies complex datasets (e.g., PCA)\n\n**Semi-supervised & Self-supervised Learning** combine labeled and unlabeled data — increasingly important as labeled data is expensive.\n\n### 2. Large Language Models (LLMs)\n\nLLMs like GPT-4, Claude, and Gemini have opened a new frontier for analytics:\n\n- **Natural language querying**: Ask questions about your data in plain English\n- **Automated report generation**: Convert data outputs into narrative summaries\n- **Code generation**: Write SQL, Python, and R code from descriptions\n- **Data interpretation**: Explain statistical results to non-technical stakeholders\n\n### 3. AutoML Platforms\n\nAutomated Machine Learning (AutoML) tools democratize ML by automating:\n- Feature engineering\n- Model selection\n- Hyperparameter tuning\n- Model evaluation\n\nPopular platforms include Google AutoML, H2O.ai, DataRobot, and Azure AutoML.\n\n### 4. AI-Powered BI Tools\n\nModern Business Intelligence tools now embed AI directly:\n\n| Tool | AI Feature |\n|---|---|\n| Power BI | Copilot, Q&A natural language queries |\n| Tableau | Explain Data, Ask Data |\n| Looker | AI-assisted metrics, LookML generation |\n| Qlik | Insight Advisor, AutoML |\n\n### 5. Vector Databases & Embeddings\n\nFor analytics on unstructured data (text, images), vector databases (Pinecone, Weaviate, pgvector) store semantic representations, enabling similarity search and retrieval-augmented analytics.\n\n> **Practical Tip**: You do not need to build these systems from scratch. As an analyst, your value lies in knowing *which* tool to apply to *which* problem — and interpreting the results critically."
+        },
+        {
+          "id": "m1-l3",
+          "type": "example",
+          "title": "Example: Automating Sales Trend Detection",
+          "duration": "6 min",
+          "content": "## Example: Automating Sales Trend Detection\n\n### Scenario\n\nA retail company's analytics team spent 15 hours per week manually reviewing sales reports across 200 product categories to identify emerging trends. They wanted to automate this process using AI.\n\n### The Traditional Approach\n\nPreviously, analysts would:\n1. Export weekly sales data from the ERP system\n2. Build pivot tables in Excel\n3. Visually scan for anomalies and trends\n4. Write narrative summaries for management\n\nThis process was slow, inconsistent across analysts, and missed subtle multi-variable trends.\n\n### The AI-Powered Solution\n\nThe team implemented a three-component system:\n\n**Component 1: Anomaly Detection Model**\n```python\n# Using Facebook Prophet for time-series anomaly detection\nfrom prophet import Prophet\nimport pandas as pd\n\ndf = pd.read_csv('weekly_sales.csv')\ndf.columns = ['ds', 'y']  # Prophet requires these column names\n\nmodel = Prophet(interval_width=0.95, yearly_seasonality=True)\nmodel.fit(df)\n\nfuture = model.make_future_dataframe(periods=4, freq='W')\nforecast = model.predict(future)\n\n# Flag anomalies: actual values outside prediction interval\nanomalies = df[df['y'] < forecast['yhat_lower'] | \n               df['y'] > forecast['yhat_upper']]\n```\n\n**Component 2: LLM-Powered Narrative Generation**\nThe detected anomalies were fed to an LLM with context about the product category, seasonality, and historical benchmarks. The LLM generated plain-English summaries like:\n\n> *\"Category: Outdoor Furniture. Week of March 15 shows a 34% sales spike — 2.1 standard deviations above the seasonal forecast. This aligns with the early spring promotion launched March 12. Recommend maintaining inventory levels above 150% of baseline for the next 3 weeks.\"*\n\n**Component 3: Automated Dashboard Update**\nResults were pushed to a Power BI dashboard with AI-generated commentary, updated every Monday morning.\n\n### Results\n\n| Metric | Before | After |\n|---|---|---|\n| Time spent on trend reports | 15 hrs/week | 2 hrs/week |\n| Categories reviewed | 200 (manual) | 200 (automated) |\n| Trends detected per week | ~12 | ~31 |\n| Report delivery time | Tuesday EOD | Monday 8 AM |\n\n### Key Takeaway\n\nThe analysts were not replaced — they shifted from *finding* trends to *acting on* them. AI handled the pattern detection; humans provided strategic judgment."
+        },
+        {
+          "id": "m1-l4",
+          "type": "case-study",
+          "title": "Case Study: Netflix's AI-Driven Content Analytics",
+          "duration": "8 min",
+          "content": "## Case Study: Netflix's AI-Driven Content Analytics\n\n### Background\n\nNetflix operates at a scale that makes traditional analytics insufficient. With over 260 million subscribers across 190 countries, generating petabytes of behavioral data daily, the company has built one of the most sophisticated AI analytics ecosystems in the world.\n\n### The Analytics Challenge\n\nNetflix needed to answer questions that traditional BI could not address:\n- Which content investments will maximize subscriber retention?\n- How should thumbnails be personalized per user?\n- When will a subscriber churn, and what intervention will prevent it?\n- How do viewing patterns differ across cultural contexts?\n\n### AI Solutions Deployed\n\n**1. Recommendation Engine**\nNetflix's recommendation system uses a combination of collaborative filtering, content-based filtering, and deep learning. The system analyzes:\n- Viewing history and completion rates\n- Time of day and device type\n- Scroll behavior (what you browse but don't watch)\n- Post-viewing ratings and re-watch behavior\n\nThe engine generates personalized rankings for each of 260M+ users in real time.\n\n**2. Artwork Personalization**\nA/B testing at scale revealed that thumbnail images dramatically affect click-through rates. Netflix deployed a multi-armed bandit algorithm that:\n- Selects from multiple artwork variants per title\n- Learns each user's visual preferences (faces vs. action shots vs. landscapes)\n- Updates artwork selection in real time\n\nThis single initiative increased overall engagement by an estimated 20-30%.\n\n**3. Churn Prediction**\nA gradient boosting model monitors 500+ behavioral signals to predict churn probability 30 days in advance. High-risk subscribers receive targeted interventions:\n- Personalized content recommendations\n- Email campaigns highlighting upcoming releases in their preferred genres\n- Pricing offers in price-sensitive markets\n\n**4. Content Investment Analytics**\nBefore greenlighting a production, Netflix uses predictive models to estimate:\n- Projected viewership by region and demographic\n- Estimated impact on subscriber acquisition and retention\n- Optimal release timing and marketing spend\n\n### Results & Impact\n\n> *\"Our recommendation system drives approximately 80% of content watched on Netflix, saving us an estimated $1 billion per year in reduced churn.\"* — Netflix Technology Blog\n\n| Initiative | Measured Impact |\n|---|---|\n| Recommendation Engine | 80% of viewing driven by recommendations |\n| Artwork Personalization | ~20-30% increase in engagement |\n| Churn Prediction | Significant reduction in preventable churn |\n| Content Analytics | Informed $17B+ annual content budget |\n\n### Lessons for Analysts\n\n1. **Scale requires automation**: At Netflix's scale, human-curated recommendations are impossible. AI is not optional.\n2. **Experimentation is core**: Netflix runs thousands of A/B tests simultaneously — AI enables this rigor.\n3. **Data quality is foundational**: Netflix invests heavily in data infrastructure before AI models.\n4. **Human judgment still matters**: Content acquisition decisions blend AI signals with creative judgment."
+        },
+        {
+          "id": "m1-q1",
+          "type": "quiz",
+          "title": "Knowledge Check: Module 1",
+          "duration": "5 min",
+          "content": "Test your understanding of AI foundations in data analytics.",
+          "questions": [
+            {
+              "id": "m1-q1-1",
+              "question": "Which stage of the Analytics Maturity Model does AI primarily power?",
+              "options": [
+                "Descriptive Analytics only",
+                "Diagnostic Analytics only",
+                "Predictive and Prescriptive Analytics",
+                "All four stages equally"
+              ],
+              "correctIndex": 2,
+              "explanation": "AI primarily powers Predictive Analytics (forecasting future outcomes) and Prescriptive Analytics (recommending actions). While AI also accelerates Descriptive and Diagnostic analytics through automation, its greatest impact is in the upper two stages."
+            },
+            {
+              "id": "m1-q1-2",
+              "question": "What is the primary advantage of AutoML platforms for data analysts?",
+              "options": [
+                "They replace the need for any statistical knowledge",
+                "They automate feature engineering, model selection, and hyperparameter tuning",
+                "They only work with structured tabular data",
+                "They eliminate the need for data cleaning"
+              ],
+              "correctIndex": 1,
+              "explanation": "AutoML platforms automate the most time-consuming ML workflow steps — feature engineering, model selection, and hyperparameter tuning — democratizing machine learning for analysts without deep ML expertise. They do not eliminate the need for statistical knowledge or data preparation."
+            },
+            {
+              "id": "m1-q1-3",
+              "question": "In the Netflix case study, what technique was used to personalize thumbnail artwork for each user?",
+              "options": [
+                "Supervised classification model",
+                "Multi-armed bandit algorithm",
+                "K-means clustering",
+                "Linear regression"
+              ],
+              "correctIndex": 1,
+              "explanation": "Netflix used a multi-armed bandit algorithm for artwork personalization. This reinforcement learning approach balances exploration (testing new artwork variants) with exploitation (showing artwork known to work for a user), learning preferences in real time."
+            },
+            {
+              "id": "m1-q1-4",
+              "question": "Which of the following best describes the role of AI in modern data analytics teams?",
+              "options": [
+                "AI replaces human analysts entirely",
+                "AI handles only data visualization tasks",
+                "AI amplifies analyst capabilities by automating computational tasks",
+                "AI is only useful for companies with more than 1 million customers"
+              ],
+              "correctIndex": 2,
+              "explanation": "AI amplifies analyst capabilities — handling pattern detection, automation, and scale — so that human analysts can focus on interpretation, strategy, and decision-making. AI does not replace analysts; it changes what analysts spend their time on."
+            },
+            {
+              "id": "m1-q1-5",
+              "question": "What distinguishes Prescriptive Analytics from Predictive Analytics?",
+              "options": [
+                "Prescriptive analytics only describes what happened in the past",
+                "Prescriptive analytics recommends specific actions to take, not just what will happen",
+                "Prescriptive analytics requires less data than predictive analytics",
+                "Prescriptive analytics is only used in healthcare"
+              ],
+              "correctIndex": 1,
+              "explanation": "Predictive analytics forecasts future outcomes (\"what will happen?\"), while prescriptive analytics goes further to recommend the best course of action (\"what should we do?\"). Prescriptive analytics combines predictions with optimization algorithms and business rules to suggest specific decisions."
+            },
+            {
+              "id": "m1-q1-6",
+              "question": "Which of the following is an example of unsupervised learning in data analytics?",
+              "options": [
+                "Predicting customer churn using labeled historical data",
+                "Classifying emails as spam or not spam",
+                "Grouping customers into segments based on purchasing behavior without predefined labels",
+                "Forecasting next month's revenue using past revenue data"
+              ],
+              "correctIndex": 2,
+              "explanation": "Customer segmentation via clustering (e.g., K-means) is a classic unsupervised learning task — the algorithm finds natural groupings in data without any predefined labels. Churn prediction, spam classification, and revenue forecasting are supervised learning tasks that require labeled training data."
+            },
+            {
+              "id": "m1-q1-7",
+              "question": "What is transfer learning, and why is it valuable for data analytics teams?",
+              "options": [
+                "Moving data from one database to another",
+                "Reusing a model trained on a large dataset as the starting point for a related task, reducing training data and compute requirements",
+                "Transferring model weights between different programming languages",
+                "A technique exclusively used in computer vision"
+              ],
+              "correctIndex": 1,
+              "explanation": "Transfer learning allows teams to leverage pre-trained models (trained on massive datasets) as starting points for domain-specific tasks. This dramatically reduces the amount of labeled training data and compute resources needed — a pre-trained language model can be fine-tuned on a few thousand domain examples rather than billions."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "number": 2,
+      "title": "Data Preparation & Feature Engineering with AI",
+      "description": "Master AI-assisted techniques for cleaning, transforming, and enriching data at scale.",
+      "icon": "Database",
+      "color": "blue",
+      "lessons": [
+        {
+          "id": "m2-l1",
+          "type": "lesson",
+          "title": "AI-Assisted Data Cleaning",
+          "duration": "9 min",
+          "content": "## AI-Assisted Data Cleaning\n\nData cleaning is traditionally the most time-consuming part of any analytics project — estimates suggest analysts spend 60-80% of their time on data preparation. AI is dramatically changing this equation.\n\n### Common Data Quality Issues\n\n| Issue | Traditional Approach | AI-Assisted Approach |\n|---|---|---|\n| Missing values | Manual imputation rules | ML-based imputation (MICE, KNN) |\n| Duplicate records | Exact string matching | Fuzzy matching with embeddings |\n| Outliers | Statistical thresholds (IQR, z-score) | Isolation Forest, DBSCAN |\n| Inconsistent formats | Regex rules | LLM-based standardization |\n| Schema drift | Manual monitoring | Automated drift detection |\n\n### ML-Based Missing Value Imputation\n\nSimple imputation (mean, median, mode) ignores relationships between variables. AI-based methods are more accurate:\n\n**Multiple Imputation by Chained Equations (MICE)**\nMICE treats each feature with missing values as a dependent variable and uses other features to predict it iteratively:\n\n```python\nfrom sklearn.experimental import enable_iterative_imputer\nfrom sklearn.impute import IterativeImputer\nimport numpy as np\n\n# Create imputer that uses all other features to predict missing values\nimputer = IterativeImputer(\n    max_iter=10,\n    random_state=42,\n    estimator=None  # defaults to BayesianRidge\n)\n\nX_imputed = imputer.fit_transform(X_with_missing)\n```\n\n**KNN Imputation**\nFinds the k most similar records and uses their values:\n\n```python\nfrom sklearn.impute import KNNImputer\n\nimputer = KNNImputer(n_neighbors=5, weights='distance')\nX_imputed = imputer.fit_transform(X_with_missing)\n```\n\n### AI-Powered Duplicate Detection\n\nTraditional exact matching fails on real-world data where \"John Smith\" and \"Jon Smith\" are the same person. Embedding-based approaches encode records into vector space and find near-duplicates:\n\n```python\nfrom sentence_transformers import SentenceTransformer\nfrom sklearn.metrics.pairwise import cosine_similarity\n\nmodel = SentenceTransformer('all-MiniLM-L6-v2')\n\n# Encode customer names + addresses as semantic vectors\nrecords = [\"John Smith, 123 Main St\", \"Jon Smith, 123 Main Street\"]\nembeddings = model.encode(records)\n\n# Similarity > 0.9 likely indicates duplicates\nsimilarity = cosine_similarity(embeddings)\n```\n\n### LLM-Based Data Standardization\n\nLLMs excel at normalizing free-text fields:\n\n**Example prompt for standardizing job titles:**\n> *\"Standardize the following job titles to one of: [Data Analyst, Data Scientist, Data Engineer, ML Engineer, BI Developer]. Return only the standardized title. Input: 'Sr. Analytics Engineer'\"*\n\nThis approach handles infinite variations without writing explicit rules.\n\n### Automated Data Quality Monitoring\n\nTools like **Great Expectations** and **dbt tests** can be augmented with ML to detect:\n- Statistical drift in feature distributions\n- Unexpected correlations appearing in new data\n- Schema changes from upstream sources\n\n> **Best Practice**: Build a data quality scorecard with AI-monitored metrics. Treat data quality as a living system, not a one-time cleaning task."
+        },
+        {
+          "id": "m2-l2",
+          "type": "lesson",
+          "title": "Automated Feature Engineering",
+          "duration": "10 min",
+          "content": "## Automated Feature Engineering\n\nFeature engineering — transforming raw data into informative inputs for ML models — is both an art and a science. AI tools are increasingly automating the most tedious aspects while enabling analysts to focus on domain-driven feature creation.\n\n### Why Feature Engineering Matters\n\nRaw data rarely speaks directly to the patterns you want to model. Consider a customer dataset with a `signup_date` column. The raw date is less informative than derived features like:\n- Days since signup\n- Day of week signed up (weekday vs. weekend)\n- Month of signup (seasonal effects)\n- Whether signup occurred during a promotion period\n\nThis transformation from raw data to informative features is feature engineering.\n\n### Automated Feature Engineering Tools\n\n**Featuretools** is the leading open-source library for automated feature engineering:\n\n```python\nimport featuretools as ft\n\n# Define entity set (relational data structure)\nes = ft.EntitySet(id=\"customer_data\")\nes = es.add_dataframe(\n    dataframe_name=\"customers\",\n    dataframe=customers_df,\n    index=\"customer_id\",\n    time_index=\"signup_date\"\n)\nes = es.add_dataframe(\n    dataframe_name=\"transactions\",\n    dataframe=transactions_df,\n    index=\"transaction_id\",\n    time_index=\"transaction_date\"\n)\n\n# Add relationship between tables\nes = es.add_relationship(\"customers\", \"customer_id\", \n                          \"transactions\", \"customer_id\")\n\n# Automatically generate hundreds of features\nfeature_matrix, feature_defs = ft.dfs(\n    entityset=es,\n    target_dataframe_name=\"customers\",\n    agg_primitives=[\"mean\", \"sum\", \"count\", \"max\", \"min\", \"std\"],\n    trans_primitives=[\"month\", \"weekday\", \"time_since_previous\"]\n)\n```\n\nThis single call can generate hundreds of statistically meaningful features from relational data.\n\n### Feature Selection with AI\n\nGenerating many features is only half the battle — selecting the most predictive ones is equally important. AI-based selection methods:\n\n| Method | Approach | Best For |\n|---|---|---|\n| **SHAP Values** | Measures each feature's contribution to model predictions | Understanding feature importance in tree models |\n| **Recursive Feature Elimination** | Iteratively removes least important features | Linear models |\n| **Mutual Information** | Measures statistical dependency between features and target | Mixed data types |\n| **Boruta Algorithm** | Shadow feature comparison | Robust selection for complex datasets |\n\n### Text Feature Engineering\n\nFor datasets with text columns, NLP-based feature engineering extracts rich signals:\n\n```python\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sentence_transformers import SentenceTransformer\n\n# TF-IDF for keyword frequency features\ntfidf = TfidfVectorizer(max_features=500, ngram_range=(1,2))\ntext_features = tfidf.fit_transform(df['customer_reviews'])\n\n# Semantic embeddings for meaning-based features\nmodel = SentenceTransformer('all-MiniLM-L6-v2')\nembeddings = model.encode(df['customer_reviews'].tolist())\n# Each review becomes a 384-dimensional feature vector\n```\n\n### Temporal Feature Engineering\n\nTime-series data benefits enormously from AI-assisted feature extraction:\n\n- **Rolling statistics**: 7-day, 30-day, 90-day moving averages and standard deviations\n- **Lag features**: Values from N periods ago\n- **Fourier features**: Capture cyclical patterns (daily, weekly, yearly)\n- **Change point detection**: Flag structural breaks in time series\n\n> **Key Principle**: The best features combine domain knowledge with automated discovery. Use tools like Featuretools to generate candidates, then apply domain expertise to select and interpret the most meaningful ones."
+        },
+        {
+          "id": "m2-l3",
+          "type": "example",
+          "title": "Example: Cleaning Messy Customer Data with AI",
+          "duration": "7 min",
+          "content": "## Example: Cleaning Messy Customer Data with AI\n\n### The Dataset\n\nA financial services company had a CRM database with 500,000 customer records accumulated over 15 years. The data suffered from:\n- 23% missing income values\n- 8,400 suspected duplicate records (same customer, different IDs)\n- 47 different formats for phone numbers\n- Inconsistent job title entries (3,200+ unique values)\n- Outliers in transaction amounts\n\n### Step 1: Profiling the Data\n\nBefore cleaning, they used **ydata-profiling** (formerly pandas-profiling) to generate an automated data quality report:\n\n```python\nfrom ydata_profiling import ProfileReport\nimport pandas as pd\n\ndf = pd.read_csv('customers.csv')\nprofile = ProfileReport(df, title=\"Customer Data Quality Report\", \n                        explorative=True)\nprofile.to_file(\"data_quality_report.html\")\n```\n\nThe report revealed correlations between missing income and other fields — critical for choosing the right imputation strategy.\n\n### Step 2: ML-Based Income Imputation\n\nIncome was not missing at random — it correlated with age, education, and occupation. MICE imputation preserved these relationships:\n\n```python\nfrom sklearn.experimental import enable_iterative_imputer\nfrom sklearn.impute import IterativeImputer\nfrom sklearn.ensemble import RandomForestRegressor\n\n# Use Random Forest as the imputation estimator\nimputer = IterativeImputer(\n    estimator=RandomForestRegressor(n_estimators=50, random_state=42),\n    max_iter=5,\n    random_state=42\n)\n\nfeatures = ['age', 'education_level', 'occupation_code', \n            'region', 'account_tenure_years']\ndf[features + ['income']] = imputer.fit_transform(\n    df[features + ['income']]\n)\n```\n\n**Result**: Imputed values had a mean absolute error of $4,200 vs. $18,700 for simple median imputation — a 77% improvement in accuracy.\n\n### Step 3: Embedding-Based Duplicate Detection\n\n```python\nfrom sentence_transformers import SentenceTransformer\nfrom sklearn.metrics.pairwise import cosine_similarity\nimport numpy as np\n\nmodel = SentenceTransformer('all-MiniLM-L6-v2')\n\n# Create composite key for each record\ndf['composite_key'] = (df['first_name'] + ' ' + df['last_name'] + \n                       ' ' + df['email'].fillna('') + \n                       ' ' + df['phone'].fillna(''))\n\nembeddings = model.encode(df['composite_key'].tolist(), \n                          batch_size=256, show_progress_bar=True)\n\n# Find pairs with similarity > 0.92\nsimilarity_matrix = cosine_similarity(embeddings)\nduplicate_pairs = np.argwhere(\n    (similarity_matrix > 0.92) & (similarity_matrix < 1.0)\n)\n```\n\n**Result**: Identified 7,891 duplicate pairs (94% precision, 97% recall vs. manual review).\n\n### Step 4: LLM-Based Job Title Standardization\n\nUsing a local LLM (Ollama with Llama 3), they standardized 3,200+ job title variants to 45 canonical categories in a batch process — a task that would have taken weeks manually.\n\n### Final Results\n\n| Issue | Records Affected | Resolution Rate |\n|---|---|---|\n| Missing income | 115,000 | 100% (ML imputation) |\n| Duplicates | 7,891 pairs | 94% precision detected |\n| Phone format | 500,000 | 100% (regex + LLM) |\n| Job titles | 3,200 variants | 100% → 45 categories |\n| Outliers | 2,340 | 100% flagged, 89% resolved |\n\n**Time saved**: 6 weeks of manual cleaning reduced to 3 days of AI-assisted processing."
+        },
+        {
+          "id": "m2-l4",
+          "type": "case-study",
+          "title": "Case Study: Airbnb's Data Quality at Scale",
+          "duration": "7 min",
+          "content": "## Case Study: Airbnb's Data Quality at Scale\n\n### Background\n\nAirbnb operates a two-sided marketplace with over 7 million listings across 220+ countries. Their analytics infrastructure processes billions of events daily. Maintaining data quality at this scale required moving beyond manual processes to AI-driven automation.\n\n### The Challenge\n\nAirbnb's data team faced three core challenges:\n\n1. **Schema drift**: Upstream services constantly changed data structures, breaking downstream analytics\n2. **Semantic inconsistency**: The same concept (e.g., \"booking\") meant different things in different systems\n3. **Silent data failures**: Pipelines would complete successfully but produce subtly wrong results\n\n### Solution: Minerva — AI-Powered Data Quality Framework\n\nAirbnb built **Minerva**, an internal data platform with embedded AI quality monitoring:\n\n**Automated Anomaly Detection**\nMinerva uses statistical models to establish baselines for every metric and alert when values deviate significantly:\n- Time-series models detect sudden drops or spikes in key metrics\n- Correlation monitoring flags when relationships between metrics break unexpectedly\n- Volume monitoring detects when tables receive unusually high or low row counts\n\n**Semantic Layer with ML Validation**\nA centralized semantic layer defines what every metric means, with ML models that:\n- Automatically detect when a metric's distribution shifts\n- Identify which upstream data source caused the shift\n- Estimate the downstream impact on dashboards and reports\n\n**Root Cause Analysis Automation**\nWhen a data quality issue is detected, Minerva automatically:\n1. Traces the lineage of the affected metric\n2. Identifies the earliest point of failure in the pipeline\n3. Estimates which dashboards and reports are affected\n4. Generates a plain-English incident summary for the data team\n\n### Feature Engineering for Trust & Safety\n\nAirbnb's Trust & Safety team uses AI-engineered features to detect fraudulent listings:\n\n- **Text embedding features**: Listing descriptions encoded as semantic vectors to detect copy-paste fraud\n- **Image similarity features**: Computer vision to identify duplicate or misleading photos\n- **Behavioral sequence features**: Host/guest interaction patterns encoded as time-series features\n- **Graph features**: Network analysis of connections between accounts\n\n### Results\n\n| Metric | Before Minerva | After Minerva |\n|---|---|---|\n| Mean time to detect data issue | 4.2 hours | 12 minutes |\n| False positive alert rate | N/A (manual) | < 5% |\n| Data incidents per quarter | 47 | 11 |\n| Analyst time on data firefighting | 30% of time | 8% of time |\n\n### Lessons for Analytics Teams\n\n1. **Invest in data observability early**: The cost of bad data compounds over time.\n2. **Automate the boring parts**: AI excels at monitoring routine quality checks 24/7.\n3. **Build a semantic layer**: Consistent definitions prevent the \"different numbers from different teams\" problem.\n4. **Root cause analysis is high-value**: Getting to *why* data is wrong is more valuable than just knowing *that* it's wrong."
+        },
+        {
+          "id": "m2-q1",
+          "type": "quiz",
+          "title": "Knowledge Check: Module 2",
+          "duration": "5 min",
+          "content": "Test your understanding of AI-assisted data preparation and feature engineering.",
+          "questions": [
+            {
+              "id": "m2-q1-1",
+              "question": "What is the key advantage of MICE (Multiple Imputation by Chained Equations) over simple mean imputation?",
+              "options": [
+                "It is faster to compute",
+                "It preserves relationships between variables when imputing missing values",
+                "It works only with categorical variables",
+                "It requires no training data"
+              ],
+              "correctIndex": 1,
+              "explanation": "MICE treats each feature with missing values as a dependent variable and uses all other features to predict it, preserving the statistical relationships between variables. Simple mean imputation ignores these relationships, leading to biased estimates when missingness is not random."
+            },
+            {
+              "id": "m2-q1-2",
+              "question": "Which library is primarily used for automated feature engineering from relational data?",
+              "options": [
+                "scikit-learn",
+                "Featuretools",
+                "pandas",
+                "SHAP"
+              ],
+              "correctIndex": 1,
+              "explanation": "Featuretools is the leading open-source library for automated feature engineering, particularly for relational data. It uses Deep Feature Synthesis (DFS) to automatically generate hundreds of features from multiple related tables."
+            },
+            {
+              "id": "m2-q1-3",
+              "question": "In the Airbnb case study, what was the primary purpose of their Minerva platform?",
+              "options": [
+                "To generate marketing content using AI",
+                "To automate data quality monitoring and root cause analysis",
+                "To build recommendation systems for listings",
+                "To process payment transactions"
+              ],
+              "correctIndex": 1,
+              "explanation": "Minerva is Airbnb's AI-powered data quality framework that automates anomaly detection, provides a semantic layer with ML validation, and performs root cause analysis when data quality issues are detected — reducing mean time to detect issues from 4.2 hours to 12 minutes."
+            },
+            {
+              "id": "m2-q1-4",
+              "question": "What is the primary use of SHAP values in feature engineering?",
+              "options": [
+                "Generating new features from existing ones",
+                "Imputing missing values in the dataset",
+                "Measuring each feature's contribution to model predictions",
+                "Standardizing text data formats"
+              ],
+              "correctIndex": 2,
+              "explanation": "SHAP (SHapley Additive exPlanations) values measure each feature's contribution to individual model predictions, providing both global feature importance rankings and local explanations for specific predictions. This makes them valuable for feature selection and model interpretability."
+            },
+            {
+              "id": "m2-q1-5",
+              "question": "What is 'data leakage' during feature engineering, and how is it prevented?",
+              "options": [
+                "When raw data files are accidentally deleted; prevented by backups",
+                "When statistics from the test set influence feature transformations; prevented by fitting transformers on training data only",
+                "When too many features are created; prevented by dimensionality reduction",
+                "When feature names contain special characters; prevented by renaming columns"
+              ],
+              "correctIndex": 1,
+              "explanation": "Data leakage in feature engineering occurs when information from the test set (or future data) is used to compute feature transformations like scaling or encoding. This inflates evaluation metrics. Prevention requires a strict pipeline: split data first, then fit all transformers (scalers, encoders, imputers) on training data only, and apply (transform) them to test data."
+            },
+            {
+              "id": "m2-q1-6",
+              "question": "What does Deep Feature Synthesis (DFS) in Featuretools do?",
+              "options": [
+                "It trains deep neural networks on tabular data",
+                "It automatically generates aggregate and transform features from relational tables using stacked primitives",
+                "It removes correlated features from the dataset",
+                "It synthesizes new training samples to balance class distributions"
+              ],
+              "correctIndex": 1,
+              "explanation": "Deep Feature Synthesis (DFS) is Featuretools' core algorithm. It traverses relationships between tables and applies stacked aggregation and transformation primitives (e.g., MEAN of SUM of transactions per customer) to automatically generate hundreds of features. The 'depth' refers to how many layers of primitives are stacked."
+            },
+            {
+              "id": "m2-q1-7",
+              "question": "Which approach is most appropriate for detecting anomalies in high-dimensional, unlabeled data?",
+              "options": [
+                "Logistic regression with a threshold of 0.5",
+                "Isolation Forest or Autoencoder-based anomaly detection",
+                "K-means clustering with k=2",
+                "Linear regression residual analysis"
+              ],
+              "correctIndex": 1,
+              "explanation": "Isolation Forest and Autoencoders are the preferred methods for unsupervised anomaly detection in high-dimensional data. Isolation Forest isolates anomalies by randomly partitioning features (anomalies require fewer splits). Autoencoders detect anomalies by measuring reconstruction error — normal patterns reconstruct well, while anomalies produce high reconstruction error."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "number": 3,
+      "title": "Predictive Analytics & Machine Learning",
+      "description": "Build, evaluate, and deploy predictive models that drive real business decisions.",
+      "icon": "TrendingUp",
+      "color": "violet",
+      "lessons": [
+        {
+          "id": "m3-l1",
+          "type": "lesson",
+          "title": "Building Your First Predictive Model",
+          "duration": "12 min",
+          "content": "## Building Your First Predictive Model\n\nPredictive analytics uses historical data to forecast future outcomes. This lesson walks through the complete workflow for building a production-quality predictive model.\n\n### The ML Workflow\n\nEvery ML project follows a structured process:\n\n1. **Define the problem** — What are you predicting? What is the business value?\n2. **Collect and explore data** — Understand distributions, correlations, and quality\n3. **Prepare features** — Clean, transform, and engineer features\n4. **Select and train models** — Choose algorithms and fit them to training data\n5. **Evaluate performance** — Measure accuracy on held-out test data\n6. **Deploy and monitor** — Serve predictions and track model drift\n\n### Choosing the Right Algorithm\n\n| Problem Type | Recommended Algorithms | When to Use |\n|---|---|---|\n| Binary classification | Logistic Regression, XGBoost, LightGBM | Churn, fraud, default prediction |\n| Multi-class classification | Random Forest, Neural Networks | Category assignment, sentiment |\n| Regression | XGBoost, Linear Regression, Neural Networks | Price, demand, revenue forecasting |\n| Time series | Prophet, LSTM, ARIMA | Sales forecasting, capacity planning |\n| Clustering | K-Means, DBSCAN, Gaussian Mixture | Customer segmentation |\n| Anomaly detection | Isolation Forest, Autoencoder | Fraud, equipment failure |\n\n### A Complete Classification Example\n\n```python\nimport pandas as pd\nimport numpy as np\nfrom sklearn.model_selection import train_test_split, cross_val_score\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.pipeline import Pipeline\nfrom xgboost import XGBClassifier\nfrom sklearn.metrics import classification_report, roc_auc_score\n\n# Load and split data\ndf = pd.read_csv('customer_churn.csv')\nX = df.drop('churned', axis=1)\ny = df['churned']\n\nX_train, X_test, y_train, y_test = train_test_split(\n    X, y, test_size=0.2, random_state=42, stratify=y\n)\n\n# Build pipeline (prevents data leakage)\npipeline = Pipeline([\n    ('scaler', StandardScaler()),\n    ('model', XGBClassifier(\n        n_estimators=300,\n        learning_rate=0.05,\n        max_depth=6,\n        subsample=0.8,\n        random_state=42,\n        eval_metric='logloss'\n    ))\n])\n\n# Train with cross-validation\ncv_scores = cross_val_score(pipeline, X_train, y_train, \n                             cv=5, scoring='roc_auc')\nprint(f\"CV AUC: {cv_scores.mean():.3f} ± {cv_scores.std():.3f}\")\n\n# Final evaluation on test set\npipeline.fit(X_train, y_train)\ny_pred = pipeline.predict(X_test)\ny_prob = pipeline.predict_proba(X_test)[:, 1]\n\nprint(classification_report(y_test, y_pred))\nprint(f\"Test AUC-ROC: {roc_auc_score(y_test, y_prob):.3f}\")\n```\n\n### Model Evaluation Metrics\n\nChoosing the right metric depends on the business context:\n\n| Metric | Formula | Use When |\n|---|---|---|\n| **Accuracy** | Correct / Total | Balanced classes, equal error costs |\n| **Precision** | TP / (TP + FP) | False positives are costly (spam filter) |\n| **Recall** | TP / (TP + FN) | False negatives are costly (disease detection) |\n| **F1 Score** | 2 × (P × R) / (P + R) | Imbalanced classes |\n| **AUC-ROC** | Area under ROC curve | Ranking quality, threshold-independent |\n| **RMSE** | √(mean squared errors) | Regression, penalizes large errors |\n| **MAE** | Mean absolute error | Regression, robust to outliers |\n\n### Avoiding Common Pitfalls\n\n**Data Leakage**: Using future information to predict the past. Always split data *before* any preprocessing.\n\n**Overfitting**: Model memorizes training data but fails on new data. Use cross-validation, regularization, and early stopping.\n\n**Class Imbalance**: When one class is rare (e.g., 1% fraud rate), accuracy is misleading. Use SMOTE, class weights, or threshold tuning.\n\n> **Golden Rule**: A model is only as good as the decisions it enables. Always connect model performance metrics to business impact — a 2% improvement in AUC might mean $5M in prevented fraud."
+        },
+        {
+          "id": "m3-l2",
+          "type": "lesson",
+          "title": "Model Interpretability & Explainable AI",
+          "duration": "10 min",
+          "content": "## Model Interpretability & Explainable AI\n\nAs AI models become more powerful, they also become more complex and harder to explain. Explainable AI (XAI) bridges the gap between predictive power and human understanding — a critical requirement for regulated industries and trust-building.\n\n### Why Interpretability Matters\n\n- **Regulatory compliance**: GDPR requires explanations for automated decisions; financial regulations require model documentation\n- **Trust**: Stakeholders are more likely to act on recommendations they understand\n- **Debugging**: Understanding model behavior helps identify and fix errors\n- **Fairness**: Detecting and mitigating bias requires understanding what drives predictions\n\n### The Interpretability Spectrum\n\n| Approach | Complexity | Interpretability | Examples |\n|---|---|---|---|\n| Linear Regression | Low | High (coefficients) | Baseline models |\n| Decision Trees | Medium | High (visual rules) | Simple classification |\n| Random Forest | High | Medium (feature importance) | General purpose |\n| XGBoost/LightGBM | High | Medium (SHAP) | Competitions, production |\n| Neural Networks | Very High | Low (black box) | Complex patterns |\n\n### SHAP: The Gold Standard for Explainability\n\nSHAP (SHapley Additive exPlanations) provides consistent, theoretically grounded explanations for any ML model:\n\n```python\nimport shap\nimport matplotlib.pyplot as plt\n\n# Create SHAP explainer\nexplainer = shap.TreeExplainer(pipeline.named_steps['model'])\nshap_values = explainer.shap_values(X_test)\n\n# Global feature importance\nshap.summary_plot(shap_values, X_test, plot_type=\"bar\")\n\n# Individual prediction explanation\nshap.waterfall_plot(\n    shap.Explanation(\n        values=shap_values[0],\n        base_values=explainer.expected_value,\n        data=X_test.iloc[0],\n        feature_names=X_test.columns.tolist()\n    )\n)\n```\n\n**Reading a SHAP waterfall plot:**\n- Each bar shows how much a feature pushed the prediction above or below the baseline\n- Red bars increase the predicted probability; blue bars decrease it\n- The sum of all SHAP values equals the difference between the prediction and the baseline\n\n### LIME for Local Explanations\n\nLIME (Local Interpretable Model-agnostic Explanations) explains individual predictions by fitting a simple linear model around a specific data point:\n\n```python\nfrom lime.lime_tabular import LimeTabularExplainer\n\nexplainer = LimeTabularExplainer(\n    X_train.values,\n    feature_names=X_train.columns.tolist(),\n    class_names=['Not Churned', 'Churned'],\n    mode='classification'\n)\n\n# Explain a specific prediction\nexplanation = explainer.explain_instance(\n    X_test.iloc[42].values,\n    pipeline.predict_proba,\n    num_features=10\n)\nexplanation.show_in_notebook()\n```\n\n### Communicating Model Explanations\n\nFor non-technical stakeholders, translate SHAP outputs into business language:\n\n> *\"This customer has a 78% probability of churning in the next 30 days. The three strongest risk factors are: (1) no login in 45 days (+23% risk), (2) last support ticket unresolved for 12 days (+18% risk), and (3) contract renewal due in 15 days (+14% risk). Recommended action: Priority outreach from account manager.\"*\n\nThis narrative approach, generated by combining SHAP values with LLM text generation, makes AI predictions actionable for business users.\n\n> **Key Principle**: Explainability is not a feature to add at the end — it should be designed into the model development process from the start, especially in high-stakes domains like healthcare, finance, and HR."
+        },
+        {
+          "id": "m3-l3",
+          "type": "example",
+          "title": "Example: Customer Churn Prediction Pipeline",
+          "duration": "8 min",
+          "content": "## Example: Customer Churn Prediction Pipeline\n\n### Business Context\n\nA SaaS company with 50,000 subscribers was losing 4.2% of customers monthly — above the industry average of 2.5%. The analytics team was tasked with building a churn prediction system to enable proactive retention.\n\n### Data Available\n\n- **Customer profile**: Subscription tier, company size, industry, tenure\n- **Product usage**: Daily active users, feature adoption, session frequency\n- **Support history**: Ticket count, resolution time, sentiment scores\n- **Billing**: Payment history, invoice disputes, plan changes\n- **Engagement**: Email open rates, webinar attendance, NPS scores\n\n### Model Development\n\n**Target variable**: Churned within 30 days (binary: 0/1)\n**Training data**: 24 months of historical data, 42,000 customers\n**Class balance**: 8.7% churn rate (imbalanced)\n\n```python\nimport pandas as pd\nimport numpy as np\nfrom sklearn.model_selection import StratifiedKFold\nfrom sklearn.preprocessing import LabelEncoder\nfrom imblearn.over_sampling import SMOTE\nfrom lightgbm import LGBMClassifier\nimport shap\n\n# Handle class imbalance with SMOTE\nsmote = SMOTE(sampling_strategy=0.3, random_state=42)\nX_resampled, y_resampled = smote.fit_resample(X_train, y_train)\n\n# LightGBM model (fast, handles mixed data types well)\nmodel = LGBMClassifier(\n    n_estimators=500,\n    learning_rate=0.03,\n    num_leaves=31,\n    class_weight='balanced',\n    random_state=42\n)\n\n# Stratified K-Fold to preserve class balance\nskf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)\ncv_aucs = []\n\nfor fold, (train_idx, val_idx) in enumerate(skf.split(X_resampled, y_resampled)):\n    X_fold_train = X_resampled.iloc[train_idx]\n    y_fold_train = y_resampled.iloc[train_idx]\n    X_fold_val = X_resampled.iloc[val_idx]\n    y_fold_val = y_resampled.iloc[val_idx]\n    \n    model.fit(X_fold_train, y_fold_train,\n              eval_set=[(X_fold_val, y_fold_val)],\n              callbacks=[lgb.early_stopping(50, verbose=False)])\n    \n    val_auc = roc_auc_score(y_fold_val, \n                             model.predict_proba(X_fold_val)[:, 1])\n    cv_aucs.append(val_auc)\n    print(f\"Fold {fold+1} AUC: {val_auc:.4f}\")\n\nprint(f\"Mean CV AUC: {np.mean(cv_aucs):.4f} ± {np.std(cv_aucs):.4f}\")\n# Output: Mean CV AUC: 0.8847 ± 0.0123\n```\n\n### Top Predictive Features (SHAP Analysis)\n\n| Rank | Feature | SHAP Importance | Business Interpretation |\n|---|---|---|---|\n| 1 | Days since last login | 0.342 | Disengagement signal |\n| 2 | Support tickets (last 30d) | 0.287 | Frustration indicator |\n| 3 | Feature adoption score | 0.241 | Value realization |\n| 4 | Days to contract renewal | 0.198 | Decision window |\n| 5 | NPS score (last survey) | 0.176 | Satisfaction signal |\n| 6 | Monthly active users trend | 0.154 | Usage trajectory |\n\n### Deployment & Business Impact\n\nThe model was deployed as a daily batch job, scoring all active customers each morning. A risk-tiered intervention system was built:\n\n| Risk Tier | Churn Probability | Intervention |\n|---|---|---|\n| Critical | > 75% | VP-level outreach within 24 hours |\n| High | 50–75% | Account manager call within 48 hours |\n| Medium | 25–50% | Automated email sequence + feature tips |\n| Low | < 25% | Standard engagement program |\n\n**Results after 6 months:**\n- Monthly churn rate reduced from 4.2% to 2.8% (33% reduction)\n- $2.3M in annual recurring revenue retained\n- Customer Success team efficiency improved 40% (focused on highest-risk accounts)\n- Model AUC maintained at 0.87 with monthly retraining"
+        },
+        {
+          "id": "m3-l4",
+          "type": "case-study",
+          "title": "Case Study: UPS ORION — AI Route Optimization",
+          "duration": "8 min",
+          "content": "## Case Study: UPS ORION — AI Route Optimization\n\n### Background\n\nUPS delivers over 21 million packages daily across 220 countries. With a fleet of 100,000+ vehicles, even small improvements in route efficiency translate to massive cost savings and environmental benefits. ORION (On-Road Integrated Optimization and Navigation) is UPS's AI-powered route optimization system, representing one of the largest applications of operations research and machine learning in logistics.\n\n### The Analytics Challenge\n\nTraditional route planning used simple heuristics: deliver in geographic clusters, minimize backtracking, prioritize time-sensitive deliveries. This approach left significant efficiency gains on the table because it couldn't simultaneously optimize for:\n- Fuel consumption\n- Driver hours\n- Customer time windows\n- Package priority levels\n- Traffic patterns\n- Vehicle capacity constraints\n\n### The AI Solution\n\nORION uses a combination of machine learning and operations research techniques:\n\n**Predictive Traffic Modeling**\nHistorical GPS data from 100,000+ vehicles, combined with real-time traffic feeds, trains ML models that predict travel times between any two points at any time of day with high accuracy.\n\n**Dynamic Route Optimization**\nA constraint satisfaction solver optimizes routes considering:\n- 200+ variables per delivery stop\n- Hard constraints (time windows, vehicle capacity)\n- Soft constraints (driver familiarity with area, fuel efficiency)\n- Real-time updates (new packages, traffic incidents)\n\n**Predictive Analytics for Planning**\nML models forecast:\n- Package volume by region and day (for fleet sizing)\n- Delivery attempt failure probability (to schedule re-delivery proactively)\n- Vehicle maintenance needs (predictive maintenance)\n\n### Data Infrastructure\n\nORION processes:\n- 250 million address records\n- GPS telemetry from 100,000+ vehicles (updated every 5 minutes)\n- Real-time traffic data from multiple providers\n- Historical delivery success/failure data\n- Weather data correlated with delivery patterns\n\n### Results\n\n| Metric | Impact |\n|---|---|\n| Miles saved per driver per day | 6–8 miles |\n| Annual fuel savings | $300–400 million |\n| Annual CO₂ reduction | 100,000+ metric tons |\n| Delivery efficiency improvement | ~100 million fewer miles driven per year |\n| Package delivery success rate | Improved by 3-5% |\n\n> *\"ORION is the largest deployment of operations research technology in history.\"* — Jack Levis, UPS Director of Process Management\n\n### Lessons for Analytics Practitioners\n\n1. **Scale amplifies value**: A 1% efficiency gain means nothing for a single driver but $300M for a fleet of 100,000.\n2. **Domain expertise is irreplaceable**: ORION required deep logistics expertise to define the right constraints and objectives.\n3. **Real-time data changes the game**: Static optimization is far less valuable than dynamic, real-time adjustment.\n4. **Hybrid approaches win**: ORION combines ML (prediction) with operations research (optimization) — neither alone would achieve the same results.\n5. **Change management matters**: Rolling out AI tools to 100,000 drivers required extensive training and trust-building."
+        },
+        {
+          "id": "m3-q1",
+          "type": "quiz",
+          "title": "Knowledge Check: Module 3",
+          "duration": "5 min",
+          "content": "Test your understanding of predictive analytics and machine learning.",
+          "questions": [
+            {
+              "id": "m3-q1-1",
+              "question": "What is data leakage in machine learning, and how is it prevented?",
+              "options": [
+                "When training data is accidentally deleted; prevented by backups",
+                "When future information is used to predict the past; prevented by splitting data before preprocessing",
+                "When model weights are exposed publicly; prevented by encryption",
+                "When too many features are used; prevented by feature selection"
+              ],
+              "correctIndex": 1,
+              "explanation": "Data leakage occurs when information from outside the training dataset is used to create the model — most commonly when preprocessing (scaling, imputation) is applied before the train/test split, allowing test data statistics to 'leak' into the training process. Prevention requires splitting data first, then fitting all preprocessing on training data only."
+            },
+            {
+              "id": "m3-q1-2",
+              "question": "When should you prioritize Recall over Precision as your primary evaluation metric?",
+              "options": [
+                "When false positives are more costly than false negatives",
+                "When false negatives are more costly than false positives",
+                "When the dataset is perfectly balanced",
+                "When using regression models"
+              ],
+              "correctIndex": 1,
+              "explanation": "Recall (sensitivity) measures how many actual positives are correctly identified. It should be prioritized when false negatives are costly — for example, in cancer screening (missing a real case is worse than a false alarm) or fraud detection (missing fraud is worse than investigating a legitimate transaction)."
+            },
+            {
+              "id": "m3-q1-3",
+              "question": "What does a SHAP waterfall plot show?",
+              "options": [
+                "The overall accuracy of the model across all test samples",
+                "How each feature pushed an individual prediction above or below the baseline",
+                "The correlation between features in the training dataset",
+                "The learning curve of the model during training"
+              ],
+              "correctIndex": 1,
+              "explanation": "A SHAP waterfall plot explains a single prediction by showing how each feature contributed to moving the prediction from the baseline (average prediction) to the final output. Red bars increase the prediction; blue bars decrease it. The sum of all SHAP values equals the difference between the prediction and baseline."
+            },
+            {
+              "id": "m3-q1-4",
+              "question": "In the UPS ORION case study, what combination of techniques was used for route optimization?",
+              "options": [
+                "Deep learning and computer vision",
+                "Natural language processing and sentiment analysis",
+                "Machine learning for prediction combined with operations research for optimization",
+                "Clustering and dimensionality reduction"
+              ],
+              "correctIndex": 2,
+              "explanation": "ORION uses a hybrid approach: ML models predict travel times and package volumes (the prediction problem), while operations research / constraint satisfaction solvers optimize routes given those predictions and business constraints (the optimization problem). This hybrid approach outperforms either technique alone."
+            },
+            {
+              "id": "m3-q1-5",
+              "question": "What is the primary purpose of stratified k-fold cross-validation?",
+              "options": [
+                "To speed up model training by using smaller subsets of data",
+                "To ensure each fold has the same class distribution as the overall dataset, preventing biased evaluation on imbalanced data",
+                "To test the model on data from different time periods",
+                "To reduce the number of features used in each fold"
+              ],
+              "correctIndex": 1,
+              "explanation": "Stratified k-fold cross-validation ensures each fold preserves the original class distribution. This is critical for imbalanced datasets — without stratification, some folds might contain very few (or zero) examples of the minority class, leading to misleading evaluation metrics that don't reflect real-world performance."
+            },
+            {
+              "id": "m3-q1-6",
+              "question": "What does the AUC-ROC metric measure, and why is it preferred over accuracy for imbalanced datasets?",
+              "options": [
+                "The average prediction time; preferred because speed matters more than accuracy",
+                "The area under the precision-recall curve; preferred because it focuses on the majority class",
+                "The model's ability to discriminate between classes across all classification thresholds; preferred because it is threshold-independent and unaffected by class imbalance",
+                "The number of features used; preferred because simpler models generalize better"
+              ],
+              "correctIndex": 2,
+              "explanation": "AUC-ROC measures the model's discriminative ability across all possible classification thresholds. A model that predicts the majority class for every sample gets 100% accuracy on a 95/5 imbalanced dataset but an AUC of 0.5 (random). AUC-ROC is threshold-independent and gives equal weight to both classes, making it the standard metric for imbalanced classification."
+            },
+            {
+              "id": "m3-q1-7",
+              "question": "What is the difference between bagging and boosting ensemble methods?",
+              "options": [
+                "Bagging uses decision trees; boosting uses neural networks",
+                "Bagging trains models in parallel on random subsets to reduce variance; boosting trains models sequentially where each corrects the errors of the previous, reducing bias",
+                "Bagging is for regression; boosting is for classification",
+                "Bagging requires more data; boosting works with small datasets"
+              ],
+              "correctIndex": 1,
+              "explanation": "Bagging (Bootstrap Aggregating) trains multiple models in parallel on random data subsets and averages their predictions — Random Forest is the classic example. It reduces variance (overfitting). Boosting trains models sequentially, with each model focusing on the errors of the previous one — XGBoost and LightGBM are examples. It reduces bias (underfitting). Both approaches improve over single models."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "number": 4,
+      "title": "NLP & Unstructured Data Analytics",
+      "description": "Unlock insights from text, documents, and other unstructured data sources using modern NLP techniques.",
+      "icon": "MessageSquare",
+      "color": "amber",
+      "lessons": [
+        {
+          "id": "m4-l1",
+          "type": "lesson",
+          "title": "Text Analytics Fundamentals",
+          "duration": "9 min",
+          "content": "## Text Analytics Fundamentals\n\nUnstructured data — text, images, audio, video — accounts for approximately 80% of all enterprise data, yet most analytics teams analyze only the structured 20%. NLP (Natural Language Processing) unlocks this vast, underutilized resource.\n\n### The NLP Pipeline\n\nEvery text analytics project follows a similar pipeline:\n\n```\nRaw Text → Preprocessing → Feature Extraction → Modeling → Insights\n```\n\n**Preprocessing Steps:**\n1. **Tokenization**: Split text into words or subwords\n2. **Lowercasing**: Normalize case\n3. **Stop word removal**: Remove common words (the, is, at) that carry little meaning\n4. **Stemming/Lemmatization**: Reduce words to their root form (running → run)\n5. **Special character handling**: Remove or encode punctuation, numbers, URLs\n\n### Modern Text Representations\n\nThe evolution of text representation has driven most NLP progress:\n\n| Era | Representation | Example | Limitation |\n|---|---|---|---|\n| 1990s | Bag of Words | Word frequency counts | Ignores word order and meaning |\n| 2000s | TF-IDF | Weighted word frequencies | Still no semantic understanding |\n| 2013 | Word2Vec | 300-dim word vectors | Word-level, no context |\n| 2018 | BERT | Contextual embeddings | Computationally expensive |\n| 2020+ | GPT-style LLMs | Full sentence/document understanding | Very large, expensive to fine-tune |\n\n### Sentiment Analysis\n\nSentiment analysis classifies text as positive, negative, or neutral — one of the most widely deployed NLP applications:\n\n```python\nfrom transformers import pipeline\n\n# Zero-shot sentiment analysis with a pre-trained model\nsentiment_analyzer = pipeline(\n    \"sentiment-analysis\",\n    model=\"distilbert-base-uncased-finetuned-sst-2-english\"\n)\n\nreviews = [\n    \"The product exceeded my expectations — absolutely love it!\",\n    \"Terrible customer service. Waited 3 weeks for a response.\",\n    \"It's okay, nothing special but does the job.\"\n]\n\nresults = sentiment_analyzer(reviews)\nfor review, result in zip(reviews, results):\n    print(f\"'{review[:50]}...' → {result['label']} ({result['score']:.2%})\")\n```\n\n### Topic Modeling\n\nTopic modeling discovers latent themes in large document collections without labeled data:\n\n```python\nfrom bertopic import BERTopic\nfrom sentence_transformers import SentenceTransformer\n\n# Load documents (e.g., 10,000 customer support tickets)\ndocs = df['ticket_description'].tolist()\n\n# BERTopic uses sentence transformers + clustering\ntopic_model = BERTopic(\n    embedding_model=\"all-MiniLM-L6-v2\",\n    nr_topics=\"auto\",\n    min_topic_size=20\n)\n\ntopics, probs = topic_model.fit_transform(docs)\n\n# View top topics\ntopic_model.get_topic_info().head(10)\n```\n\nBERTopic might discover topics like:\n- Topic 0: \"login, password, account, access, reset\" → Authentication issues\n- Topic 1: \"billing, charge, invoice, refund, payment\" → Billing disputes\n- Topic 2: \"slow, performance, loading, crash, error\" → Performance problems\n\n### Named Entity Recognition (NER)\n\nNER extracts structured information from unstructured text:\n\n```python\nimport spacy\n\nnlp = spacy.load(\"en_core_web_trf\")  # Transformer-based model\n\ntext = \"Apple CEO Tim Cook announced a $90 billion buyback program in Cupertino on May 2, 2024.\"\ndoc = nlp(text)\n\nfor ent in doc.ents:\n    print(f\"{ent.text:20} → {ent.label_:10} ({spacy.explain(ent.label_)})\")\n# Apple                → ORG        (Companies, agencies, institutions)\n# Tim Cook             → PERSON     (People, including fictional)\n# $90 billion          → MONEY      (Monetary values)\n# Cupertino            → GPE        (Countries, cities, states)\n# May 2, 2024          → DATE       (Absolute or relative dates)\n```\n\n> **Key Insight**: The shift from rule-based NLP to transformer-based models has made text analytics accessible to analysts without deep NLP expertise. Pre-trained models handle most common tasks out of the box."
+        },
+        {
+          "id": "m4-l2",
+          "type": "lesson",
+          "title": "LLMs for Analytics: Querying Data in Plain English",
+          "duration": "11 min",
+          "content": "## LLMs for Analytics: Querying Data in Plain English\n\nLarge Language Models have introduced a paradigm shift in how analysts interact with data. Instead of writing SQL or Python, analysts can now describe what they want in plain English and have AI generate the code — or answer directly.\n\n### Text-to-SQL: Natural Language Database Queries\n\nText-to-SQL converts natural language questions into executable SQL queries:\n\n**Example Interaction:**\n\n*User*: \"Show me the top 10 customers by revenue last quarter, broken down by product category, and flag any who haven't purchased in the last 30 days.\"\n\n*LLM-generated SQL:*\n```sql\nWITH quarterly_revenue AS (\n    SELECT \n        c.customer_id,\n        c.customer_name,\n        p.category,\n        SUM(o.order_amount) AS total_revenue,\n        MAX(o.order_date) AS last_purchase_date\n    FROM customers c\n    JOIN orders o ON c.customer_id = o.customer_id\n    JOIN products p ON o.product_id = p.product_id\n    WHERE o.order_date >= DATE_TRUNC('quarter', CURRENT_DATE - INTERVAL '3 months')\n      AND o.order_date < DATE_TRUNC('quarter', CURRENT_DATE)\n    GROUP BY c.customer_id, c.customer_name, p.category\n),\nranked_customers AS (\n    SELECT *,\n           RANK() OVER (ORDER BY total_revenue DESC) AS revenue_rank,\n           CASE WHEN last_purchase_date < CURRENT_DATE - INTERVAL '30 days' \n                THEN 'Inactive' ELSE 'Active' END AS activity_status\n    FROM quarterly_revenue\n)\nSELECT * FROM ranked_customers\nWHERE revenue_rank <= 10\nORDER BY total_revenue DESC;\n```\n\n### Retrieval-Augmented Analytics (RAA)\n\nRAA combines LLMs with your organization's data to answer complex analytical questions:\n\n```python\nfrom langchain.chat_models import ChatOpenAI\nfrom langchain.agents import create_sql_agent\nfrom langchain.sql_database import SQLDatabase\n\n# Connect to your data warehouse\ndb = SQLDatabase.from_uri(\"postgresql://user:pass@host/analytics_db\")\n\n# Create an AI agent that can query the database\nllm = ChatOpenAI(model=\"gpt-4o\", temperature=0)\nagent = create_sql_agent(llm=llm, db=db, verbose=True)\n\n# Ask questions in plain English\nresponse = agent.run(\n    \"What is the month-over-month growth rate for each product category \"\n    \"in the last 6 months, and which categories are accelerating vs. decelerating?\"\n)\nprint(response)\n```\n\n### AI-Powered Report Generation\n\nLLMs can transform raw data outputs into narrative reports:\n\n```python\nimport openai\nimport json\n\n# Your analytics results\nanalytics_data = {\n    \"period\": \"Q1 2024\",\n    \"revenue\": 4250000,\n    \"revenue_growth\": 0.127,\n    \"top_segment\": \"Enterprise\",\n    \"top_segment_growth\": 0.234,\n    \"churn_rate\": 0.028,\n    \"churn_change\": -0.006,\n    \"new_customers\": 847,\n    \"expansion_revenue\": 380000\n}\n\nprompt = f\"\"\"\nYou are a senior business analyst. Write a concise executive summary \n(3-4 paragraphs) for the following Q1 2024 performance data. \nHighlight key wins, areas of concern, and 2 strategic recommendations.\n\nData: {json.dumps(analytics_data, indent=2)}\n\"\"\"\n\nresponse = openai.chat.completions.create(\n    model=\"gpt-4o\",\n    messages=[{\"role\": \"user\", \"content\": prompt}],\n    temperature=0.3\n)\n\nprint(response.choices[0].message.content)\n```\n\n### Prompt Engineering for Analytics\n\nThe quality of LLM outputs depends heavily on prompt design. Key principles:\n\n| Principle | Poor Prompt | Better Prompt |\n|---|---|---|\n| **Specificity** | \"Analyze this data\" | \"Identify the top 3 factors driving the 15% revenue decline in Q3\" |\n| **Context** | \"Write SQL\" | \"Write PostgreSQL for a schema with tables: orders(id, date, amount, customer_id), customers(id, name, segment)\" |\n| **Format** | \"Summarize results\" | \"Summarize in 3 bullet points, each under 20 words, for a C-suite audience\" |\n| **Constraints** | \"Find anomalies\" | \"Find anomalies using 2-sigma threshold, exclude weekends, flag only if 3+ consecutive days\" |\n\n### Limitations and Guardrails\n\nLLMs are powerful but require careful oversight:\n\n- **Hallucination**: LLMs can generate plausible-sounding but incorrect SQL or statistics. Always validate outputs.\n- **Context limits**: Large datasets cannot be passed directly to LLMs — use retrieval or aggregation first.\n- **Consistency**: LLMs may give different answers to the same question. Use temperature=0 for analytical tasks.\n- **Security**: Never pass sensitive PII directly to external LLM APIs. Use anonymization or on-premise models.\n\n> **Best Practice**: Treat LLM-generated code and analysis as a first draft that requires human review, not a final answer. The analyst's critical thinking remains essential."
+        },
+        {
+          "id": "m4-l3",
+          "type": "example",
+          "title": "Example: Analyzing Customer Reviews at Scale",
+          "duration": "7 min",
+          "content": "## Example: Analyzing Customer Reviews at Scale\n\n### The Challenge\n\nAn e-commerce platform with 2 million products received 50,000+ customer reviews daily. The product team needed to:\n1. Identify product quality issues before they escalated\n2. Understand which product attributes drove satisfaction vs. dissatisfaction\n3. Prioritize which supplier relationships needed attention\n4. Generate automated responses to common complaints\n\nManual review was impossible. A keyword-search approach missed nuanced feedback.\n\n### The NLP Solution Architecture\n\n**Step 1: Aspect-Based Sentiment Analysis**\n\nRather than just positive/negative, they needed to know *what* customers liked or disliked:\n\n```python\nfrom transformers import pipeline\n\n# Fine-tuned model for aspect-based sentiment\nabsa_pipeline = pipeline(\n    \"text-classification\",\n    model=\"yangheng/deberta-v3-base-absa-v1.1\"\n)\n\nreview = \"The battery life is excellent but the camera quality is disappointing for the price.\"\n\n# Extract aspects and their sentiments\naspects = ['battery life', 'camera quality', 'price', 'display', 'build quality']\nresults = {}\n\nfor aspect in aspects:\n    result = absa_pipeline(f\"[CLS] {review} [SEP] {aspect} [SEP]\")\n    results[aspect] = result[0]\n\n# Output:\n# battery life: POSITIVE (0.97)\n# camera quality: NEGATIVE (0.89)  \n# price: NEGATIVE (0.72)\n```\n\n**Step 2: Automated Issue Clustering**\n\n```python\nfrom bertopic import BERTopic\nimport pandas as pd\n\n# Filter to negative reviews only\nnegative_reviews = df[df['sentiment'] == 'NEGATIVE']['review_text'].tolist()\n\n# Discover issue clusters automatically\ntopic_model = BERTopic(min_topic_size=50, nr_topics=30)\ntopics, _ = topic_model.fit_transform(negative_reviews)\n\n# Get representative terms per topic\ntopic_info = topic_model.get_topic_info()\n# Topic 0: \"defective, broken, stopped working, returned\" → Defect issues\n# Topic 1: \"wrong item, different, not as described\" → Listing accuracy\n# Topic 2: \"shipping, delayed, never arrived, tracking\" → Fulfillment\n```\n\n**Step 3: Supplier Quality Scoring**\n\nEach supplier received a weekly AI-generated quality score:\n\n```python\nsupplier_scores = df.groupby('supplier_id').agg({\n    'sentiment_score': 'mean',           # Overall sentiment\n    'defect_topic_flag': 'mean',         # % reviews mentioning defects\n    'review_count': 'count',             # Volume\n    'aspect_battery_sentiment': 'mean',  # Category-specific aspects\n    'aspect_quality_sentiment': 'mean'\n}).reset_index()\n\n# Composite quality score (0-100)\nsupplier_scores['quality_score'] = (\n    supplier_scores['sentiment_score'] * 40 +\n    (1 - supplier_scores['defect_topic_flag']) * 40 +\n    supplier_scores['aspect_quality_sentiment'] * 20\n) * 100\n```\n\n**Step 4: Automated Response Generation**\n\n```python\nimport openai\n\ndef generate_review_response(review_text, sentiment, main_issue):\n    prompt = f\"\"\"\n    You are a customer service specialist. Write a professional, empathetic \n    response to this customer review. Be specific to their issue, offer a \n    concrete next step, and keep it under 80 words.\n    \n    Review: {review_text}\n    Sentiment: {sentiment}\n    Main issue identified: {main_issue}\n    \"\"\"\n    \n    response = openai.chat.completions.create(\n        model=\"gpt-4o-mini\",\n        messages=[{\"role\": \"user\", \"content\": prompt}],\n        temperature=0.4\n    )\n    return response.choices[0].message.content\n```\n\n### Results\n\n| Metric | Before | After |\n|---|---|---|\n| Time to identify product issues | 2-3 weeks | 24 hours |\n| Review response rate | 8% | 67% (automated) |\n| Supplier quality disputes resolved | 23% | 71% (data-backed) |\n| Product defect rate (6 months) | 3.4% | 1.9% |\n| Customer satisfaction score | 3.8/5 | 4.2/5 |\n\nThe system processed 50,000 reviews daily in under 2 hours, generating actionable insights that previously required a team of 12 analysts working full-time."
+        },
+        {
+          "id": "m4-l4",
+          "type": "case-study",
+          "title": "Case Study: JPMorgan's COIN — Contract Intelligence",
+          "duration": "7 min",
+          "content": "## Case Study: JPMorgan's COIN — Contract Intelligence\n\n### Background\n\nJPMorgan Chase is one of the world's largest financial institutions, processing enormous volumes of legal documents, loan agreements, and financial contracts. In 2017, the bank deployed COIN (Contract Intelligence), an NLP system that transformed how the bank processes legal documents.\n\n### The Problem\n\nJPMorgan's legal and compliance teams spent approximately **360,000 hours annually** reviewing commercial loan agreements — a tedious, error-prone process where lawyers and loan officers manually extracted key data points from complex legal documents.\n\nThe core challenge: each loan agreement is a unique document, often 100+ pages, containing critical data points like:\n- Interest rate terms and adjustment clauses\n- Collateral requirements\n- Covenant conditions\n- Default triggers\n- Prepayment penalties\n\nManual extraction was slow, expensive, and inconsistent across reviewers.\n\n### The COIN Solution\n\nCOIN uses a combination of NLP techniques:\n\n**Document Understanding**\n- OCR to digitize scanned documents\n- Document structure analysis to identify sections (recitals, definitions, covenants)\n- Named entity recognition to extract parties, dates, amounts, and legal terms\n\n**Clause Classification**\nA fine-tuned BERT model classifies each clause into one of 150+ predefined categories, then extracts the relevant data points from each clause type.\n\n**Anomaly Detection**\nThe system flags clauses that deviate from standard templates — a critical function for risk management. If a loan agreement contains an unusual prepayment clause, COIN surfaces it for human review.\n\n**Knowledge Graph**\nExtracted entities and relationships are stored in a knowledge graph, enabling queries like: \"Show all loans with floating rate clauses tied to LIBOR that mature before 2025.\"\n\n### Results\n\n| Metric | Human Review | COIN |\n|---|---|---|\n| Time to review one agreement | ~360 seconds | ~seconds |\n| Annual hours saved | — | 360,000 hours |\n| Error rate | ~1% | Near zero |\n| Documents processed per year | ~12,000 | Unlimited |\n| Cost per document | High | Minimal marginal cost |\n\n> *\"The software reviews documents in seconds, doing work that used to take lawyers 360,000 hours.\"* — JPMorgan Annual Report\n\n### Broader Impact\n\nCOIN's success led JPMorgan to expand NLP applications across:\n- **Regulatory document analysis**: Automatically parsing and summarizing regulatory changes\n- **Earnings call analysis**: Extracting sentiment and key metrics from competitor earnings calls\n- **Research report synthesis**: Summarizing thousands of analyst reports into structured data\n- **Risk monitoring**: Scanning news and filings for mentions of counterparties\n\n### Lessons for Analytics Teams\n\n1. **High-volume, repetitive document tasks are ideal for NLP**: The ROI is clearest where human time is most expensive.\n2. **Human-in-the-loop is essential for high-stakes decisions**: COIN assists lawyers; it does not replace legal judgment.\n3. **Domain-specific fine-tuning dramatically improves accuracy**: A generic NLP model would perform poorly on legal language; COIN was trained on legal documents.\n4. **Start with extraction, then add intelligence**: COIN began with simple data extraction before adding anomaly detection and knowledge graph capabilities."
+        },
+        {
+          "id": "m4-q1",
+          "type": "quiz",
+          "title": "Knowledge Check: Module 4",
+          "duration": "5 min",
+          "content": "Test your understanding of NLP and unstructured data analytics.",
+          "questions": [
+            {
+              "id": "m4-q1-1",
+              "question": "What is the key advantage of transformer-based embeddings (like BERT) over TF-IDF for text analytics?",
+              "options": [
+                "They are faster to compute",
+                "They require less training data",
+                "They capture semantic meaning and context, not just word frequency",
+                "They work better with structured tabular data"
+              ],
+              "correctIndex": 2,
+              "explanation": "Transformer-based embeddings like BERT capture semantic meaning and context — the word 'bank' in 'river bank' and 'bank account' gets different representations. TF-IDF only captures word frequency patterns, missing semantic relationships and context-dependent meanings."
+            },
+            {
+              "id": "m4-q1-2",
+              "question": "What is aspect-based sentiment analysis, and how does it differ from standard sentiment analysis?",
+              "options": [
+                "It analyzes only positive aspects of text",
+                "It determines sentiment for specific attributes (e.g., battery life, camera quality) rather than overall document sentiment",
+                "It is faster than standard sentiment analysis",
+                "It only works on product reviews"
+              ],
+              "correctIndex": 1,
+              "explanation": "Aspect-based sentiment analysis (ABSA) determines sentiment for specific aspects or attributes within a text. For example, a review might be positive about battery life but negative about camera quality. Standard sentiment analysis would give a single overall sentiment score, missing these nuanced, attribute-level insights."
+            },
+            {
+              "id": "m4-q1-3",
+              "question": "What is the primary risk of using LLMs for SQL generation in production analytics?",
+              "options": [
+                "LLMs are too slow for real-time queries",
+                "LLMs can generate syntactically correct but semantically wrong SQL (hallucination)",
+                "LLMs cannot understand complex database schemas",
+                "LLMs only work with NoSQL databases"
+              ],
+              "correctIndex": 1,
+              "explanation": "The primary risk is hallucination — LLMs can generate SQL that is syntactically valid and runs without errors but produces incorrect results due to wrong table joins, incorrect aggregations, or misunderstood business logic. Always validate LLM-generated SQL against known results before deploying in production."
+            },
+            {
+              "id": "m4-q1-4",
+              "question": "In the JPMorgan COIN case study, what was the primary business impact?",
+              "options": [
+                "Replacing all legal staff with AI",
+                "Reducing 360,000 hours of annual document review work",
+                "Eliminating the need for loan agreements",
+                "Automating customer service interactions"
+              ],
+              "correctIndex": 1,
+              "explanation": "COIN's primary impact was saving approximately 360,000 hours of annual legal document review work. The system reviews loan agreements in seconds rather than the ~360 seconds required for human review, dramatically reducing costs and errors while freeing lawyers to focus on higher-value judgment work."
+            },
+            {
+              "id": "m4-q1-5",
+              "question": "What is Retrieval-Augmented Generation (RAG) and why is it important for enterprise analytics?",
+              "options": [
+                "A technique for generating synthetic training data to augment small datasets",
+                "A method that combines LLM generation with real-time retrieval from a knowledge base, grounding responses in current, proprietary data",
+                "A way to train LLMs faster by retrieving pre-computed gradients",
+                "A data augmentation technique for image classification"
+              ],
+              "correctIndex": 1,
+              "explanation": "RAG combines an LLM's language capabilities with a retrieval system that fetches relevant documents from a knowledge base at inference time. This is critical for enterprise analytics because it grounds LLM responses in current, proprietary data (e.g., internal reports, databases) rather than relying solely on the model's training data, which may be outdated or lack company-specific knowledge."
+            },
+            {
+              "id": "m4-q1-6",
+              "question": "What is the difference between Named Entity Recognition (NER) and Relation Extraction in NLP pipelines?",
+              "options": [
+                "NER identifies entities (people, organizations, dates); Relation Extraction identifies semantic relationships between those entities",
+                "NER is for structured data; Relation Extraction is for unstructured data",
+                "NER requires deep learning; Relation Extraction uses rule-based methods only",
+                "NER and Relation Extraction are the same task with different names"
+              ],
+              "correctIndex": 0,
+              "explanation": "NER identifies and classifies named entities in text (e.g., 'Apple' as ORG, 'Tim Cook' as PERSON, '$3.9 billion' as MONEY). Relation Extraction goes further to identify semantic relationships between those entities (e.g., 'Tim Cook' IS_CEO_OF 'Apple'). Together they form the foundation of knowledge graph construction from unstructured text."
+            },
+            {
+              "id": "m4-q1-7",
+              "question": "What is 'zero-shot' classification in NLP, and when is it most useful?",
+              "options": [
+                "Classification that achieves zero errors on the test set",
+                "Classifying text into categories the model was never explicitly trained on, using natural language descriptions of the categories",
+                "A classification method that requires zero labeled training examples and no pre-trained model",
+                "Classification of text with zero preprocessing steps"
+              ],
+              "correctIndex": 1,
+              "explanation": "Zero-shot classification uses a pre-trained language model to classify text into categories it was never explicitly trained on. You describe the categories in natural language (e.g., 'this text is about finance' vs 'this text is about sports'), and the model uses its language understanding to assign probabilities. It's most useful when you need to classify into new categories quickly without collecting labeled training data."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m5",
+      "number": 5,
+      "title": "AI Ethics, Governance & the Future",
+      "description": "Navigate the ethical challenges of AI analytics and build responsible, trustworthy AI systems.",
+      "icon": "Shield",
+      "color": "rose",
+      "lessons": [
+        {
+          "id": "m5-l1",
+          "type": "lesson",
+          "title": "Bias, Fairness & Responsible AI",
+          "duration": "10 min",
+          "content": "## Bias, Fairness & Responsible AI\n\nAI systems trained on historical data inevitably reflect historical biases. As analysts, we have a professional and ethical responsibility to detect, measure, and mitigate bias in the models we build and deploy.\n\n### Sources of Bias in AI Analytics\n\n**1. Historical Bias**\nTraining data reflects past decisions that may have been discriminatory. A hiring model trained on historical promotions will learn that certain demographics were promoted less — and perpetuate that pattern.\n\n**2. Representation Bias**\nWhen training data underrepresents certain groups, the model performs worse for those groups. A fraud detection model trained mostly on US transactions may perform poorly on transactions from other regions.\n\n**3. Measurement Bias**\nWhen the proxy variable used to represent a concept is systematically different across groups. Using \"zip code\" as a proxy for creditworthiness encodes racial segregation patterns.\n\n**4. Aggregation Bias**\nWhen a single model is applied to heterogeneous groups that have fundamentally different patterns. A health risk model trained on a general population may perform poorly for specific demographic subgroups.\n\n**5. Feedback Loop Bias**\nWhen model predictions influence future data collection, reinforcing the model's existing biases. Predictive policing models that direct more police to certain neighborhoods generate more arrests there, which then \"confirms\" the model's predictions.\n\n### Measuring Fairness\n\nFairness is not a single metric — different definitions can conflict with each other:\n\n| Fairness Metric | Definition | Example |\n|---|---|---|\n| **Demographic Parity** | Equal positive prediction rates across groups | Loan approval rate equal for all racial groups |\n| **Equal Opportunity** | Equal true positive rates across groups | Equal recall for qualified candidates across genders |\n| **Equalized Odds** | Equal TPR and FPR across groups | Equal accuracy for all groups |\n| **Calibration** | Predicted probabilities match actual rates | 70% predicted risk → 70% actual risk for all groups |\n\n```python\nfrom fairlearn.metrics import MetricFrame, demographic_parity_difference\nfrom sklearn.metrics import accuracy_score\n\n# Evaluate model fairness across demographic groups\nmetric_frame = MetricFrame(\n    metrics={\n        'accuracy': accuracy_score,\n        'selection_rate': lambda y_true, y_pred: y_pred.mean()\n    },\n    y_true=y_test,\n    y_pred=y_pred,\n    sensitive_features=X_test['gender']\n)\n\nprint(metric_frame.by_group)\nprint(f\"Demographic parity difference: {demographic_parity_difference(y_test, y_pred, sensitive_features=X_test['gender']):.3f}\")\n```\n\n### Bias Mitigation Strategies\n\n**Pre-processing** (fix the data):\n- Resampling to balance representation\n- Reweighting samples from underrepresented groups\n- Removing proxy variables for protected attributes\n\n**In-processing** (fix the model):\n- Fairness constraints during training (Fairlearn's ExponentiatedGradient)\n- Adversarial debiasing (train a model to be good at the task but bad at predicting protected attributes)\n\n**Post-processing** (fix the outputs):\n- Threshold adjustment per group to equalize error rates\n- Calibration correction\n\n### The Fairness-Accuracy Trade-off\n\nImposing fairness constraints typically reduces overall accuracy. This trade-off must be made explicitly and transparently:\n\n> *\"A model that is 95% accurate overall but 60% accurate for a minority group is not a good model — it is a discriminatory model with good marketing.\"*\n\nThe decision about which fairness definition to prioritize is fundamentally a values question, not a technical one. Analysts should surface these trade-offs to decision-makers rather than making them silently.\n\n### Responsible AI Principles\n\nLeading organizations have converged on similar principles:\n\n1. **Fairness**: AI systems should not discriminate on protected characteristics\n2. **Transparency**: Decision processes should be explainable and auditable\n3. **Privacy**: Personal data should be protected and used only as intended\n4. **Accountability**: Clear ownership for AI system outcomes\n5. **Safety**: AI systems should be tested for failure modes before deployment\n6. **Human oversight**: High-stakes AI decisions should have human review mechanisms"
+        },
+        {
+          "id": "m5-l2",
+          "type": "lesson",
+          "title": "AI Governance Frameworks & Compliance",
+          "duration": "9 min",
+          "content": "## AI Governance Frameworks & Compliance\n\nAs AI becomes embedded in consequential decisions — credit, hiring, healthcare, criminal justice — regulatory frameworks are rapidly evolving. Analysts must understand the governance landscape to build compliant, trustworthy systems.\n\n### The Regulatory Landscape\n\n| Regulation | Jurisdiction | Key Requirements for AI |\n|---|---|---|\n| **EU AI Act** | European Union | Risk-based classification; high-risk AI requires conformity assessment, human oversight, transparency |\n| **GDPR** | EU/EEA | Right to explanation for automated decisions; data minimization; purpose limitation |\n| **CCPA/CPRA** | California, USA | Consumer rights over automated decision-making; opt-out rights |\n| **Fair Credit Reporting Act** | USA | Adverse action notices; right to dispute; model documentation |\n| **Equal Credit Opportunity Act** | USA | Prohibits discrimination in credit decisions; requires disparate impact analysis |\n| **NYC Local Law 144** | New York City | Bias audits for automated employment decision tools |\n\n### The EU AI Act: A Framework for Risk\n\nThe EU AI Act classifies AI systems by risk level:\n\n**Unacceptable Risk** (Prohibited):\n- Social scoring by governments\n- Real-time biometric surveillance in public spaces\n- Subliminal manipulation techniques\n\n**High Risk** (Strict Requirements):\n- Credit scoring and insurance risk assessment\n- Employment and HR decisions\n- Education and vocational training\n- Law enforcement\n- Critical infrastructure management\n\n**Limited Risk** (Transparency Obligations):\n- Chatbots (must disclose AI nature)\n- Deepfakes (must be labeled)\n\n**Minimal Risk** (No Specific Requirements):\n- Spam filters, AI in video games, etc.\n\n### Building an AI Governance Framework\n\nA practical governance framework for analytics teams includes:\n\n**1. Model Inventory**\nMaintain a registry of all AI models in production:\n```\nModel ID | Business Use | Risk Level | Owner | Last Audit | Expiry\nM-001    | Credit Score | High       | Risk  | 2024-01-15 | 2024-07-15\nM-002    | Churn Pred.  | Medium     | CX    | 2024-02-01 | 2024-08-01\n```\n\n**2. Model Cards**\nDocument every model with:\n- Intended use and limitations\n- Training data description and known biases\n- Performance metrics across demographic groups\n- Monitoring thresholds and escalation procedures\n\n**3. Data Lineage**\nTrack where every data point came from, how it was transformed, and where it flows — essential for debugging, compliance, and trust.\n\n**4. Model Monitoring**\nContinuously track:\n- **Data drift**: Are input distributions changing?\n- **Concept drift**: Is the relationship between inputs and outputs changing?\n- **Performance degradation**: Are accuracy metrics declining?\n- **Fairness metrics**: Are disparities emerging over time?\n\n```python\nfrom evidently import ColumnMapping\nfrom evidently.report import Report\nfrom evidently.metric_preset import DataDriftPreset, ModelPerformancePreset\n\n# Generate automated monitoring report\nreport = Report(metrics=[\n    DataDriftPreset(),\n    ModelPerformancePreset()\n])\n\nreport.run(\n    reference_data=training_data,\n    current_data=production_data_last_30_days,\n    column_mapping=ColumnMapping(target='churn', prediction='churn_pred')\n)\n\nreport.save_html(\"monitoring_report.html\")\n```\n\n**5. Human-in-the-Loop Design**\nFor high-stakes decisions, design workflows that:\n- Surface AI recommendations with confidence scores\n- Require human approval above certain impact thresholds\n- Provide easy mechanisms to override AI recommendations\n- Log all overrides for model improvement\n\n### Privacy-Preserving Analytics\n\nWhen working with sensitive data, consider:\n\n- **Differential Privacy**: Add calibrated noise to outputs so individual records cannot be inferred\n- **Federated Learning**: Train models on distributed data without centralizing it\n- **Synthetic Data**: Generate statistically representative fake data for development and testing\n- **Data Anonymization**: Remove or hash PII before model training\n\n> **Key Principle**: Governance is not a compliance checkbox — it is a competitive advantage. Organizations that build trustworthy AI systems earn stakeholder confidence, avoid costly failures, and build sustainable AI capabilities."
+        },
+        {
+          "id": "m5-l3",
+          "type": "example",
+          "title": "Example: Auditing a Hiring Algorithm for Bias",
+          "duration": "7 min",
+          "content": "## Example: Auditing a Hiring Algorithm for Bias\n\n### Background\n\nA technology company used an ML model to screen resumes and rank candidates for software engineering roles. After 18 months in production, the HR team noticed that the percentage of women advancing to interviews had declined from 28% to 19%. They commissioned a bias audit.\n\n### The Audit Process\n\n**Step 1: Disparate Impact Analysis**\n\nThe first test was the \"80% rule\" (four-fifths rule) from the EEOC:\n\n```python\nimport pandas as pd\nfrom fairlearn.metrics import demographic_parity_difference, equalized_odds_difference\n\n# Load model predictions and outcomes\ndf = pd.read_csv('hiring_model_outputs.csv')\n\n# Calculate selection rates by gender\nselection_rates = df.groupby('gender')['selected'].mean()\nprint(selection_rates)\n# gender\n# Female    0.19\n# Male      0.31\n\n# 80% rule: female rate / male rate = 0.19/0.31 = 0.61 < 0.80\n# → FAILS the 80% rule → potential adverse impact\n\ndisparate_impact_ratio = selection_rates['Female'] / selection_rates['Male']\nprint(f\"Disparate Impact Ratio: {disparate_impact_ratio:.2f}\")\n# Output: 0.61 — significant adverse impact detected\n```\n\n**Step 2: Feature Audit**\n\nSHAP analysis revealed which features drove the disparity:\n\n```python\nimport shap\n\nexplainer = shap.TreeExplainer(model)\nshap_values = explainer.shap_values(X_test)\n\n# Analyze SHAP values by gender\nmale_shap = shap_values[X_test['gender'] == 'Male']\nfemale_shap = shap_values[X_test['gender'] == 'Female']\n\n# Compare feature importance by group\nfeature_importance_by_gender = pd.DataFrame({\n    'feature': X_test.columns,\n    'male_mean_shap': np.abs(male_shap).mean(axis=0),\n    'female_mean_shap': np.abs(female_shap).mean(axis=0)\n})\n```\n\n**Findings**: The model heavily weighted:\n1. **GitHub contribution count** (men had 3.2x more public contributions on average)\n2. **Open source project mentions** (men had 2.8x more mentions)\n3. **Competitive programming scores** (men participated at 4x the rate)\n\nThese features were proxies for coding ability but were systematically lower for women due to societal factors, not actual skill differences.\n\n**Step 3: Counterfactual Analysis**\n\n```python\n# What would happen if we removed the biased features?\nbiased_features = ['github_contributions', 'open_source_mentions', \n                   'competitive_programming_score']\n\nX_test_debiased = X_test.drop(columns=biased_features)\nmodel_debiased = train_model(X_train.drop(columns=biased_features), y_train)\n\n# Re-evaluate selection rates\ny_pred_debiased = model_debiased.predict(X_test_debiased)\nselection_rates_debiased = pd.Series(y_pred_debiased).groupby(\n    X_test['gender']\n).mean()\n\n# Female: 0.27, Male: 0.29 → Disparate impact ratio: 0.93 ✓\n```\n\n**Step 4: Remediation**\n\nThe team implemented three changes:\n1. Removed the three biased proxy features\n2. Added structured technical assessments (coding tests) as primary signals\n3. Implemented ongoing fairness monitoring with monthly audits\n\n### Results After Remediation\n\n| Metric | Before | After |\n|---|---|---|\n| Female selection rate | 19% | 27% |\n| Male selection rate | 31% | 29% |\n| Disparate impact ratio | 0.61 | 0.93 |\n| Model AUC (overall) | 0.84 | 0.82 |\n| 90-day hire performance | Baseline | +4% (better hires) |\n\nThe slight reduction in overall AUC was accepted as a worthwhile trade-off for dramatically improved fairness — and the quality of hires actually improved, suggesting the removed features were not as predictive of job performance as assumed.\n\n### Key Lessons\n\n1. **Monitor fairness metrics continuously**, not just at deployment\n2. **Proxy variables can encode discrimination** even when protected attributes are excluded\n3. **Fairness and accuracy are not always in conflict** — removing biased features sometimes improves both\n4. **Document the audit trail** — regulatory compliance requires evidence of due diligence"
+        },
+        {
+          "id": "m5-l4",
+          "type": "case-study",
+          "title": "Case Study: Amazon's Biased Hiring Tool",
+          "duration": "7 min",
+          "content": "## Case Study: Amazon's Biased Hiring Tool\n\n### Background\n\nIn 2014, Amazon began developing an AI-powered recruiting tool to automate resume screening. The goal was to build a system that could review resumes and score candidates on a scale of 1-5, dramatically accelerating the hiring process for technical roles. By 2018, Amazon had quietly shut down the project. The story of why is one of the most important cautionary tales in AI ethics.\n\n### The System\n\nAmazon's ML team trained the model on 10 years of historical resume data — resumes submitted to Amazon between 2004 and 2014, along with outcomes (hired/not hired). The model learned to identify patterns in resumes that correlated with successful hires.\n\n### The Problem Discovered\n\nIn 2015, the team discovered the model was systematically downgrading resumes that included the word \"women's\" — as in \"women's chess club\" or \"women's college.\" The model had learned that women were less likely to have been hired historically, and was encoding that historical bias as a predictive signal.\n\nFurther investigation revealed:\n- The model penalized graduates of all-women's colleges\n- It favored resumes containing verbs more commonly used by men (\"executed,\" \"captured\") over those more commonly used by women (\"collaborated,\" \"supported\")\n- Technical skill assessments showed no gender gap, but the model's overall scores did\n\n### Root Cause Analysis\n\n**The core problem**: The training data reflected Amazon's historical hiring patterns, which were heavily male-dominated in technical roles (as is the tech industry broadly). The model learned to replicate these patterns, not to identify the best candidates.\n\n**The feedback loop**: The model was trained on who Amazon *had* hired, not on who would have been the *best* hire. These are fundamentally different questions.\n\n**The proxy problem**: The model never directly saw gender — but it learned to infer it from indirect signals (college names, club memberships, word choice), a classic example of proxy discrimination.\n\n### Amazon's Response\n\nAmazon attempted to fix the model by explicitly penalizing gender-related terms. However, the team concluded that they could not guarantee the model would not find other ways to discriminate. In 2018, Amazon disbanded the team and abandoned the project.\n\n> *\"Amazon's computer models were trained to vet applicants by observing patterns in resumes submitted to the company over a 10-year period. Most came from men, a reflection of male dominance across the tech industry. In effect, Amazon's system taught itself that male candidates were preferable.\"* — Reuters, 2018\n\n### Industry-Wide Impact\n\nThis case catalyzed significant changes across the industry:\n\n1. **Regulatory action**: New York City passed Local Law 144 requiring bias audits for automated employment decision tools\n2. **Industry standards**: IEEE, Partnership on AI, and others published guidelines for fair hiring AI\n3. **Vendor scrutiny**: HR technology vendors now routinely publish fairness audit reports\n4. **Academic research**: Sparked a wave of research into algorithmic fairness in hiring\n\n### Lessons for Analytics Practitioners\n\n| Lesson | Application |\n|---|---|\n| Historical data encodes historical bias | Always audit training data for representation and historical discrimination |\n| Proxy variables are dangerous | Audit for indirect discrimination, not just direct |\n| \"Fixing\" bias is harder than preventing it | Build fairness into the design process, not as an afterthought |\n| Shutting down a biased system is the right call | Organizational courage to stop a project is a governance success, not a failure |\n| Transparency builds trust | Amazon's credibility suffered partly because the project was secret |\n\n### The Broader Question\n\nThis case raises a fundamental question for analytics practitioners: **When should we use AI for high-stakes decisions about people?**\n\nThe answer requires weighing:\n- The accuracy of the AI vs. the accuracy of the human alternative\n- The nature and magnitude of potential harms\n- The availability of oversight and appeal mechanisms\n- The transparency and explainability of the system\n- The diversity and representativeness of the training data\n\nThere is no universal answer — but there is a universal obligation to ask the question rigorously."
+        },
+        {
+          "id": "m5-q1",
+          "type": "quiz",
+          "title": "Knowledge Check: Module 5",
+          "duration": "5 min",
+          "content": "Test your understanding of AI ethics, governance, and responsible AI.",
+          "questions": [
+            {
+              "id": "m5-q1-1",
+              "question": "What is 'feedback loop bias' in AI systems?",
+              "options": [
+                "When the model's training takes too long due to large datasets",
+                "When model predictions influence future data collection, reinforcing existing biases",
+                "When users provide incorrect feedback on model outputs",
+                "When the model overfits to the training data"
+              ],
+              "correctIndex": 1,
+              "explanation": "Feedback loop bias occurs when a model's predictions influence future data collection in ways that reinforce the model's existing biases. Classic example: predictive policing models direct police to certain areas, generating more arrests there, which then 'confirms' the model's predictions — creating a self-fulfilling prophecy."
+            },
+            {
+              "id": "m5-q1-2",
+              "question": "Under the EU AI Act, which of the following would be classified as 'High Risk' AI?",
+              "options": [
+                "A spam filter for email",
+                "An AI character in a video game",
+                "An automated credit scoring system",
+                "A music recommendation algorithm"
+              ],
+              "correctIndex": 2,
+              "explanation": "The EU AI Act classifies credit scoring systems as High Risk AI because they make consequential decisions about people's financial lives. High Risk AI requires conformity assessments, human oversight mechanisms, transparency documentation, and ongoing monitoring. Spam filters and entertainment AI are classified as Minimal Risk."
+            },
+            {
+              "id": "m5-q1-3",
+              "question": "What was the root cause of bias in Amazon's hiring AI tool?",
+              "options": [
+                "The model directly used gender as a feature",
+                "The training data reflected historical male-dominated hiring patterns, which the model learned to replicate",
+                "The model was trained on too little data",
+                "Amazon intentionally built a biased system"
+              ],
+              "correctIndex": 1,
+              "explanation": "Amazon's model was trained on 10 years of historical hiring data that reflected the tech industry's male-dominated patterns. The model learned to replicate these historical patterns — including indirect proxies for gender like college names and word choice — rather than identifying the best candidates regardless of gender."
+            },
+            {
+              "id": "m5-q1-4",
+              "question": "What is differential privacy, and what problem does it solve?",
+              "options": [
+                "A technique to improve model accuracy by using different training datasets",
+                "Adding calibrated noise to outputs so individual records cannot be inferred from aggregate results",
+                "A method for comparing two different AI models",
+                "A privacy policy framework for GDPR compliance"
+              ],
+              "correctIndex": 1,
+              "explanation": "Differential privacy adds carefully calibrated statistical noise to query outputs or model parameters, providing a mathematical guarantee that individual records cannot be identified from the results. It solves the problem of protecting individual privacy while still enabling useful aggregate analytics — critical for sensitive healthcare, financial, and demographic data."
+            },
+            {
+              "id": "m5-q1-5",
+              "question": "What is the purpose of a Model Card in responsible AI deployment?",
+              "options": [
+                "A business card format for AI researchers to share contact information",
+                "A standardized document describing a model's intended use, training data, performance metrics, limitations, and bias audit results",
+                "A credit card-sized summary of model accuracy for executives",
+                "A legal contract between AI vendors and customers"
+              ],
+              "correctIndex": 1,
+              "explanation": "Model Cards (introduced by Google) are standardized documentation that accompany AI models. They describe the model's intended use cases, training data characteristics, performance across different demographic groups, known limitations, and bias audit results. Model Cards enable informed decision-making about whether and how to deploy a model, and are increasingly required by enterprise governance frameworks."
+            },
+            {
+              "id": "m5-q1-6",
+              "question": "What is 'demographic parity' as a fairness metric, and what is its key limitation?",
+              "options": [
+                "A metric that ensures all demographic groups have equal model accuracy; limited because accuracy can be misleading",
+                "A metric requiring equal positive prediction rates across groups; limited because equal rates may not be appropriate when base rates differ across groups",
+                "A metric that ensures equal training data representation; limited because data collection is expensive",
+                "A metric requiring equal feature importance across groups; limited because features vary in relevance"
+              ],
+              "correctIndex": 1,
+              "explanation": "Demographic parity requires that the positive prediction rate (e.g., loan approval rate) be equal across demographic groups. Its key limitation is that if the base rates of the outcome genuinely differ across groups (e.g., due to historical economic factors), enforcing equal approval rates may require approving higher-risk applicants from one group, potentially harming them. This illustrates the fundamental tension between different fairness definitions — satisfying one often violates another."
+            },
+            {
+              "id": "m5-q1-7",
+              "question": "What is 'model drift' and how should analytics teams monitor for it?",
+              "options": [
+                "When the model file becomes corrupted over time; monitored by checksums",
+                "When real-world data distributions change after deployment, causing model performance to degrade; monitored by tracking prediction distributions and business KPIs over time",
+                "When the model is moved to a different server; monitored by uptime checks",
+                "When too many users access the model simultaneously; monitored by latency metrics"
+              ],
+              "correctIndex": 1,
+              "explanation": "Model drift occurs when the statistical properties of real-world data change after a model is deployed, causing its performance to degrade. Data drift means input feature distributions have changed; concept drift means the relationship between inputs and outputs has changed. Teams should monitor prediction score distributions, feature distributions, and downstream business KPIs (e.g., actual churn rate vs. predicted) with automated alerts when metrics cross defined thresholds."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
