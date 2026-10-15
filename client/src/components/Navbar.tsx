@@ -193,6 +193,19 @@ export default function Navbar() {
                   <Link href="/dashboard" className="text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>
                     My Learning
                   </Link>
+                  {(user?.role === "trainer" || user?.role === "admin") && (
+                    <Link href="/trainer" className="text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>
+                      Trainer Dashboard
+                    </Link>
+                  )}
+                  {user?.role === "admin" && (
+                    <Link href="/admin" className="text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>
+                      Admin Panel
+                    </Link>
+                  )}
+                  <Link href="/payments" className="text-sm font-medium py-2" onClick={() => setMobileOpen(false)}>
+                    Payment History
+                  </Link>
                   <button onClick={() => { logout(); setMobileOpen(false); }} className="text-sm font-medium py-2 text-destructive text-left">
                     Sign Out
                   </button>

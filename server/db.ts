@@ -25,6 +25,17 @@ export async function getDb() {
 
 // ─── Users ────────────────────────────────────────────────────────────────────
 
+export function resolvePersistedUserRole(
+  openId: string,
+  requestedRole: InsertUser["role"] | undefined,
+  ownerOpenId = ENV.ownerOpenId,
+) {
+  // The project owner must remain an administrator even when an OAuth profile
+  // arrives with a stale default "user" role during a later sign-in.
+  if (ownerOpenId && openId === ownerOpenId) return "admin" as const;
+  return requestedRole;
+}
+
 export async function upsertUser(user: InsertUser): Promise<void> {
   if (!user.openId) throw new Error("User openId is required for upsert");
   const db = await getDb();
@@ -42,8 +53,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   };
   textFields.forEach(assignNullable);
   if (user.lastSignedIn !== undefined) { values.lastSignedIn = user.lastSignedIn; updateSet.lastSignedIn = user.lastSignedIn; }
-  if (user.role !== undefined) { values.role = user.role; updateSet.role = user.role; }
-  else if (user.openId === ENV.ownerOpenId) { values.role = "admin"; updateSet.role = "admin"; }
+  const resolvedRole = resolvePersistedUserRole(user.openId, user.role);
+  if (resolvedRole !== undefined) { values.role = resolvedRole; updateSet.role = resolvedRole; }
   if (!values.lastSignedIn) values.lastSignedIn = new Date();
   if (Object.keys(updateSet).length === 0) updateSet.lastSignedIn = new Date();
   await db.insert(users).values(values).onDuplicateKeyUpdate({ set: updateSet });
