@@ -27,7 +27,7 @@ const LOGO_CIRCLE_URL = "/manus-storage/skillsphere-logo-circle_8ea1006a.png";
 const STATS = [
   { label: "", value: "", icon: Users },
   { label: "", value: "", icon: BookOpen },
-  { label: "Completion Rate", value: "", icon: Award },
+  { label: "", value: "", icon: Award },
   { label: "", value: "", icon: Globe },
 ];
 
@@ -521,7 +521,7 @@ export default function Home() {
         <div className="container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {STATS.map((stat, i) => (
-              <div key={stat.label} className={`text-center animate-fade-in-up stagger-${i + 1}`}>
+              <div key={i} className={`text-center animate-fade-in-up stagger-${i + 1}`}>
                 <div className="flex justify-center mb-2">
                   <stat.icon className="h-6 w-6 text-primary" />
                 </div>
