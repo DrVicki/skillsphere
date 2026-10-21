@@ -17,9 +17,11 @@ import LessonContent from "@/components/LessonContent";
 import CubeMoveLabs from "@/components/CubeMoveLabs";
 import QuantumVisualizations from "@/components/QuantumVisualizations";
 import AIDataAnalyticsVisualizations from "@/components/AIDataAnalyticsVisualizations";
+import PythonForgeLab from "@/components/PythonForgeLab";
 import { parseGuidedMoveLabs, stripGuidedMoveLabs } from "@/lib/cubeMoveLabs";
 import { getQuantumVisualizationForModule } from "@/lib/quantumVisualizations";
 import { getAIDataAnalyticsVisualizationForModule } from "@/lib/aiDataAnalyticsVisualizations";
+import { getPythonForgeActivityForModule } from "@/lib/pythonForgeActivities";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Link } from "wouter";
 
@@ -59,6 +61,7 @@ export default function LearnCourse({ params }: Props) {
   const lessonContent = activeModule?.content ? stripGuidedMoveLabs(activeModule.content) : "";
   const quantumVisualization = getQuantumVisualizationForModule(course?.slug, activeModule?.title);
   const aiDataAnalyticsVisualization = getAIDataAnalyticsVisualizationForModule(course?.slug, activeModule?.title);
+  const pythonForgeActivity = getPythonForgeActivityForModule(course?.slug, activeModule?.title);
 
   useEffect(() => {
     if (!modules || modules.length === 0 || activeModuleId) return;
@@ -244,6 +247,9 @@ export default function LearnCourse({ params }: Props) {
 
                   {/* The AI data analytics curriculum pairs source lessons with standalone interactive workflow visualizations. */}
                   {aiDataAnalyticsVisualization && <AIDataAnalyticsVisualizations visualization={aiDataAnalyticsVisualization} />}
+
+                  {/* Python Forge keeps each source-authored hands-on activity in a browser-run Python lab. */}
+                  {pythonForgeActivity && <PythonForgeLab activity={pythonForgeActivity} />}
 
                   {/* Assessment */}
                   {activeModule.type === "assessment" && activeModule.assessmentData && (

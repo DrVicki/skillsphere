@@ -86,6 +86,7 @@
 - [x] Gate preview-mode completion, discussion, and chat actions behind sign-in and enrollment
 - [x] Import the complete Using AI in Data Analytics source curriculum, knowledge checks, capstone, source visual assets, and interactive workflow visualizations
 - [x] Add classrooms with course assignments, email-based student rosters, automatic enrollment, pending sign-in activation, and learner progress views
+- [x] Upgrade Python Forge with complete source lessons, portfolio projects, and embedded browser coding labs
 
 ## Admin Dashboard
 
