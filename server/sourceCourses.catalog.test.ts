@@ -51,6 +51,14 @@ describe("source course catalog", () => {
       isFree: false,
       price: "297.00",
     });
+    expect(bySlug.get("chief-ai-officer-caio-4-week-bootcamp")).toMatchObject({
+      title: "Chief AI Officer (CAIO) 4-Week BootCamp",
+      totalModules: 20,
+      totalDuration: 1200,
+      isPublished: true,
+      isFree: false,
+      price: "497.00",
+    });
   });
 
   it("preserves source lesson content and knowledge checks for the imported curricula", async () => {
@@ -62,16 +70,19 @@ describe("source course catalog", () => {
     const pyforge = bySlug.get("python-forge-learn-by-building");
     const chatGptBusiness = bySlug.get("10-ways-chatgpt-business-owners");
     const cubeUnlocked = bySlug.get("cube-unlocked-visual-rubiks-cube-course");
+    const caioBootcamp = bySlug.get("chief-ai-officer-caio-4-week-bootcamp");
 
     expect(dataCenter).toBeDefined();
     expect(pyforge).toBeDefined();
     expect(chatGptBusiness).toBeDefined();
     expect(cubeUnlocked).toBeDefined();
+    expect(caioBootcamp).toBeDefined();
 
     const dataCenterModules = await caller.modules.byCourse(dataCenter!.id);
     const pyforgeModules = await caller.modules.byCourse(pyforge!.id);
     const chatGptModules = await caller.modules.byCourse(chatGptBusiness!.id);
     const cubeModules = await caller.modules.byCourse(cubeUnlocked!.id);
+    const caioModules = await caller.modules.byCourse(caioBootcamp!.id);
 
     expect(dataCenterModules).toHaveLength(16);
     expect(dataCenterModules[0]?.content).toContain("What Is a Data Center?");
@@ -126,5 +137,21 @@ describe("source course catalog", () => {
       cubeModule("03 · Open. Act. Close. Restore.")?.content
     ).not.toContain("Guided Move Cards");
     expect(cubeModule("07 · Solve, explain, then solve again")).toBeDefined();
+
+    expect(caioModules).toHaveLength(20);
+    expect(caioModules[0]).toMatchObject({
+      title: expect.stringContaining("The CAIO Window"),
+      isPreview: true,
+      content: expect.stringContaining("Open the supplied CAIO guide"),
+    });
+    expect(
+      caioModules.filter(module => module.type === "assessment")
+    ).toHaveLength(4);
+    expect(caioModules.at(-2)).toMatchObject({
+      title: expect.stringContaining("Capstone: Your 90-Day CAIO Plan"),
+      content: expect.stringContaining(
+        "Build and present your CAIO engagement brief"
+      ),
+    });
   });
 });

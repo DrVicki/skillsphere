@@ -1,0 +1,343 @@
+{
+  "source": {
+    "title": "How to Become a CAIO",
+    "author": "Benjamin Simkin",
+    "edition": "First edition, 2026",
+    "readingUrl": "/manus-storage/How-to-Become-a-CAIO-digital(3)_ed89dec1.pdf",
+    "citation": "Benjamin Simkin, How to Become a CAIO (AI First Foundations, 2026)."
+  },
+  "course": {
+    "title": "Chief AI Officer (CAIO) 4-Week BootCamp",
+    "slug": "chief-ai-officer-caio-4-week-bootcamp",
+    "description": "A four-week, hands-on leadership BootCamp built from the supplied How to Become a CAIO guide. Move from AI opportunity framing to a defensible proof portfolio, one safe deployment pilot, and a board-ready 90-day plan. Each week combines assigned guide readings, applied examples, hands-on artifacts, knowledge checks, and a practical capstone engagement.",
+    "shortDescription": "Build a CAIO-ready proof portfolio, pilot plan, governance posture, and 90-day leadership roadmap in four focused weeks.",
+    "category": "AI Leadership",
+    "level": "intermediate",
+    "tags": ["Chief AI Officer", "AI Strategy", "AI Governance", "Business Transformation", "AI Deployment", "Leadership", "Fractional CAIO"],
+    "price": "497.00",
+    "comparePrice": "997.00",
+    "totalDuration": 1200
+  },
+  "weeks": [
+    {
+      "number": 1,
+      "title": "The CAIO Mandate and Your Starting Position",
+      "outcome": "Define the CAIO mandate, recognize the limits of AI systems, and choose a credible starting path.",
+      "lessons": [
+        {
+          "id": "w1-l1",
+          "title": "The CAIO Window: Why the Seat Exists Now",
+          "duration": 60,
+          "reading": "Read Part I, Chapters 1–3: The Window, What the Machine Can Actually Do, and The Ninety-Five Percent.",
+          "outcomes": ["Explain why AI leadership demand is an operational—not merely technical—issue.", "Identify the difference between a technology trend and a business role with accountable outcomes.", "Use the ‘window’ idea to articulate a time-bound career or internal leadership opportunity."],
+          "teaching": [
+            "The guide frames the Chief AI Officer opportunity as a leadership gap created when the cost of language, pattern, and document work drops faster than organisations can redesign the work around it. A CAIO is not a title attached to a tool rollout; the role exists to decide where AI creates value, who owns the work, and how results become durable operations.",
+            "The source also warns against treating AI as magic. These systems can assist with recurring work made of words, numbers, and patterns, but they do not own accountability, understand a business without context, or remove the need for judgment. The BootCamp uses that distinction throughout: choose work where the technology helps, and keep humans responsible for consequences."
+          ],
+          "example": {
+            "title": "From ‘we need AI’ to a CAIO-sized problem",
+            "body": "A regional distributor wants ‘an AI strategy.’ Instead of recommending tools, a CAIO candidate asks which recurring tasks consume staff hours, which errors create customer pain, and which process has a named owner. The output is a shortlist of operational problems—not a shopping list of products."
+          },
+          "activity": {
+            "title": "Map your CAIO opportunity statement",
+            "brief": "Write a one-paragraph opportunity statement for one organisation or industry you know.",
+            "steps": ["Name the organisation or industry and the work it sells or delivers.", "List three recurring words, numbers, or pattern-based tasks that likely consume staff time.", "State one business result a CAIO could be accountable for, such as faster quoting, fewer handoff errors, or lower response time.", "Add one limit or risk that must remain under human control."],
+            "definitionOfDone": ["The statement names an operational outcome, not a generic desire to ‘use AI.’", "It includes both an opportunity and a boundary.", "It is specific enough for a leader to recognize the business context."]
+          },
+          "reflection": "Where would a visible, measured result matter more than an impressive AI demonstration in this organisation?"
+        },
+        {
+          "id": "w1-l2",
+          "title": "What the Machine Can Do—and What It Cannot Own",
+          "duration": 60,
+          "reading": "Continue Part I, Chapters 2–3. Focus on capability boundaries, context, accountability, and common reasons pilots fail.",
+          "outcomes": ["Classify candidate work as assistive, human-approved, or inappropriate for AI automation.", "Recognize why missing context, poor task selection, and absent ownership cause failed pilots.", "Draft a human-in-the-loop rule for a first deployment."],
+          "teaching": [
+            "A CAIO needs working literacy, not a model-science credential. The practical question is whether a task has enough stable context, observable quality criteria, and a human who can review the output. If not, a faster model only accelerates uncertainty.",
+            "The guide’s failure analysis is a useful counterweight to hype: pilots fail when teams choose the wrong task, brief the system poorly, or leave the result orphaned. Treat each of those as a design condition. Pick a narrow process, make the source material and quality standard explicit, and name an accountable owner before launch."
+          ],
+          "example": {
+            "title": "Three tasks, three different treatments",
+            "body": "A weekly internal summary can be AI-drafted and human-reviewed. A customer credit decision may use AI to surface supporting information but must remain a human decision. A regulated clinical recommendation should not be delegated to a general-purpose assistant without specialist controls. Same technology; different accountability and blast radius."
+          },
+          "activity": {
+            "title": "Build a task suitability matrix",
+            "brief": "Evaluate three real tasks against value, repeatability, context, human review, and consequence of error.",
+            "steps": ["Choose three tasks from your work or a target business.", "For each, note frequency, inputs, desired output, current owner, and what a bad result could affect.", "Label each task: assist now, pilot with approval, or do not automate yet.", "Write a one-sentence reason for the most promising task and the riskiest task."],
+            "definitionOfDone": ["Each task has a named owner and a stated quality check.", "At least one task is rejected or deferred for a defensible reason.", "Your preferred task has a manageable first-pilot blast radius."]
+          },
+          "reflection": "Which assumption about AI capability would create the greatest operational risk if your leadership team made it?"
+        },
+        {
+          "id": "w1-l3",
+          "title": "The Seat: Mandate, Alliances, and the Safety Posture",
+          "duration": 60,
+          "reading": "Read Part II, Chapters 4–7: The Seat, What It Pays, The Sceptics, and The Safety Seat.",
+          "outcomes": ["Draft a concise CAIO mandate centered on outcomes and accountability.", "Identify the executive and operational alliances needed to make the role effective.", "Explain why governance enables adoption instead of blocking it."],
+          "teaching": [
+            "The CAIO role needs authority over an outcome, not ownership of every technical implementation. A credible mandate connects business priorities, process owners, finance, technology, legal/privacy, and frontline teams. The CAIO brings those functions into one delivery cadence and makes the next decision visible.",
+            "Safety is part of the mandate from day one. A defensible posture states which information cannot enter external tools, who approves new use cases, how outputs are reviewed, and what happens when something fails. Good governance removes ambiguity for staff and makes a first pilot easier to approve."
+          ],
+          "example": {
+            "title": "A useful mandate versus a vanity title",
+            "body": "Weak mandate: ‘Lead our AI transformation.’ Strong mandate: ‘Within 90 days, deliver two human-approved process pilots with measured baselines, an owner, a one-page risk register, and a recommendation for scale or stop.’ The second version has a decision, an owner, and evidence."
+          },
+          "activity": {
+            "title": "Draft a one-page CAIO charter",
+            "brief": "Write a charter for an internal or fractional CAIO engagement.",
+            "steps": ["Write the mandate in one sentence using a business outcome.", "Name the executive sponsor, process owner, technical partner, and risk/privacy partner.", "List three in-scope activities and three out-of-scope activities for the first 90 days.", "Add a weekly decision rhythm and one escalation rule."],
+            "definitionOfDone": ["The charter names accountable people or roles.", "It defines a limited 90-day scope.", "It includes a safety or escalation path, not only a delivery goal."]
+          },
+          "reflection": "Where could a CAIO role be mistaken for an IT project, and what language would reframe it as business leadership?"
+        },
+        {
+          "id": "w1-l4",
+          "title": "Choose Your Path and Set Up the 30-Day Operating System",
+          "duration": 60,
+          "reading": "Read Part III, Chapters 8–14, and Appendix K: Your First Thirty Days. Focus on choosing an employed, consulting, or staged path.",
+          "outcomes": ["Choose a primary path for the BootCamp: internal leader, fractional practitioner, or staged transition.", "Select one industry and one real target process or target business.", "Create a recurring working cadence for evidence-building."],
+          "teaching": [
+            "The source rejects the idea that a technical degree or permission is the starting point. The practical entry route depends on your access: employees can use legitimate access to a business; consultants need a clear industry focus and a target organisation; career changers should build evidence before making grand claims.",
+            "The 30-day plan is intentionally narrow. Pick one industry, one real process or business, and protected weekly work time. The point is not to become generally interested in AI. It is to leave the month holding dated operational artifacts and a credible next ask."
+          ],
+          "example": {
+            "title": "A staged fractional path",
+            "body": "A long-tenured operations manager chooses manufacturing, documents one recurring quote-preparation process at her employer, and uses that before-and-after as the foundation for a future fractional offer. She does not try to launch a consulting practice and change her employer in the same week."
+          },
+          "activity": {
+            "title": "Set your BootCamp operating agreement",
+            "brief": "Choose one path, one sector, one target, and a realistic weekly time commitment.",
+            "steps": ["Choose employed, consulting, or staged transition as your primary path for these four weeks.", "Name one industry you know well and why it is a fit.", "Name one target process or target business you can study ethically.", "Block two recurring work sessions and one longer weekly review in your calendar.", "Create a dated evidence folder for every artifact you will produce."],
+            "definitionOfDone": ["You have one primary track, not several competing tracks.", "Your target is a real business context with observable work.", "Your calendar contains protected time and a dated evidence location."]
+          },
+          "reflection": "What access, industry knowledge, or operational credibility do you already have that a purely technical candidate may lack?"
+        }
+      ],
+      "assessment": {
+        "title": "Week 1 Knowledge Check · Mandate and Foundations",
+        "questions": [
+          {"id": "w1q1", "question": "Which description best fits a CAIO’s first responsibility?", "options": ["Buy the newest AI tools", "Own business outcomes, safe deployment, and accountable adoption", "Replace every operational leader", "Write all production code"], "correctIndex": 1, "explanation": "The CAIO role is an accountable business leadership function, not a tool-purchasing or solo engineering role."},
+          {"id": "w1q2", "question": "Which condition makes a first AI pilot safer?", "options": ["Maximum possible business impact", "No process owner", "A low blast radius and human review", "Running many pilots in parallel"], "correctIndex": 2, "explanation": "A low-consequence, human-reviewed pilot lets a team learn without exposing customers or the business to unproven output."},
+          {"id": "w1q3", "question": "What should a Week 1 path decision include?", "options": ["One industry and one target process or business", "A promise to serve every industry", "A complete software product", "A new job title before evidence"], "correctIndex": 0, "explanation": "Narrowing the industry and real target prevents general-interest activity from replacing evidence-building."},
+          {"id": "w1q4", "question": "Why is governance introduced before scale?", "options": ["To delay delivery", "To clarify boundaries, approvals, and failure handling", "To eliminate human involvement", "To avoid measuring results"], "correctIndex": 1, "explanation": "Governance makes responsible use easier by clarifying what staff can do and how exceptions are handled."}
+        ]
+      }
+    },
+    {
+      "number": 2,
+      "title": "Proof, Diagnosis, and the Business Case",
+      "outcome": "Create visible, dated evidence that connects AI work to a measurable business problem.",
+      "lessons": [
+        {
+          "id": "w2-l1",
+          "title": "The Proof Ladder: Build Evidence Before You Ask for Permission",
+          "duration": 60,
+          "reading": "Read Part IV, Chapter 15: The Proof Ladder.",
+          "outcomes": ["Differentiate a credential claim from an operational proof artifact.", "Select a before-and-after task suitable for honest measurement.", "Plan an evidence portfolio that supports internal leadership or client conversations."],
+          "teaching": [
+            "The guide’s central career principle is that new fields reward proof before titles. A useful artifact exists without an assignment: it is dated, attributable, and concrete enough for a skeptical reviewer to inspect. This week begins with the smallest credible artifact, a measured before-and-after on one recurring task.",
+            "The measurement must include correction time and quality constraints. A claim that a task is ‘faster’ is weak; a dated comparison of baseline time, reviewed AI-assisted time, output quality, and cost is a business result."
+          ],
+          "example": {"title": "A credible before-and-after", "body": "A sales operations lead measures a weekly account-summary task at 70 minutes. With a saved, reviewed AI workflow, it takes 18 minutes including correction. The artifact includes the inputs, review rule, dates, and a note that complex accounts still require manual drafting."},
+          "activity": {"title": "Design your before-and-after study", "brief": "Choose one recurring task and create a one-page measurement plan.", "steps": ["Name the task, frequency, current owner, and current steps.", "Define baseline units: minutes, errors, turnaround, or volume.", "Define a quality check and a human review rule.", "Record what will count as an honest limitation.", "Create a dated baseline sheet and schedule one week of observation."], "definitionOfDone": ["The task recurs often enough to measure.", "The baseline and after-measurement use the same unit.", "The plan includes quality review and a limitation."]},
+          "reflection": "What would make a skeptical executive trust your result rather than dismiss it as a tool demo?"
+        },
+        {
+          "id": "w2-l2",
+          "title": "Shadow Audit: Read a Business for Operational Leaks",
+          "duration": 60,
+          "reading": "Read Part IV, Chapter 16: The Shadow Audit; review Chapter 20: Reading a Business.",
+          "outcomes": ["Find public or internal signals of repetitive operational pain.", "Convert observations into a defensible opportunity hypothesis.", "Avoid overclaiming from a single signal."],
+          "teaching": [
+            "A shadow audit is a structured way to turn observations into a practical hypothesis. The source encourages using what is visible: job ads, customer reviews, process bottlenecks, existing software, public documents, or direct operations interviews. The aim is not to prove every fact from outside; it is to identify questions worth validating.",
+            "Strong diagnosis relies on convergence. A high-volume administration job ad, slow-response reviews, and an owner personally answering routine messages may point to the same process problem. One complaint alone is not enough. Record observations, sources, assumptions, and the question you would ask the process owner."
+          ],
+          "example": {"title": "Converging signals at a clinic", "body": "A clinic’s reviews mention long waits for callbacks; its job ad seeks a full-time receptionist to manage enquiries; its website has a limited contact flow. A careful hypothesis is not ‘the clinic needs a chatbot.’ It is ‘enquiry triage and callback workflow may be creating avoidable delay; validate volume, exceptions, and privacy constraints.’"},
+          "activity": {"title": "Create a mini shadow audit", "brief": "Audit one ethical target: your employer, a client with permission, or a public business using public information.", "steps": ["Collect three observable signals: a process observation, public review pattern, job ad, or published workflow clue.", "Write the source for each signal and separate fact from inference.", "Name one candidate process, its likely owner, and the customer or financial consequence.", "Write five discovery questions you would ask before recommending any solution."], "definitionOfDone": ["The audit contains at least two converging signals.", "Each claim is labeled as observed fact or hypothesis.", "The final recommendation is a discovery conversation, not a premature product pitch."]},
+          "reflection": "Which inference in your audit needs the most validation, and who could answer it?"
+        },
+        {
+          "id": "w2-l3",
+          "title": "Policy Before Scale: Practical AI Risk and Governance",
+          "duration": 60,
+          "reading": "Read Chapter 7: The Safety Seat; Chapter 24: Data, Privacy and Safety; and Appendix L: The Risk and Governance Primer.",
+          "outcomes": ["Identify the data and decision boundaries of a pilot.", "Draft a plain-language one-page AI use policy.", "Define an approval and escalation rule."],
+          "teaching": [
+            "The goal of early governance is not a large compliance program. It is a usable set of operating rules: approved tools, prohibited data, human approval points, an owner for new use cases, and a way to report incidents or uncertain outputs. Written simply, these rules give frontline staff permission to use helpful tools safely.",
+            "Treat risk as a design input. Customer personal data, health data, unreleased financial information, confidential contracts, and decisions that affect rights or access all require more care. A first pilot should favor an internal, reversible task where outputs can be reviewed before anyone acts."
+          ],
+          "example": {"title": "A one-page policy in practice", "body": "A property services business allows an approved assistant to draft internal job summaries from approved templates. Staff may not paste tenant identifiers, payment information, or unredacted contracts. Every external message requires employee approval. A named operations manager approves new uses and receives issue reports."},
+          "activity": {"title": "Draft your one-page AI use policy", "brief": "Create a policy suitable for your selected target context.", "steps": ["List approved tools or tool categories for the pilot.", "List information that must not be entered into those tools.", "Set a human-review rule for outputs.", "Name the role that approves a new use case.", "Add a simple report-and-stop rule when output is unsafe, wrong, or unclear."], "definitionOfDone": ["The policy fits on one page.", "It uses plain language that a frontline employee can follow.", "It covers tools, data, review, approval, and incident response."]},
+          "reflection": "Which safety rule would make adoption easier because it removes ambiguity for staff?"
+        },
+        {
+          "id": "w2-l4",
+          "title": "Speak Money: Results Memos and Value Arithmetic",
+          "duration": 60,
+          "reading": "Read Part IV, Chapters 17–18: Your First Win and Speak Money, Not Model.",
+          "outcomes": ["Translate a process improvement into a business-relevant measure.", "Structure a concise results memo around baseline, change, number, and next decision.", "State assumptions without inflating a benefit claim."],
+          "teaching": [
+            "A CAIO earns authority by making the business case legible. The guide emphasizes the before-and-after baseline, the actual change, the measured result, and the next decision. Technology vocabulary is secondary because leaders ultimately need to know what changed, what it cost, what risk remains, and what to do next.",
+            "Value arithmetic should be explicit and modest. If a process saves 10 staff hours per week, state the loaded labor assumption, the annualized range, the human review time, and what the calculation does not include. Credibility comes from traceable inputs, not from the largest possible number."
+          ],
+          "example": {"title": "A one-page results memo", "body": "Baseline: customer enquiry triage took 18 staff hours each week. Change: a human-approved categorization draft was piloted for four weeks. Result: first-response preparation dropped to 9.5 hours with no increase in escalations. Next: maintain approval, expand to one additional enquiry type, and re-measure after 30 days."},
+          "activity": {"title": "Write a results memo from a scenario", "brief": "Use your selected task or a provided scenario to draft a one-page memo.", "steps": ["Write the baseline and identify its source.", "Describe the process change and review rule.", "Calculate the result using stated assumptions.", "List one limitation or unresolved risk.", "End with one clear approve, stop, or next-pilot decision."], "definitionOfDone": ["The memo uses a real or transparently simulated baseline.", "The calculation states its assumptions.", "The final paragraph asks for a decision rather than more discussion."]},
+          "reflection": "What measure would your sponsor care about most: time, errors, revenue, response time, risk, or employee experience—and why?"
+        }
+      ],
+      "assessment": {
+        "title": "Week 2 Knowledge Check · Proof and Value",
+        "questions": [
+          {"id": "w2q1", "question": "What makes a before-and-after artifact credible?", "options": ["It uses the largest possible savings claim", "It includes a dated baseline, reviewed after-state, and honest limitations", "It only describes the AI tool", "It avoids mentioning correction time"], "correctIndex": 1, "explanation": "Credible evidence includes comparable measurement, review, and transparent constraints."},
+          {"id": "w2q2", "question": "What is the purpose of a shadow audit?", "options": ["To prescribe a tool without evidence", "To turn observable signals into questions and opportunity hypotheses", "To access confidential systems without permission", "To guarantee an AI project will work"], "correctIndex": 1, "explanation": "A shadow audit supports an evidence-led discovery conversation; it does not replace validation."},
+          {"id": "w2q3", "question": "Which item belongs in a one-page AI use policy?", "options": ["An unlimited list of new tools", "A rule for prohibited data and human review", "A promise that no output can be wrong", "A complex legal opinion"], "correctIndex": 1, "explanation": "Practical governance explains data boundaries and human checks in usable language."},
+          {"id": "w2q4", "question": "What is the best closing line of a results memo?", "options": ["A list of model features", "A clear next decision supported by the measured result", "A request for a bigger title", "A claim that all risk is eliminated"], "correctIndex": 1, "explanation": "The memo should help a decision-maker choose the next responsible action."}
+        ]
+      }
+    },
+    {
+      "number": 3,
+      "title": "Deploy One Process Responsibly",
+      "outcome": "Design a safe, measurable, human-owned pilot that can become a real operating system.",
+      "lessons": [
+        {
+          "id": "w3-l1",
+          "title": "The Deployment Loop: Eight Steps, One Process",
+          "duration": 60,
+          "reading": "Read Part V, Chapter 19: The Deployment Loop.",
+          "outcomes": ["Recall the eight-step deployment loop in sequence.", "Explain why early work focuses on one process at a time.", "Select a candidate process using volume, pain, measurability, and blast radius."],
+          "teaching": [
+            "The source’s deployment loop is: assess, pick one, map it, build or buy, pilot, measure, hand off, and govern. It is deliberately sequential. Teams often begin several pilots at once and finish none; the better first outcome is one running process with a measured result and a trained owner.",
+            "Initial selection should favor a repeated task with real pain, observable measures, and low consequence if a draft is wrong. A narrow win produces the evidence, trust, and operating habits needed for the next process."
+          ],
+          "example": {"title": "Choosing the right first pilot", "body": "A logistics company has three ideas: automate an internal delivery-status summary, generate customer dispute decisions, or create a warehouse safety advisor. The status summary is high-volume, easy to review, and low blast radius; it is the sensible first pilot. The other ideas may matter later but carry more consequence."},
+          "activity": {"title": "Score three candidate processes", "brief": "Create a one-page scoring table to select one first pilot.", "steps": ["List three candidate processes.", "Score each from 1–5 for volume, staff pain, measurability, and blast radius.", "Write one sentence explaining the score for each dimension.", "Select one process and record why the other two wait."], "definitionOfDone": ["The selected process has a named owner.", "The choice is justified by evidence, not novelty.", "You explain why a higher-risk idea is deferred."]},
+          "reflection": "Which attractive AI idea should wait because it is not yet a good first deployment?"
+        },
+        {
+          "id": "w3-l2",
+          "title": "Read and Map the Real Process",
+          "duration": 60,
+          "reading": "Read Chapter 20: Reading a Business, then revisit the map-it step in Chapter 19.",
+          "outcomes": ["Conduct a process interview with the person who does the work.", "Document triggers, steps, decisions, exceptions, inputs, outputs, and quality criteria.", "Distinguish a manager’s description from frontline reality."],
+          "teaching": [
+            "You cannot responsibly automate a process you cannot describe. The guide instructs the CAIO to sit with the person who actually performs the work, not only the manager, and map the trigger, every step, decision point, exception, information source, destination, and definition of done.",
+            "Process mapping often reveals workarounds, waiting, duplicate entry, and rules nobody remembers. These discoveries are valuable even if AI is never used. Treat the map as both a diagnostic asset and a specification for a future builder or tool configuration."
+          ],
+          "example": {"title": "Quote-request mapping", "body": "A manager says quotes take 10 minutes. A coordinator’s walkthrough reveals three systems, a pricing exception spreadsheet, missing customer details, and a daily approval queue. The useful process map surfaces the exception paths before a workflow is selected."},
+          "activity": {"title": "Map one process end to end", "brief": "Build a process map from a real or realistic interview.", "steps": ["Name the trigger and the expected final output.", "List each human and system step in order.", "Mark every decision, exception, wait state, and handoff.", "Record source data, destination data, and the existing quality check.", "Circle one step that could be AI-assisted and one that must remain human-owned."], "definitionOfDone": ["The map could be followed by someone unfamiliar with the process.", "It captures at least one exception path.", "It names the person accountable for the result."]},
+          "reflection": "What did the process map reveal that a tool-first conversation would have missed?"
+        },
+        {
+          "id": "w3-l3",
+          "title": "Build, Buy, and Pilot in Shadow Mode",
+          "duration": 60,
+          "reading": "Read Chapters 21–23: The Tool Landscape, Ten Deployments Anyone Can Ship, and Piloting and Proving.",
+          "outcomes": ["Apply build-versus-buy criteria to a specific workflow.", "Design a shadow-mode pilot with a defined baseline and review rule.", "Set acceptance criteria and stop conditions before launch."],
+          "teaching": [
+            "Tool selection follows process understanding. The guide’s practical rule is to buy for commodity problems, assemble for your workflow, and build only after the first two demonstrably fail. The decision is not about the most advanced platform; it is about fit, data handling, maintainability, and cost relative to the problem.",
+            "A pilot runs next to the existing method before it replaces it. In shadow mode, people keep doing the task while the new workflow produces comparable drafts. That lets the team measure quality, find edge cases, and stop safely before a customer or irreversible decision is exposed."
+          ],
+          "example": {"title": "A shadow-mode enquiry pilot", "body": "For two weeks, an assistant drafts enquiry categories and reply suggestions from approved templates. Staff continue their normal response process, compare the draft with what they sent, and log errors. The workflow has a 90% category-accuracy target, no autonomous sending, and a stop rule for sensitive requests."},
+          "activity": {"title": "Write a pilot card", "brief": "Create a two-page pilot design for your chosen process.", "steps": ["Choose buy, assemble, or build and explain the decision.", "Define the baseline, pilot duration, and sample size.", "Set quality, time, cost, and safety acceptance criteria.", "Write human review and stop conditions.", "Name the process owner and the person who reviews pilot results."], "definitionOfDone": ["The pilot can be run without exposing unreviewed output to customers.", "Success metrics and stop conditions are written before launch.", "The owner and reviewer are different enough to create accountability."]},
+          "reflection": "What evidence would convince you to stop or redesign the pilot rather than scale it?"
+        },
+        {
+          "id": "w3-l4",
+          "title": "Handoff, Governance, and a System That Survives You",
+          "duration": 60,
+          "reading": "Read Chapters 24–26: Data, Privacy and Safety; Working With Builders; and Installing Governance.",
+          "outcomes": ["Create a lightweight runbook for an operating AI workflow.", "Define ownership, monitoring, incident handling, and review cadence.", "Recognize when a builder relationship needs a clearer specification."],
+          "teaching": [
+            "A successful pilot is not a durable deployment until someone owns it after the initial excitement fades. Handoff includes a one-page runbook: what the workflow does, inputs and outputs, approved use, review steps, what can fail, how to switch it off, who owns it, and when performance is reviewed.",
+            "Governance becomes operational through artifacts. A register of use cases, data boundaries, owners, approval levels, pilot measures, incidents, and review dates makes the work legible to leaders and safe for staff. If a builder is involved, the process map and acceptance criteria are the backbone of the specification."
+          ],
+          "example": {"title": "The runbook that prevents orphanhood", "body": "A proposal-drafting workflow has a process owner in sales operations, an approved input folder, a mandatory reviewer, a list of prohibited client data, a fallback manual process, and a weekly sample check. When the owner goes on leave, the workflow continues because the operating knowledge is written down."},
+          "activity": {"title": "Create a deployment runbook", "brief": "Write a one-page operating runbook for your pilot.", "steps": ["Describe the purpose, trigger, inputs, and output.", "List approved data and prohibited data.", "State the review and approval step.", "Name the owner, backup owner, and escalation contact.", "Write a stop/switch-off procedure and a weekly monitoring measure."], "definitionOfDone": ["A new operator could run the process from the document.", "The document includes failure and shutdown instructions.", "The governance rules match the risk of the workflow."]},
+          "reflection": "If you left tomorrow, what knowledge would a colleague need to operate this workflow safely?"
+        }
+      ],
+      "assessment": {
+        "title": "Week 3 Knowledge Check · Deployment Practice",
+        "questions": [
+          {"id": "w3q1", "question": "What is the recommended sequence at the start of a deployment loop?", "options": ["Buy a tool, then find a task", "Assess, choose one process, and map it", "Launch in every department", "Build custom software before interviewing users"], "correctIndex": 1, "explanation": "The loop begins with understanding the business, selecting one candidate, and mapping the work before tools."},
+          {"id": "w3q2", "question": "Why use shadow mode for a pilot?", "options": ["To eliminate all human review", "To compare the new workflow against the old one before relying on it", "To hide the work from the process owner", "To scale immediately"], "correctIndex": 1, "explanation": "Shadow mode protects customers and gives the team comparative evidence."},
+          {"id": "w3q3", "question": "Which item belongs in a durable AI workflow runbook?", "options": ["Only the vendor name", "A stop procedure and named owner", "A claim that it never fails", "An unapproved data export"], "correctIndex": 1, "explanation": "Runbooks need ownership, operating instructions, and an escape path when something goes wrong."},
+          {"id": "w3q4", "question": "When is custom build most appropriate?", "options": ["Before studying the process", "Whenever a new model appears", "After off-the-shelf and workflow assembly options demonstrably fail the need", "For every low-risk task"], "correctIndex": 2, "explanation": "Custom work should follow validated process needs, not precede them."}
+        ]
+      }
+    },
+    {
+      "number": 4,
+      "title": "Win the Seat, Lead the Conversation, and Scale the Work",
+      "outcome": "Translate proof and safe delivery into an internal mandate, a client conversation, and a 90-day CAIO plan.",
+      "lessons": [
+        {
+          "id": "w4-l1",
+          "title": "The Empty Seat Map: Find Organizations That Need Leadership",
+          "duration": 60,
+          "reading": "Read Part VI, Chapter 27: The Empty Seat Map.",
+          "outcomes": ["Identify public signals that a business has AI-relevant operational pain.", "Build a focused prospect or internal-opportunity list.", "Use multiple signals before asserting a problem."],
+          "teaching": [
+            "The guide recommends looking beyond technology companies. Repetitive work is often concentrated in established firms with real volumes: distribution, professional services, healthcare-adjacent operations, property, trades, manufacturing, and logistics. Their public signals can reveal expensive workarounds and unowned process pain.",
+            "Useful signals include repeated-role hiring, review patterns about delay or errors, weak response flows, stale digital experiences, and leaders doing frontline work. These clues start a hypothesis; they are not permission to overstate the diagnosis. Look for convergence and prepare questions before recommending action."
+          ],
+          "example": {"title": "A ranked empty-seat list", "body": "A learner identifies ten accounting firms. She ranks them using administrative hiring, client-review themes, repeatable document work, and her own domain understanding. She records the evidence and selects three organisations where two or more signals converge."},
+          "activity": {"title": "Build your empty-seat map", "brief": "Create a ranked list of 10 internal opportunities or organisations in one sector.", "steps": ["Define your target sector and ideal organisation profile.", "List 10 eligible organisations or internal business units.", "For each, gather one or two observable process signals.", "Score fit, urgency, access, and potential measurability.", "Select your top three and prepare a discovery question for each."], "definitionOfDone": ["The list is focused on one sector or organisational context.", "Rankings cite observable signals rather than intuition alone.", "Top choices have a clear reason for a discovery conversation."]},
+          "reflection": "Which kind of business would value your operational background most, and what evidence supports that conclusion?"
+        },
+        {
+          "id": "w4-l2",
+          "title": "Assessment-First Conversations and the Value of the Seat",
+          "duration": 60,
+          "reading": "Read Chapters 28–32: Shadow-Audit Outreach, The Assessment-First Close, Borrowed Audiences, Do It or Hire the Doing, and Pricing the Seat.",
+          "outcomes": ["Lead with a diagnosis and a question set rather than a generic AI pitch.", "Structure a discovery conversation around operational evidence.", "Connect pricing or internal investment to measurable scope and ownership."],
+          "teaching": [
+            "A credible CAIO conversation begins with the work, not the model. Bring the observations from a shadow audit, state what you can and cannot know from outside, and ask questions about volume, cost, exceptions, ownership, and risk. This creates a path to a paid or sponsored assessment rather than a vague free consultation.",
+            "Price and scope should follow the seat’s responsibilities: diagnosis, prioritization, governance, pilot design, and accountable reporting. Avoid pricing a leadership engagement as an undifferentiated hours-for-tools exercise. Whether internal or external, clarify what artifact or decision the work will produce."
+          ],
+          "example": {"title": "Assessment-first outreach", "body": "Instead of ‘I help firms use AI,’ a consultant writes: ‘Your hiring and review patterns suggest enquiry handling may be consuming senior time. I may be wrong; if it is useful, I can run a short assessment that maps volume, exceptions, risk, and one measurable pilot recommendation.’"},
+          "activity": {"title": "Draft a discovery invitation and agenda", "brief": "Write an internal or client-facing invitation for a 30-minute discovery conversation.", "steps": ["Open with one observed fact and one careful hypothesis.", "Acknowledge what you cannot know without a conversation.", "List five diagnostic questions about volume, pain, quality, ownership, and data.", "State the output of an assessment: a prioritized process shortlist and pilot recommendation.", "Write one sentence explaining the decision your sponsor or client will be able to make afterward."], "definitionOfDone": ["The invitation avoids generic AI promises.", "It frames a discovery conversation, not a premature solution proposal.", "It makes the assessment output and next decision clear."]},
+          "reflection": "What would make a sponsor feel that your first conversation respects their operational reality?"
+        },
+        {
+          "id": "w4-l3",
+          "title": "Protection, Credibility, and Keeping the Seat",
+          "duration": 60,
+          "reading": "Read Chapters 33–36: Paper and Protection, The Honest P&L, Keeping the Seat, and Hunting Bigger Water; revisit Appendix L as needed.",
+          "outcomes": ["Identify the practical protections needed in an AI leadership engagement.", "Explain why ongoing measurement and governance sustain a mandate.", "Plan a reporting cadence that keeps results, risk, and ownership visible."],
+          "teaching": [
+            "The work does not end at implementation. Sustainable CAIO leadership combines clear scope, data and confidentiality boundaries, ownership, realistic economics, and a rhythm of evidence. The source’s emphasis on honest measurement applies here: report what moved, what did not, what risk appeared, and which decision is next.",
+            "Keeping the seat is less about defending a title than operating a portfolio of visible, owned systems. A leader who documents outcomes, updates governance, hears frontline feedback, and regularly reprioritizes work becomes difficult to remove because the organisation can see the function being performed."
+          ],
+          "example": {"title": "A monthly CAIO operating review", "body": "A monthly review includes one-page updates for each pilot: baseline, current measure, quality exceptions, owner feedback, data/risk changes, spend, and an approve/adjust/stop recommendation. Leaders can see both value and control without needing a technical deep dive."},
+          "activity": {"title": "Design your CAIO operating cadence", "brief": "Create a 90-day governance and reporting cadence for your target context.", "steps": ["Set weekly operating reviews for a pilot owner and CAIO lead.", "Set a monthly executive review with a standard one-page scorecard.", "Define what triggers an immediate risk review.", "List the artifacts that must stay current: register, runbook, policy, measures, and decision log.", "Write a statement of how frontline feedback enters the review."], "definitionOfDone": ["The cadence has named participants and dates or frequencies.", "The scorecard includes value, quality, risk, and ownership.", "There is a route for stopping or changing work based on evidence."]},
+          "reflection": "What would leaders need to see every month to trust that AI work is being responsibly led?"
+        },
+        {
+          "id": "w4-l4",
+          "title": "Capstone: Your 90-Day CAIO Plan and Leadership Briefing",
+          "duration": 180,
+          "reading": "Read Part VII–VIII, Chapters 37–41, plus Appendix K. Review the guide’s templates and worked-engagement sequence before starting.",
+          "outcomes": ["Synthesize the BootCamp artifacts into a sequenced 90-day plan.", "Prepare a leadership briefing that asks for a practical decision.", "Demonstrate a CAIO approach that joins value, safety, delivery, and accountability."],
+          "teaching": [
+            "The capstone is a practical engagement brief, not a strategy deck. It should identify the business context, evidence of a process opportunity, the selected first pilot, baseline and acceptance measures, safety rules, named owners, and the next two opportunities. This gives a sponsor something operational to approve or improve.",
+            "Your 90-day plan should not promise an enterprise transformation. It should sequence discovery, a low-blast-radius pilot, a measured result, a runbook, a governance checkpoint, and a decision on the next process. The value of the plan is its specificity: who does what, by when, with what evidence."
+          ],
+          "example": {"title": "A board-ready request", "body": "‘Approve a 30-day, human-reviewed pilot for quote-intake summaries. The baseline is 14 coordinator hours weekly; the success criterion is a 30% reduction in preparation time with no increase in correction or customer escalation. Sales operations owns the process, privacy approves data boundaries, and the pilot stops if prohibited data enters the workflow.’"},
+          "activity": {"title": "Build and present your CAIO engagement brief", "brief": "Assemble your BootCamp work into a concise leadership-ready package.", "steps": ["Write a one-page executive summary: context, opportunity, outcome, and decision requested.", "Attach your process map and baseline plan.", "Create a pilot card with scope, measures, human review, stop conditions, and owners.", "Attach a one-page AI policy and runbook outline.", "Create a 90-day timeline with discovery, pilot, measurement, governance, and next-process milestones.", "Prepare a five-minute verbal briefing using outcome, evidence, risk, and next decision."], "definitionOfDone": ["The package identifies one specific first process and named owners.", "Measures, data boundaries, and stop conditions are present.", "The 90-day plan is sequenced and realistic.", "The briefing ends with one decision a sponsor can make now."]},
+          "reflection": "What proof in your capstone would make you credible for the next conversation, even before you hold the CAIO title?"
+        }
+      ],
+      "assessment": {
+        "title": "Week 4 Knowledge Check · Leadership and Scale",
+        "questions": [
+          {"id": "w4q1", "question": "What turns a public signal into a defensible opportunity hypothesis?", "options": ["One dramatic review", "Convergence of multiple observable signals plus validation questions", "A generic AI pitch", "A promise to fix every department"], "correctIndex": 1, "explanation": "Multiple signals and disciplined validation reduce the risk of overclaiming."},
+          {"id": "w4q2", "question": "What should an assessment-first conversation lead with?", "options": ["A model comparison", "Operational observations and diagnostic questions", "A fixed solution price without scope", "A promise of autonomous decisions"], "correctIndex": 1, "explanation": "Start with the business work and evidence, then validate the problem before recommending a solution."},
+          {"id": "w4q3", "question": "What keeps a CAIO mandate durable after the first pilot?", "options": ["Never reporting limitations", "Visible measures, governance artifacts, ownership, and a decision cadence", "A one-time product demonstration", "Avoiding frontline feedback"], "correctIndex": 1, "explanation": "The role endures by operating accountable, measured systems—not by holding a title."},
+          {"id": "w4q4", "question": "What is the strongest capstone outcome?", "options": ["A general AI vision statement", "A 90-day plan with a first process, baseline, safe pilot, owners, and next decision", "A list of every AI tool", "A plan with no stop conditions"], "correctIndex": 1, "explanation": "A leadership-ready plan makes the first operating decision concrete and responsible."}
+        ]
+      }
+    }
+  ]
+}
