@@ -31,6 +31,11 @@ const curriculum = JSON.parse(
   )
 ) as Curriculum;
 
+const importerSource = fs.readFileSync(
+  path.resolve(process.cwd(), "import-caio-bootcamp.mjs"),
+  "utf8"
+);
+
 describe("CAIO 4-Week BootCamp source curriculum", () => {
   it("preserves a complete four-week source-grounded learning path", () => {
     expect(curriculum.source).toMatchObject({
@@ -94,5 +99,17 @@ describe("CAIO 4-Week BootCamp source curriculum", () => {
         expect.stringContaining("stop conditions"),
       ])
     );
+  });
+
+  it("uses an explicit find-or-update import path to prevent duplicate CAIO records", () => {
+    expect(importerSource).toContain(
+      "SELECT id FROM courses WHERE slug = ? ORDER BY id ASC"
+    );
+    expect(importerSource).toContain("if (existingRows.length > 1)");
+    expect(importerSource).toContain(
+      "CAIO BootCamp import stopped because duplicate course records already exist"
+    );
+    expect(importerSource).toContain("if (existingCourseId)");
+    expect(importerSource).not.toContain("ON DUPLICATE KEY UPDATE");
   });
 });

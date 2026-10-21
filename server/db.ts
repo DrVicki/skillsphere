@@ -80,10 +80,15 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
   if (!values.lastSignedIn) values.lastSignedIn = new Date();
   if (Object.keys(updateSet).length === 0) updateSet.lastSignedIn = new Date();
-  await db
-    .insert(users)
-    .values(values)
-    .onDuplicateKeyUpdate({ set: updateSet });
+  const existingUser = await getUserByOpenId(user.openId);
+  if (existingUser) {
+    // Some historical project databases contain duplicate identity rows. Update
+    // the most recently used record resolved above so OAuth sync cannot create
+    // another record or downgrade the owner role.
+    await db.update(users).set(updateSet).where(eq(users.id, existingUser.id));
+  } else {
+    await db.insert(users).values(values);
+  }
   const persistedUser = await getUserByOpenId(user.openId);
   if (persistedUser) {
     // A classroom may be created before a learner has registered. Match those
@@ -102,6 +107,7 @@ export async function getUserByOpenId(openId: string) {
     .select()
     .from(users)
     .where(eq(users.openId, openId))
+    .orderBy(desc(users.lastSignedIn), desc(users.id))
     .limit(1);
   return result[0];
 }
@@ -169,6 +175,7 @@ export async function getCourses(
     offset?: number;
     publishedOnly?: boolean;
     trainerId?: number;
+    sort?: "popular" | "recent";
   } = {}
 ) {
   const db = await getDb();
@@ -217,7 +224,11 @@ export async function getCourses(
     .from(courses)
     .leftJoin(users, eq(courses.trainerId, users.id))
     .where(conditions.length ? and(...conditions) : undefined)
-    .orderBy(desc(courses.enrollmentCount))
+    .orderBy(
+      opts.sort === "recent"
+        ? desc(courses.createdAt)
+        : desc(courses.enrollmentCount)
+    )
     .limit(opts.limit ?? 20)
     .offset(opts.offset ?? 0);
 }

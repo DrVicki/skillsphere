@@ -10,6 +10,24 @@ function createPublicContext(): TrpcContext {
   };
 }
 
+function createAdminContext(): TrpcContext {
+  return {
+    user: {
+      id: 1,
+      openId: "admin-catalog-test",
+      name: "Administrator",
+      email: "admin@skillsphere.test",
+      loginMethod: "manus",
+      role: "admin",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      lastSignedIn: new Date(),
+    },
+    req: { protocol: "https", headers: {} } as TrpcContext["req"],
+    res: { clearCookie: () => {} } as TrpcContext["res"],
+  };
+}
+
 describe("source course catalog", () => {
   it("lists the three newly imported public courses with their curriculum counts", async () => {
     const caller = appRouter.createCaller(createPublicContext());
@@ -58,6 +76,25 @@ describe("source course catalog", () => {
       isPublished: true,
       isFree: false,
       price: "497.00",
+    });
+  });
+
+  it("shows the complete catalog and newest CAIO BootCamp in the Admin Dashboard", async () => {
+    const caller = appRouter.createCaller(createAdminContext());
+    const courses = await caller.courses.listAll();
+
+    expect(courses).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          slug: "chief-ai-officer-caio-4-week-bootcamp",
+        }),
+      ])
+    );
+    expect(courses[0]).toMatchObject({
+      slug: "chief-ai-officer-caio-4-week-bootcamp",
+      title: "Chief AI Officer (CAIO) 4-Week BootCamp",
+      totalModules: 20,
+      isPublished: true,
     });
   });
 

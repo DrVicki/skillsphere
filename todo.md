@@ -88,6 +88,8 @@
 - [x] Add classrooms with course assignments, email-based student rosters, automatic enrollment, pending sign-in activation, and learner progress views
 - [x] Upgrade Python Forge with complete source lessons, portfolio projects, and embedded browser coding labs
 - [x] Create a four-week Chief AI Officer (CAIO) BootCamp from the supplied guide, with readings, examples, hands-on activities, assessments, and a 90-day capstone
+- [x] Make the CAIO BootCamp visible in the full Admin Dashboard course catalog and recent-course panel
+- [x] Ensure the SkillSphere owner consistently resolves to the administrator role after sign-in
 
 ## Admin Dashboard
 

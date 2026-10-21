@@ -99,10 +99,8 @@ const modules = curriculum.weeks.flatMap((week, weekIndex) => [
   assessmentModule(week),
 ]);
 
-const totalDuration = modules.reduce(
-  (total, module) => total + module.duration,
-  0
-);
+// Individual modules store seconds, while the course summary is displayed in minutes.
+const totalDuration = course.totalDuration;
 
 const db = await createConnection(process.env.DATABASE_URL);
 
@@ -110,9 +108,14 @@ try {
   await db.beginTransaction();
 
   const [existingRows] = await db.execute(
-    "SELECT id FROM courses WHERE slug = ? LIMIT 1",
+    "SELECT id FROM courses WHERE slug = ? ORDER BY id ASC",
     [course.slug]
   );
+  if (existingRows.length > 1) {
+    throw new Error(
+      "CAIO BootCamp import stopped because duplicate course records already exist. Resolve duplicates before rerunning the import."
+    );
+  }
   const existingCourseId = existingRows[0]?.id;
 
   if (existingCourseId) {
@@ -129,50 +132,49 @@ try {
     }
   }
 
-  await db.execute(
-    `INSERT INTO courses (
-      trainerId, title, slug, description, shortDescription, thumbnailUrl, category, level, language,
-      tags, price, comparePrice, isFree, isPublished, isFeatured, totalDuration, totalModules
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'English', ?, ?, ?, 0, 1, 0, ?, ?)
-    ON DUPLICATE KEY UPDATE
-      trainerId = VALUES(trainerId),
-      title = VALUES(title),
-      description = VALUES(description),
-      shortDescription = VALUES(shortDescription),
-      thumbnailUrl = VALUES(thumbnailUrl),
-      category = VALUES(category),
-      level = VALUES(level),
-      language = VALUES(language),
-      tags = VALUES(tags),
-      price = VALUES(price),
-      comparePrice = VALUES(comparePrice),
-      isFree = VALUES(isFree),
-      isPublished = VALUES(isPublished),
-      isFeatured = VALUES(isFeatured),
-      totalDuration = VALUES(totalDuration),
-      totalModules = VALUES(totalModules)`,
-    [
-      1,
-      course.title,
-      course.slug,
-      course.description,
-      course.shortDescription,
-      course.thumbnailUrl,
-      course.category,
-      course.level,
-      JSON.stringify(course.tags),
-      course.price,
-      course.comparePrice,
-      totalDuration,
-      modules.length,
-    ]
-  );
+  const courseValues = [
+    1,
+    course.title,
+    course.slug,
+    course.description,
+    course.shortDescription,
+    course.thumbnailUrl,
+    course.category,
+    course.level,
+    JSON.stringify(course.tags),
+    course.price,
+    course.comparePrice,
+    totalDuration,
+    modules.length,
+  ];
 
-  const [[storedCourse]] = await db.execute(
-    "SELECT id FROM courses WHERE slug = ? LIMIT 1",
-    [course.slug]
-  );
-  const courseId = storedCourse.id;
+  if (existingCourseId) {
+    await db.execute(
+      `UPDATE courses SET
+        trainerId = ?, title = ?, slug = ?, description = ?, shortDescription = ?, thumbnailUrl = ?,
+        category = ?, level = ?, language = 'English', tags = ?, price = ?, comparePrice = ?,
+        isFree = 0, isPublished = 1, isFeatured = 0, totalDuration = ?, totalModules = ?
+       WHERE id = ?`,
+      [...courseValues, existingCourseId]
+    );
+  } else {
+    await db.execute(
+      `INSERT INTO courses (
+        trainerId, title, slug, description, shortDescription, thumbnailUrl, category, level, language,
+        tags, price, comparePrice, isFree, isPublished, isFeatured, totalDuration, totalModules
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'English', ?, ?, ?, 0, 1, 0, ?, ?)`,
+      courseValues
+    );
+  }
+
+  const courseId =
+    existingCourseId ??
+    (
+      await db.execute(
+        "SELECT id FROM courses WHERE slug = ? ORDER BY id ASC LIMIT 1",
+        [course.slug]
+      )
+    )[0][0].id;
 
   await db.execute("DELETE FROM modules WHERE courseId = ?", [courseId]);
   for (const [sortOrder, module] of modules.entries()) {

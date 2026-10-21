@@ -37,6 +37,12 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
   const [location] = useLocation();
   const { user, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const logout = trpc.auth.logout.useMutation({
+    onSuccess: () => {
+      window.location.href = "/";
+    },
+    onError: () => toast.error("Logout failed"),
+  });
 
   if (loading) {
     return (
@@ -94,13 +100,6 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
       </div>
     );
   }
-  const logout = trpc.auth.logout.useMutation({
-    onSuccess: () => {
-      window.location.href = "/";
-    },
-    onError: () => toast.error("Logout failed"),
-  });
-
   const Sidebar = () => (
     <aside className="flex flex-col h-full bg-[#0f172a] text-white w-64 shrink-0">
       {/* Logo */}

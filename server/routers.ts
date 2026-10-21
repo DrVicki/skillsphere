@@ -177,7 +177,14 @@ export const appRouter = router({
           })
           .optional()
       )
-      .query(({ input }) => getCourses({ ...input, publishedOnly: false })),
+      .query(({ input }) =>
+        getCourses({
+          ...input,
+          publishedOnly: false,
+          sort: "recent",
+          limit: input?.limit ?? 100,
+        })
+      ),
 
     myTrainerCourses: trainerProcedure.query(({ ctx }) =>
       getCoursesByTrainer(ctx.user.id)
