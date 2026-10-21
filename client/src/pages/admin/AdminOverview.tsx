@@ -1,6 +1,13 @@
 import AdminLayout from "@/components/AdminLayout";
 import { trpc } from "@/lib/trpc";
-import { BookOpen, Users, DollarSign, TrendingUp, FileText, Eye } from "lucide-react";
+import {
+  BookOpen,
+  Users,
+  DollarSign,
+  TrendingUp,
+  FileText,
+  Eye,
+} from "lucide-react";
 import { Link } from "wouter";
 
 export default function AdminOverview() {
@@ -8,14 +15,58 @@ export default function AdminOverview() {
   const { data: courses } = trpc.courses.listAll.useQuery();
   const { data: users } = trpc.auth.listUsers.useQuery();
   const { data: blogPosts } = trpc.blog.listAll.useQuery();
+  const { data: classrooms } = trpc.classrooms.listManaged.useQuery();
 
   const stats = [
-    { label: "Total Courses", value: courses?.length ?? 0, icon: BookOpen, color: "bg-blue-500", href: "/admin/courses" },
-    { label: "Total Users", value: users?.length ?? 0, icon: Users, color: "bg-violet-500", href: "/admin/users" },
-    { label: "Total Revenue", value: `$${Number(analytics?.totalRevenue ?? 0).toFixed(2)}`, icon: DollarSign, color: "bg-emerald-500", href: "/admin/analytics" },
-    { label: "Enrollments", value: analytics?.totalEnrollments ?? 0, icon: TrendingUp, color: "bg-amber-500", href: "/admin/analytics" },
-    { label: "Blog Posts", value: blogPosts?.length ?? 0, icon: FileText, color: "bg-pink-500", href: "/admin/blog" },
-    { label: "Published Courses", value: courses?.filter(c => c.isPublished).length ?? 0, icon: Eye, color: "bg-teal-500", href: "/admin/courses" },
+    {
+      label: "Total Courses",
+      value: courses?.length ?? 0,
+      icon: BookOpen,
+      color: "bg-blue-500",
+      href: "/admin/courses",
+    },
+    {
+      label: "Total Users",
+      value: users?.length ?? 0,
+      icon: Users,
+      color: "bg-violet-500",
+      href: "/admin/users",
+    },
+    {
+      label: "Total Revenue",
+      value: `$${Number(analytics?.totalRevenue ?? 0).toFixed(2)}`,
+      icon: DollarSign,
+      color: "bg-emerald-500",
+      href: "/admin/analytics",
+    },
+    {
+      label: "Enrollments",
+      value: analytics?.totalEnrollments ?? 0,
+      icon: TrendingUp,
+      color: "bg-amber-500",
+      href: "/admin/analytics",
+    },
+    {
+      label: "Blog Posts",
+      value: blogPosts?.length ?? 0,
+      icon: FileText,
+      color: "bg-pink-500",
+      href: "/admin/blog",
+    },
+    {
+      label: "Published Courses",
+      value: courses?.filter(c => c.isPublished).length ?? 0,
+      icon: Eye,
+      color: "bg-teal-500",
+      href: "/admin/courses",
+    },
+    {
+      label: "Classrooms",
+      value: classrooms?.length ?? 0,
+      icon: Users,
+      color: "bg-indigo-500",
+      href: "/admin/classrooms",
+    },
   ];
 
   const recentCourses = courses?.slice(0, 5) ?? [];
@@ -30,7 +81,9 @@ export default function AdminOverview() {
             <a className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-all hover:-translate-y-0.5 group">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-xs text-gray-500 font-medium mb-1">{label}</p>
+                  <p className="text-xs text-gray-500 font-medium mb-1">
+                    {label}
+                  </p>
                   <p className="text-2xl font-bold text-gray-900">{value}</p>
                 </div>
                 <div className={`${color} p-2.5 rounded-lg`}>
@@ -52,18 +105,33 @@ export default function AdminOverview() {
             </Link>
           </div>
           <div className="space-y-3">
-            {recentCourses.length === 0 && <p className="text-sm text-gray-400">No courses yet.</p>}
+            {recentCourses.length === 0 && (
+              <p className="text-sm text-gray-400">No courses yet.</p>
+            )}
             {recentCourses.map(course => (
               <div key={course.id} className="flex items-center gap-3">
-                {course.thumbnailUrl
-                  ? <img src={course.thumbnailUrl} className="w-10 h-10 rounded-lg object-cover shrink-0" alt="" />
-                  : <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0"><BookOpen className="h-4 w-4 text-gray-400" /></div>
-                }
+                {course.thumbnailUrl ? (
+                  <img
+                    src={course.thumbnailUrl}
+                    className="w-10 h-10 rounded-lg object-cover shrink-0"
+                    alt=""
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                    <BookOpen className="h-4 w-4 text-gray-400" />
+                  </div>
+                )}
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-gray-900 truncate">{course.title}</p>
-                  <p className="text-xs text-gray-400">{course.enrollmentCount ?? 0} enrollments</p>
+                  <p className="text-sm font-medium text-gray-900 truncate">
+                    {course.title}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {course.enrollmentCount ?? 0} enrollments
+                  </p>
                 </div>
-                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${course.isPublished ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"}`}>
+                <span
+                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${course.isPublished ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"}`}
+                >
                   {course.isPublished ? "Live" : "Draft"}
                 </span>
               </div>
@@ -85,7 +153,9 @@ export default function AdminOverview() {
                 <FileText className="h-8 w-8 text-gray-200 mx-auto mb-2" />
                 <p className="text-sm text-gray-400">No blog posts yet.</p>
                 <Link href="/admin/blog/new">
-                  <a className="text-xs text-primary hover:underline mt-1 inline-block">Write your first post →</a>
+                  <a className="text-xs text-primary hover:underline mt-1 inline-block">
+                    Write your first post →
+                  </a>
                 </Link>
               </div>
             )}
@@ -95,10 +165,16 @@ export default function AdminOverview() {
                   <FileText className="h-4 w-4 text-pink-400" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-gray-900 truncate">{post.title}</p>
-                  <p className="text-xs text-gray-400">{post.category ?? "Uncategorized"}</p>
+                  <p className="text-sm font-medium text-gray-900 truncate">
+                    {post.title}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {post.category ?? "Uncategorized"}
+                  </p>
                 </div>
-                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${post.isPublished ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"}`}>
+                <span
+                  className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${post.isPublished ? "bg-emerald-100 text-emerald-700" : "bg-gray-100 text-gray-500"}`}
+                >
                   {post.isPublished ? "Live" : "Draft"}
                 </span>
               </div>

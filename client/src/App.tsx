@@ -13,6 +13,7 @@ import TrainerDashboard from "./pages/TrainerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminOverview from "./pages/admin/AdminOverview";
 import AdminCourses from "./pages/admin/AdminCourses";
+import AdminClassrooms from "./pages/admin/AdminClassrooms";
 import AdminBlog from "./pages/admin/AdminBlog";
 import AdminBlogEditor from "./pages/admin/AdminBlogEditor";
 import AdminUsers from "./pages/admin/AdminUsers";
@@ -34,6 +35,7 @@ function Router() {
       <Route path="/trainer" component={TrainerDashboard} />
       <Route path="/admin" component={AdminOverview} />
       <Route path="/admin/courses" component={AdminCourses} />
+      <Route path="/admin/classrooms" component={AdminClassrooms} />
       <Route path="/admin/blog" component={AdminBlog} />
       <Route path="/admin/blog/new" component={AdminBlogEditor} />
       <Route path="/admin/blog/edit/:id" component={AdminBlogEditor} />

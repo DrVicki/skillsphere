@@ -8,6 +8,8 @@ import {
   timestamp,
   varchar,
   json,
+  index,
+  uniqueIndex,
 } from "drizzle-orm/mysql-core";
 
 // ─── Users ───────────────────────────────────────────────────────────────────
@@ -18,7 +20,9 @@ export const users = mysqlTable("users", {
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin", "trainer", "learner"]).default("learner").notNull(),
+  role: mysqlEnum("role", ["user", "admin", "trainer", "learner"])
+    .default("learner")
+    .notNull(),
   avatarUrl: text("avatarUrl"),
   bio: text("bio"),
   stripeCustomerId: varchar("stripeCustomerId", { length: 128 }),
@@ -42,7 +46,9 @@ export const courses = mysqlTable("courses", {
   thumbnailUrl: text("thumbnailUrl"),
   previewVideoUrl: text("previewVideoUrl"),
   category: varchar("category", { length: 100 }),
-  level: mysqlEnum("level", ["beginner", "intermediate", "advanced"]).default("beginner"),
+  level: mysqlEnum("level", ["beginner", "intermediate", "advanced"]).default(
+    "beginner"
+  ),
   language: varchar("language", { length: 50 }).default("English"),
   tags: json("tags").$type<string[]>(),
   price: decimal("price", { precision: 10, scale: 2 }).default("0.00"),
@@ -94,20 +100,110 @@ export type InsertModule = typeof modules.$inferInsert;
 
 // ─── Enrollments ─────────────────────────────────────────────────────────────
 
-export const enrollments = mysqlTable("enrollments", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  courseId: int("courseId").notNull(),
-  enrolledAt: timestamp("enrolledAt").defaultNow().notNull(),
-  completedAt: timestamp("completedAt"),
-  lastAccessedAt: timestamp("lastAccessedAt").defaultNow().notNull(),
-  progressPercent: int("progressPercent").default(0),
-  stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 128 }),
-  amountPaid: decimal("amountPaid", { precision: 10, scale: 2 }).default("0.00"),
-});
+export const enrollments = mysqlTable(
+  "enrollments",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: int("userId").notNull(),
+    courseId: int("courseId").notNull(),
+    enrolledAt: timestamp("enrolledAt").defaultNow().notNull(),
+    completedAt: timestamp("completedAt"),
+    lastAccessedAt: timestamp("lastAccessedAt").defaultNow().notNull(),
+    progressPercent: int("progressPercent").default(0),
+    stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 128 }),
+    amountPaid: decimal("amountPaid", { precision: 10, scale: 2 }).default(
+      "0.00"
+    ),
+    source: mysqlEnum("source", ["purchase", "free", "classroom"])
+      .default("purchase")
+      .notNull(),
+    classroomId: int("classroomId"),
+  },
+  table => [
+    uniqueIndex("enrollments_user_course_unique").on(
+      table.userId,
+      table.courseId
+    ),
+    index("enrollments_classroom_idx").on(table.classroomId),
+  ]
+);
 
 export type Enrollment = typeof enrollments.$inferSelect;
 export type InsertEnrollment = typeof enrollments.$inferInsert;
+
+// ─── Classrooms ──────────────────────────────────────────────────────────────
+
+export const classrooms = mysqlTable(
+  "classrooms",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    name: varchar("name", { length: 255 }).notNull(),
+    description: text("description"),
+    ownerId: int("ownerId").notNull(),
+    status: mysqlEnum("status", ["active", "archived"])
+      .default("active")
+      .notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [
+    index("classrooms_owner_idx").on(table.ownerId),
+    index("classrooms_status_idx").on(table.status),
+  ]
+);
+
+export type Classroom = typeof classrooms.$inferSelect;
+export type InsertClassroom = typeof classrooms.$inferInsert;
+
+export const classroomCourses = mysqlTable(
+  "classroom_courses",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    classroomId: int("classroomId").notNull(),
+    courseId: int("courseId").notNull(),
+    assignedBy: int("assignedBy").notNull(),
+    assignedAt: timestamp("assignedAt").defaultNow().notNull(),
+  },
+  table => [
+    uniqueIndex("classroom_courses_classroom_course_unique").on(
+      table.classroomId,
+      table.courseId
+    ),
+    index("classroom_courses_course_idx").on(table.courseId),
+  ]
+);
+
+export type ClassroomCourse = typeof classroomCourses.$inferSelect;
+
+export const classroomMembers = mysqlTable(
+  "classroom_members",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    classroomId: int("classroomId").notNull(),
+    userId: int("userId"),
+    email: varchar("email", { length: 320 }).notNull(),
+    status: mysqlEnum("status", ["pending", "active", "removed"])
+      .default("pending")
+      .notNull(),
+    invitedBy: int("invitedBy").notNull(),
+    invitedAt: timestamp("invitedAt").defaultNow().notNull(),
+    joinedAt: timestamp("joinedAt"),
+    removedAt: timestamp("removedAt"),
+  },
+  table => [
+    uniqueIndex("classroom_members_classroom_email_unique").on(
+      table.classroomId,
+      table.email
+    ),
+    index("classroom_members_user_idx").on(table.userId),
+    index("classroom_members_classroom_status_idx").on(
+      table.classroomId,
+      table.status
+    ),
+  ]
+);
+
+export type ClassroomMember = typeof classroomMembers.$inferSelect;
 
 // ─── Module Progress ─────────────────────────────────────────────────────────
 
@@ -134,13 +230,23 @@ export const payments = mysqlTable("payments", {
   userId: int("userId").notNull(),
   courseId: int("courseId"),
   bundleId: int("bundleId"),
-  stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 128 }).unique(),
+  stripePaymentIntentId: varchar("stripePaymentIntentId", {
+    length: 128,
+  }).unique(),
   stripeSessionId: varchar("stripeSessionId", { length: 256 }),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   currency: varchar("currency", { length: 10 }).default("usd"),
-  status: mysqlEnum("status", ["pending", "completed", "failed", "refunded"]).default("pending"),
+  status: mysqlEnum("status", [
+    "pending",
+    "completed",
+    "failed",
+    "refunded",
+  ]).default("pending"),
   couponCode: varchar("couponCode", { length: 64 }),
-  discountAmount: decimal("discountAmount", { precision: 10, scale: 2 }).default("0.00"),
+  discountAmount: decimal("discountAmount", {
+    precision: 10,
+    scale: 2,
+  }).default("0.00"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -153,9 +259,16 @@ export type InsertPayment = typeof payments.$inferInsert;
 export const subscriptions = mysqlTable("subscriptions", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull(),
-  stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 128 }).unique(),
+  stripeSubscriptionId: varchar("stripeSubscriptionId", {
+    length: 128,
+  }).unique(),
   stripePriceId: varchar("stripePriceId", { length: 128 }),
-  status: mysqlEnum("status", ["active", "canceled", "past_due", "trialing"]).default("active"),
+  status: mysqlEnum("status", [
+    "active",
+    "canceled",
+    "past_due",
+    "trialing",
+  ]).default("active"),
   currentPeriodEnd: timestamp("currentPeriodEnd"),
   cancelAtPeriodEnd: boolean("cancelAtPeriodEnd").default(false),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -190,7 +303,10 @@ export const coupons = mysqlTable("coupons", {
   id: int("id").autoincrement().primaryKey(),
   code: varchar("code", { length: 64 }).notNull().unique(),
   discountType: mysqlEnum("discountType", ["percent", "fixed"]).notNull(),
-  discountValue: decimal("discountValue", { precision: 10, scale: 2 }).notNull(),
+  discountValue: decimal("discountValue", {
+    precision: 10,
+    scale: 2,
+  }).notNull(),
   maxUses: int("maxUses"),
   usedCount: int("usedCount").default(0),
   courseId: int("courseId"),
@@ -292,8 +408,18 @@ export const contactMessages = mysqlTable("contact_messages", {
   email: varchar("email", { length: 320 }).notNull(),
   subject: varchar("subject", { length: 255 }).notNull(),
   message: text("message").notNull(),
-  category: mysqlEnum("category", ["general", "support", "billing", "partnerships", "other"]).default("general").notNull(),
-  status: mysqlEnum("status", ["new", "read", "replied"]).default("new").notNull(),
+  category: mysqlEnum("category", [
+    "general",
+    "support",
+    "billing",
+    "partnerships",
+    "other",
+  ])
+    .default("general")
+    .notNull(),
+  status: mysqlEnum("status", ["new", "read", "replied"])
+    .default("new")
+    .notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -305,8 +431,11 @@ export const newsletterSubscribers = mysqlTable("newsletter_subscribers", {
   id: int("id").autoincrement().primaryKey(),
   email: varchar("email", { length: 320 }).notNull().unique(),
   name: varchar("name", { length: 255 }),
-  status: mysqlEnum("status", ["active", "unsubscribed"]).default("active").notNull(),
+  status: mysqlEnum("status", ["active", "unsubscribed"])
+    .default("active")
+    .notNull(),
   subscribedAt: timestamp("subscribedAt").defaultNow().notNull(),
 });
 export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
-export type InsertNewsletterSubscriber = typeof newsletterSubscribers.$inferInsert;
+export type InsertNewsletterSubscriber =
+  typeof newsletterSubscribers.$inferInsert;
