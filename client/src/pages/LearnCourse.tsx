@@ -30,10 +30,12 @@ import CubeMoveLabs from "@/components/CubeMoveLabs";
 import QuantumVisualizations from "@/components/QuantumVisualizations";
 import AIDataAnalyticsVisualizations from "@/components/AIDataAnalyticsVisualizations";
 import PythonForgeLab from "@/components/PythonForgeLab";
+import CAIOActivityTemplateDownload from "@/components/CAIOActivityTemplateDownload";
 import { parseGuidedMoveLabs, stripGuidedMoveLabs } from "@/lib/cubeMoveLabs";
 import { getQuantumVisualizationForModule } from "@/lib/quantumVisualizations";
 import { getAIDataAnalyticsVisualizationForModule } from "@/lib/aiDataAnalyticsVisualizations";
 import { getPythonForgeActivityForModule } from "@/lib/pythonForgeActivities";
+import { getCAIOActivityTemplateForModule } from "@/lib/caioActivityTemplates";
 import { getVideoPlayback } from "@/lib/embedContent";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Link } from "wouter";
@@ -110,6 +112,10 @@ export default function LearnCourse({ params }: Props) {
     activeModule?.title
   );
   const pythonForgeActivity = getPythonForgeActivityForModule(
+    course?.slug,
+    activeModule?.title
+  );
+  const caioActivityTemplate = getCAIOActivityTemplateForModule(
     course?.slug,
     activeModule?.title
   );
@@ -409,6 +415,13 @@ export default function LearnCourse({ params }: Props) {
                     {/* Python Forge keeps each source-authored hands-on activity in a browser-run Python lab. */}
                     {pythonForgeActivity && (
                       <PythonForgeLab activity={pythonForgeActivity} />
+                    )}
+
+                    {/* Weekly CAIO action workbooks turn each week's reflection into a saved evidence artifact. */}
+                    {caioActivityTemplate && (
+                      <CAIOActivityTemplateDownload
+                        template={caioActivityTemplate}
+                      />
                     )}
 
                     {/* Assessment */}

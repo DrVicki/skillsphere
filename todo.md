@@ -91,6 +91,7 @@
 - [x] Make the CAIO BootCamp visible in the full Admin Dashboard course catalog and recent-course panel
 - [x] Ensure the SkillSphere owner consistently resolves to the administrator role after sign-in
 - [x] Repair the CAIO BootCamp video embed and make lesson video rendering support public embeds
+- [x] Add downloadable CAIO action-workbook templates for all four BootCamp weeks
 
 ## Admin Dashboard
 
