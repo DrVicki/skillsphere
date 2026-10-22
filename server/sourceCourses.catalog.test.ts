@@ -179,7 +179,7 @@ describe("source course catalog", () => {
     expect(caioModules[0]).toMatchObject({
       title: expect.stringContaining("The CAIO Window"),
       isPreview: true,
-      content: expect.stringContaining("Open the supplied CAIO guide"),
+      content: expect.stringContaining("Benjamin Simkin"),
     });
     expect(
       caioModules.filter(module => module.type === "assessment")

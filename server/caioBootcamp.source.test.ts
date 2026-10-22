@@ -101,6 +101,21 @@ describe("CAIO 4-Week BootCamp source curriculum", () => {
     );
   });
 
+  it("retains the Week 1 introductory video as an embeddable lesson source", () => {
+    const introduction = curriculum.weeks[0]?.lessons[0] as
+      | ((typeof curriculum.weeks)[number]["lessons"][number] & {
+          videoUrl?: string;
+        })
+      | undefined;
+    expect(introduction?.videoUrl).toContain(
+      "youtube-nocookie.com/embed/uQwepQQJ6Bw"
+    );
+    expect(importerSource).toContain(
+      'type: lesson.videoUrl ? "video" : "text"'
+    );
+    expect(importerSource).toContain("content, videoUrl, duration");
+  });
+
   it("uses an explicit find-or-update import path to prevent duplicate CAIO records", () => {
     expect(importerSource).toContain(
       "SELECT id FROM courses WHERE slug = ? ORDER BY id ASC"

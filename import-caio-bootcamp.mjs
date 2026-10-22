@@ -90,8 +90,9 @@ You need a score of 75% to mark the assessment complete. Review the reading, exa
 const modules = curriculum.weeks.flatMap((week, weekIndex) => [
   ...week.lessons.map((lesson, lessonIndex) => ({
     title: `Week ${week.number} · Lesson ${lessonIndex + 1} · ${lesson.title}`,
-    type: "text",
+    type: lesson.videoUrl ? "video" : "text",
     content: lessonMarkdown(week, lesson),
+    videoUrl: lesson.videoUrl ?? null,
     duration: lesson.duration * 60,
     isPreview: weekIndex === 0 && lessonIndex < 2,
     assessmentData: null,
@@ -179,13 +180,14 @@ try {
   await db.execute("DELETE FROM modules WHERE courseId = ?", [courseId]);
   for (const [sortOrder, module] of modules.entries()) {
     await db.execute(
-      `INSERT INTO modules (courseId, title, type, content, duration, sortOrder, isPreview, assessmentData)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO modules (courseId, title, type, content, videoUrl, duration, sortOrder, isPreview, assessmentData)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         courseId,
         module.title,
         module.type,
         module.content,
+        module.videoUrl ?? null,
         module.duration,
         sortOrder,
         module.isPreview ? 1 : 0,

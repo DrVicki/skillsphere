@@ -90,6 +90,7 @@
 - [x] Create a four-week Chief AI Officer (CAIO) BootCamp from the supplied guide, with readings, examples, hands-on activities, assessments, and a 90-day capstone
 - [x] Make the CAIO BootCamp visible in the full Admin Dashboard course catalog and recent-course panel
 - [x] Ensure the SkillSphere owner consistently resolves to the administrator role after sign-in
+- [x] Repair the CAIO BootCamp video embed and make lesson video rendering support public embeds
 
 ## Admin Dashboard
 
