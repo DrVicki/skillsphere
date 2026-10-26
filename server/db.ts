@@ -20,6 +20,7 @@ import {
   chatMessages,
   courseReviews,
   newsletterSubscribers,
+  gameDesignDiaryEntries,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -495,6 +496,95 @@ export async function markEnrollmentComplete(userId: number, courseId: number) {
       )
     );
   return Number((result as any)[0]?.affectedRows ?? 0) > 0;
+}
+
+// ─── Game Design Diary ────────────────────────────────────────────────────────
+
+export async function getGameDesignDiaryEntries(
+  userId: number,
+  courseId: number
+) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(gameDesignDiaryEntries)
+    .where(
+      and(
+        eq(gameDesignDiaryEntries.userId, userId),
+        eq(gameDesignDiaryEntries.courseId, courseId)
+      )
+    )
+    .orderBy(desc(gameDesignDiaryEntries.updatedAt));
+}
+
+export async function createGameDesignDiaryEntry(data: {
+  userId: number;
+  courseId: number;
+  moduleId?: number | null;
+  week?: string | null;
+  title: string;
+  body: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(gameDesignDiaryEntries).values({
+    userId: data.userId,
+    courseId: data.courseId,
+    moduleId: data.moduleId ?? null,
+    week: data.week?.trim() || null,
+    title: data.title.trim(),
+    body: data.body.trim(),
+  });
+  return (result as any)[0]?.insertId ?? 0;
+}
+
+export async function updateGameDesignDiaryEntry(
+  id: number,
+  userId: number,
+  courseId: number,
+  data: {
+    moduleId?: number | null;
+    week?: string | null;
+    title?: string;
+    body?: string;
+  }
+) {
+  const db = await getDb();
+  if (!db) return;
+  await db
+    .update(gameDesignDiaryEntries)
+    .set({
+      ...(data.moduleId !== undefined ? { moduleId: data.moduleId } : {}),
+      ...(data.week !== undefined ? { week: data.week?.trim() || null } : {}),
+      ...(data.title !== undefined ? { title: data.title.trim() } : {}),
+      ...(data.body !== undefined ? { body: data.body.trim() } : {}),
+    })
+    .where(
+      and(
+        eq(gameDesignDiaryEntries.id, id),
+        eq(gameDesignDiaryEntries.userId, userId),
+        eq(gameDesignDiaryEntries.courseId, courseId)
+      )
+    );
+}
+
+export async function deleteGameDesignDiaryEntry(
+  id: number,
+  userId: number,
+  courseId: number
+) {
+  const db = await getDb();
+  if (!db) return;
+  await db
+    .delete(gameDesignDiaryEntries)
+    .where(
+      and(
+        eq(gameDesignDiaryEntries.id, id),
+        eq(gameDesignDiaryEntries.userId, userId),
+        eq(gameDesignDiaryEntries.courseId, courseId)
+      )
+    );
 }
 
 // ─── Classrooms ──────────────────────────────────────────────────────────────

@@ -50,6 +50,13 @@
       "when": 1792591931556,
       "tag": "0006_flowery_mindworm",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1793045352956,
+      "tag": "0007_shallow_iron_lad",
+      "breakpoints": true
     }
   ]
 }

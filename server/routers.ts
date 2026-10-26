@@ -56,6 +56,10 @@ import {
   getContactMessages,
   subscribeToNewsletter,
   getNewsletterSubscribers,
+  createGameDesignDiaryEntry,
+  deleteGameDesignDiaryEntry,
+  getGameDesignDiaryEntries,
+  updateGameDesignDiaryEntry,
   getBlogPosts,
   getBlogPostBySlug,
   getBlogPostById,
@@ -87,6 +91,20 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
     throw new TRPCError({ code: "FORBIDDEN", message: "Admin only" });
   return next({ ctx });
 });
+
+const GAME_DESIGN_COURSE_SLUG = "professional-certificate-game-design";
+
+async function requireGameDesignCourse(courseId: number) {
+  const course = await getCourseById(courseId);
+  if (!course) throw new TRPCError({ code: "NOT_FOUND", message: "Course not found" });
+  if (course.slug !== GAME_DESIGN_COURSE_SLUG) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "The Game Diary is available only for the Game Design certificate.",
+    });
+  }
+  return course;
+}
 
 // ─── Trainer guard ────────────────────────────────────────────────────────────
 const trainerProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -768,6 +786,68 @@ export const appRouter = router({
       )
       .mutation(async ({ ctx, input }) => {
         await upsertModuleProgress({ ...input, userId: ctx.user.id });
+        return { success: true };
+    }),
+  }),
+
+  // ─── Game Design Diary ─────────────────────────────────────────────────────
+  gameDesignDiary: router({
+    list: protectedProcedure.input(z.number()).query(async ({ ctx, input }) => {
+      await requireGameDesignCourse(input);
+      return getGameDesignDiaryEntries(ctx.user.id, input);
+    }),
+
+    create: protectedProcedure
+      .input(
+        z.object({
+          courseId: z.number(),
+          moduleId: z.number().nullable().optional(),
+          week: z.string().trim().max(64).optional(),
+          title: z.string().trim().min(1).max(255),
+          body: z.string().trim().min(1).max(50000),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        await requireGameDesignCourse(input.courseId);
+        if (input.moduleId) {
+          const module = await getModuleById(input.moduleId);
+          if (!module || module.courseId !== input.courseId) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Diary entry module does not belong to this course.",
+            });
+          }
+        }
+        const id = await createGameDesignDiaryEntry({
+          ...input,
+          userId: ctx.user.id,
+        });
+        return { id };
+      }),
+
+    update: protectedProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          courseId: z.number(),
+          moduleId: z.number().nullable().optional(),
+          week: z.string().trim().max(64).optional(),
+          title: z.string().trim().min(1).max(255).optional(),
+          body: z.string().trim().min(1).max(50000).optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        await requireGameDesignCourse(input.courseId);
+        const { id, courseId, ...data } = input;
+        await updateGameDesignDiaryEntry(id, ctx.user.id, courseId, data);
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number(), courseId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await requireGameDesignCourse(input.courseId);
+        await deleteGameDesignDiaryEntry(input.id, ctx.user.id, input.courseId);
         return { success: true };
       }),
   }),

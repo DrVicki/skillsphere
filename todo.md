@@ -112,3 +112,14 @@
 - [x] Integrate RichTextEditor into blog post editor (replace plain textarea)
 - [x] Integrate RichTextEditor into course lesson editor (replace plain textarea)
 - [x] Ensure editor output is stored as HTML and rendered correctly in lesson viewer and blog reader
+
+## Game Design Certificate Upgrade (October 2026)
+
+- [x] Audit the supplied source course safely and capture its four parts, 24 modules, readings, tools, activities, reflections, and source link
+- [x] Upgrade the existing Game Design course in place with source-grounded module content while preserving module IDs, enrollments, and progress rows
+- [x] Add per-module hands-on activities, interactive visualizations, and two-question knowledge checks
+- [x] Add authenticated, per-user Game Diary persistence with create, edit, delete, search, and text export
+- [x] Integrate the Game Diary tab and reflection/activity entry paths into LearnCourse
+- [x] Preserve visible Dr. Vicki's Tech Talk navigation link
+- [x] Generate and apply the Diary schema migration
+- [x] Validate browser preview, TypeScript, production build, git diff check, and all Vitest tests

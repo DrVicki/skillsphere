@@ -1,0 +1,1412 @@
+{
+  "sourceUrl": "https://gamedesign-fmsfaqpu.manus.space/?code=5hVzMKXP9sEEc2PRrmgKYq",
+  "course": {
+    "title": "Professional Certificate in Game Design",
+    "slug": "professional-certificate-game-design",
+    "instructor": "Dr. Vicki Bealman",
+    "duration": "~6 months",
+    "modules": 24,
+    "parts": 4
+  },
+  "parts": [
+    {
+      "id": 1,
+      "label": "Part 1",
+      "title": "The Foundations of Game Design",
+      "description": "Learn the systems, rules, players, and communities that make games work. Build a shared vocabulary for analyzing games, then recreate and question systems through low-fidelity, playable design experiments.",
+      "color": "#58a6ff"
+    },
+    {
+      "id": 2,
+      "label": "Part 2",
+      "title": "Tabletop and Low Fidelity Prototyping",
+      "description": "Explore ideation, playtesting, usability, iteration, and responsible design as you move from a concept to a testable tabletop experience.",
+      "color": "#3fb950"
+    },
+    {
+      "id": 3,
+      "label": "Part 3",
+      "title": "Using a Game Engine",
+      "description": "Bring systems into digital space while designing for teams and players. Explore inclusive game feel, team workflows, project scope, and the technical questions that shape a confident digital prototype.",
+      "color": "#f6c90e"
+    },
+    {
+      "id": 4,
+      "label": "Part 4",
+      "title": "Putting It All Together",
+      "description": "Connect business context, industry voices, pitch practice, sound thinking, and your final capstone into a portfolio-ready design story.",
+      "color": "#f85149"
+    }
+  ],
+  "outcomes": [
+    "Analyze game mechanics and complex game systems",
+    "Design and prototype tabletop and digital games",
+    "Apply playtesting and iteration methodologies",
+    "Build games using a professional game engine",
+    "Create inclusive and accessible game experiences",
+    "Pitch and present a complete game concept",
+    "Understand the business and industry of games",
+    "Design games with cultural responsibility in mind"
+  ],
+  "modules": [
+    {
+      "num": "01",
+      "title": "The Territory of Game Design",
+      "partId": 1,
+      "overview": "What is game design, and where does it begin and end? This module maps the full territory of the discipline — its history, its relationship to adjacent fields like game development and game studies, and the enormous variety of forms games take. You will examine how game designers think, what questions drive their practice, and why game design matters as a creative and cultural force. By the end, you will have a clear sense of the field you are entering and the scope of what you will learn.",
+      "objectives": [
+        "Define game design and distinguish it from game development, game studies, and related fields",
+        "Describe the historical evolution of game design from folk games and board games to contemporary digital experiences",
+        "Identify the major roles and responsibilities of a game designer across different contexts",
+        "Articulate why game design is a significant creative, cultural, and professional discipline"
+      ],
+      "topics": [
+        "Defining Game Design",
+        "Game Design vs. Game Development",
+        "History of Games",
+        "Roles of the Game Designer",
+        "Games as Cultural Artifacts",
+        "Scope of the Field"
+      ],
+      "duration": "~45 min",
+      "resources": [
+        {
+          "label": "Game Design & Development 2021 — selected introductory chapters",
+          "url": "https://ecampusontario.pressbooks.pub/gamedesigndevelopmenttextbook/",
+          "type": "reading"
+        },
+        {
+          "label": "MIT OpenCourseWare — 1-1: Introduction, Overview, and Syllabus for Game Design",
+          "url": "https://ocw.mit.edu/courses/cms-608-game-design-spring-2014/resources/ses01_1/",
+          "type": "video"
+        },
+        {
+          "label": "Twine — browser editor for interactive, nonlinear stories",
+          "url": "https://twinery.org/2/",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Think about a game that first made you want to design games. What was it about that game's design — its rules, its world, its feel — that sparked your interest? How does that experience connect to what you learned about the territory of game design today?",
+      "activity": {
+        "title": "Start your Game Design Field Notes",
+        "steps": [
+          "Choose a familiar game and name one player decision worth examining.",
+          "Describe the rules, players, and intended experience behind that decision.",
+          "Record one question you want to investigate as a designer."
+        ],
+        "deliverable": "A one-page field note that separates rules, player action, and experience."
+      },
+      "visualizationKey": "territory-map",
+      "part": {
+        "id": 1,
+        "label": "Part 1",
+        "title": "The Foundations of Game Design",
+        "description": "Learn the systems, rules, players, and communities that make games work. Build a shared vocabulary for analyzing games, then recreate and question systems through low-fidelity, playable design experiments.",
+        "color": "#58a6ff"
+      }
+    },
+    {
+      "num": "02",
+      "title": "Games, Rules, and Players",
+      "partId": 1,
+      "overview": "Every game is defined by its rules — the formal structures that tell players what they can do, what they cannot do, and what winning or losing means. This module examines the foundational relationship between games, their rule systems, and the players who engage with them. You will learn to distinguish between different types of rules, analyze how rules create possibility spaces, and understand how players interpret, negotiate, and sometimes subvert the rules they are given. Formal game analysis tools are introduced and applied to real examples.",
+      "objectives": [
+        "Distinguish between constitutive rules, operational rules, and implicit rules in games",
+        "Explain how rules define a game's possibility space and constrain player behavior",
+        "Analyze how players interpret, negotiate, and subvert rules in practice",
+        "Apply formal game analysis to break down the rule structure of an existing game"
+      ],
+      "topics": [
+        "Constitutive, Operational, and Implicit Rules",
+        "Possibility Spaces",
+        "Player Agency and Decision-Making",
+        "The Magic Circle",
+        "Formal Game Analysis",
+        "Metagame and Rule Subversion"
+      ],
+      "duration": "~45 min",
+      "resources": [
+        {
+          "label": "Game Design Concepts, Level 3: Formal Elements of Games",
+          "url": "https://gamedesignconcepts.wordpress.com/2009/07/06/level-3-formal-elements-of-games/",
+          "type": "reading"
+        },
+        {
+          "label": "The Magic Circle",
+          "url": "https://www.youtube.com/watch?v=kx8UHeNHa8M",
+          "type": "video"
+        },
+        {
+          "label": "Twine",
+          "url": "https://twinery.org/2",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Pick a game you know well and identify one implicit rule — something players follow that is never written down. Where did that rule come from? What would happen to the game if it were made explicit, or if it were removed entirely?",
+      "activity": {
+        "title": "Rewrite a Rule",
+        "steps": [
+          "Select one rule that strongly shapes player agency.",
+          "Explain the possibility space the rule creates.",
+          "Rewrite the rule twice and predict how player behavior would change."
+        ],
+        "deliverable": "A before-and-after rule card with a short player-impact analysis."
+      },
+      "visualizationKey": "rule-loop",
+      "part": {
+        "id": 1,
+        "label": "Part 1",
+        "title": "The Foundations of Game Design",
+        "description": "Learn the systems, rules, players, and communities that make games work. Build a shared vocabulary for analyzing games, then recreate and question systems through low-fidelity, playable design experiments.",
+        "color": "#58a6ff"
+      }
+    },
+    {
+      "num": "03",
+      "title": "Play Communities",
+      "partId": 1,
+      "overview": "Games are not played in a vacuum — they exist within communities of players who share norms, histories, and social practices. This module explores how play communities form around games, how they evolve over time, and how they shape the meaning and reception of the games they play. You will examine competitive scenes, fan communities, modding cultures, and the social dynamics of multiplayer design. Crucially, you will also consider the designer's responsibility toward the communities their games create and sustain.",
+      "objectives": [
+        "Describe how play communities form, sustain themselves, and evolve around games",
+        "Analyze the social norms, shared practices, and power dynamics within different play communities",
+        "Identify design decisions that shape the kind of community a game fosters",
+        "Reflect on the designer's ethical responsibilities toward the communities their games create"
+      ],
+      "topics": [
+        "How Play Communities Form",
+        "Player Types and Motivations",
+        "Competitive Scenes and Esports Communities",
+        "Fan Communities and Modding Culture",
+        "Toxicity and Community Health",
+        "Designing for Community"
+      ],
+      "duration": "~40 min",
+      "resources": [
+        {
+          "label": "Community codes of conduct as proactive intervention for toxicity in games",
+          "url": "https://www.frontiersin.org/journals/public-health/articles/10.3389/fpubh.2026.1842010/full",
+          "type": "reading"
+        },
+        {
+          "label": "Games as Community Driven Care: A Case Study of Co-Designing Games for Health",
+          "url": "https://www.youtube.com/watch?v=xCZwEACWowc",
+          "type": "video"
+        },
+        {
+          "label": "itch.io Hosting a game jam (free community/jam workflow)",
+          "url": "https://itch.io/docs/creators/game-jams",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Describe a play community you have been part of — online or in person. What norms governed how people behaved? Were those norms healthy or harmful? What design decisions in the game itself encouraged or discouraged those norms?",
+      "activity": {
+        "title": "Map a Play Community",
+        "steps": [
+          "Choose a game community you can observe respectfully.",
+          "Map its roles, rituals, norms, and points of friction.",
+          "Identify one design choice that could support healthier participation."
+        ],
+        "deliverable": "A community map with one evidence-based design recommendation."
+      },
+      "visualizationKey": "community-map",
+      "part": {
+        "id": 1,
+        "label": "Part 1",
+        "title": "The Foundations of Game Design",
+        "description": "Learn the systems, rules, players, and communities that make games work. Build a shared vocabulary for analyzing games, then recreate and question systems through low-fidelity, playable design experiments.",
+        "color": "#58a6ff"
+      }
+    },
+    {
+      "num": "04",
+      "title": "Building Blocks of Game Design",
+      "partId": 1,
+      "overview": "All games are built from the same fundamental elements — but the way those elements are combined is what makes each game unique. This module introduces the core building blocks of game design: mechanics, dynamics, aesthetics, components, resources, and feedback loops. Using the MDA (Mechanics, Dynamics, Aesthetics) framework as a primary lens, you will deconstruct existing games and learn to see how individual design decisions cascade into full player experiences. This vocabulary will serve as your foundation for everything that follows.",
+      "objectives": [
+        "Define and apply the MDA (Mechanics, Dynamics, Aesthetics) framework to analyze games",
+        "Identify the core mechanics, feedback loops, and resource systems in a variety of games",
+        "Explain how dynamics emerge from the interaction of mechanics and player behavior",
+        "Use precise design vocabulary when discussing, analyzing, and critiquing games"
+      ],
+      "topics": [
+        "Mechanics, Dynamics, Aesthetics (MDA)",
+        "Core Loops and Feedback Loops",
+        "Resources and Economies",
+        "Progression and Pacing",
+        "Verbs and Nouns of Game Design",
+        "Systems Thinking in Design"
+      ],
+      "duration": "~50 min",
+      "resources": [
+        {
+          "label": "MIT OpenCourseWare: Mechanics, Dynamics, Aesthetics — The MDA Framework (lesson transcript/audio)",
+          "url": "https://ocw.mit.edu/courses/cms-608-game-design-spring-2014/resources/ses04/",
+          "type": "reading"
+        },
+        {
+          "label": "MIT OpenCourseWare: 4. Mechanics, Dynamics, Aesthetics — The MDA Framework (official lecture video)",
+          "url": "https://www.youtube.com/watch?v=H0MFJwQH2fo",
+          "type": "video"
+        },
+        {
+          "label": "GDevelop — free/open-source game editor for mechanics and feedback-loop prototyping",
+          "url": "https://gdevelop.io/",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Choose a game you played recently and apply the MDA framework to it. What are its core mechanics? What dynamics emerge from those mechanics? What aesthetic experience do those dynamics produce? Did the designer achieve what you think they intended?",
+      "activity": {
+        "title": "Build an MDA analysis",
+        "steps": [
+          "Pick a game and list three mechanics that drive its core loop.",
+          "Describe the dynamics those mechanics produce in play.",
+          "Name the aesthetic experience the system appears to target."
+        ],
+        "deliverable": "An MDA canvas with one proposed mechanics-level experiment."
+      },
+      "visualizationKey": "mda",
+      "part": {
+        "id": 1,
+        "label": "Part 1",
+        "title": "The Foundations of Game Design",
+        "description": "Learn the systems, rules, players, and communities that make games work. Build a shared vocabulary for analyzing games, then recreate and question systems through low-fidelity, playable design experiments.",
+        "color": "#58a6ff"
+      }
+    },
+    {
+      "num": "05",
+      "title": "Modes of Interaction",
+      "partId": 1,
+      "overview": "How players interact with a game — and with each other through a game — is one of the most consequential design decisions a designer makes. This module surveys the primary modes of player interaction: solo, cooperative, competitive, asymmetric, and hybrid structures. You will examine how each mode creates different social dynamics, emotional experiences, and design challenges. Through analysis and hands-on exercises, you will practice identifying and intentionally designing for specific interaction structures.",
+      "objectives": [
+        "Identify and distinguish the primary modes of player interaction: solo, cooperative, competitive, and asymmetric",
+        "Analyze how interaction structures create different social dynamics and emotional experiences",
+        "Evaluate the design trade-offs between cooperative, competitive, and hybrid interaction models",
+        "Design a simple mechanic that leverages a specific interaction mode intentionally"
+      ],
+      "topics": [
+        "Solo, Cooperative, and Competitive Play",
+        "Asymmetric Design",
+        "Turn-Based vs. Real-Time Interaction",
+        "Player vs. Environment vs. Player",
+        "Interaction Mapping",
+        "Designing for Different Play Styles"
+      ],
+      "duration": "~45 min",
+      "resources": [
+        {
+          "label": "Exploring the Effects of Different Asymmetric Game Designs on User Experience in Collaborative Virtual Reality",
+          "url": "https://arxiv.org/html/2510.14607v1",
+          "type": "reading"
+        },
+        {
+          "label": "The Sweet Spot of Asymmetric Design — BAFTA Games Live / Creative Assembly",
+          "url": "https://www.youtube.com/watch?v=TXk8ipUTx24",
+          "type": "video"
+        },
+        {
+          "label": "PlayingCards.io Standard Deck / Custom Room",
+          "url": "https://playingcards.io/game/standard-deck",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Think of a game that uses an interaction mode you find particularly compelling. Why does that mode work so well for that game? Now imagine the same game redesigned with a different interaction mode — what would change, and what would be lost?",
+      "activity": {
+        "title": "Trace an Interaction Loop",
+        "steps": [
+          "Choose one player action and trace input, system response, feedback, and next decision.",
+          "Mark the point where information or agency is lost.",
+          "Propose one change that makes the loop clearer or more expressive."
+        ],
+        "deliverable": "An interaction-loop diagram and a short redesign rationale."
+      },
+      "visualizationKey": "interaction-loop",
+      "part": {
+        "id": 1,
+        "label": "Part 1",
+        "title": "The Foundations of Game Design",
+        "description": "Learn the systems, rules, players, and communities that make games work. Build a shared vocabulary for analyzing games, then recreate and question systems through low-fidelity, playable design experiments.",
+        "color": "#58a6ff"
+      }
+    },
+    {
+      "num": "06",
+      "title": "Emergent Behavior",
+      "partId": 1,
+      "overview": "Some of the most memorable moments in games are not scripted — they arise unexpectedly from the interaction of simple rules and player choices. This is emergence: complex, unpredictable, and often delightful behavior that no single rule produces on its own. This module explores how emergence works in game systems, why it is a hallmark of deep and replayable design, and how to create rule sets that invite it. You will study classic examples of emergence across tabletop and digital games, then prototype a simple rule set in Tabletopia to observe emergent behavior firsthand.",
+      "objectives": [
+        "Define emergent behavior and explain why it is a valuable property in game design",
+        "Identify design conditions — rule simplicity, player freedom, system interaction — that promote emergence",
+        "Analyze case studies of emergence in well-known tabletop and digital games",
+        "Prototype a simple rule set in Tabletopia and document the emergent behaviors that arise during play"
+      ],
+      "topics": [
+        "Emergence vs. Scripted Events",
+        "Simple Rules, Complex Outcomes",
+        "Systems Design for Emergence",
+        "Sandbox and Simulation Design",
+        "Case Studies in Emergent Gameplay",
+        "Tabletopia Prototyping Exercise"
+      ],
+      "duration": "~50 min",
+      "resources": [
+        {
+          "label": "Examining Emergent Gameplay — Game Developer",
+          "url": "https://www.gamedeveloper.com/design/examining-emergent-gameplay",
+          "type": "reading"
+        },
+        {
+          "label": "Emergence, Dynamic Narrative and Systems in Game Design — The Game Overanalyser",
+          "url": "https://www.youtube.com/watch?v=OrmyLaLCaIo",
+          "type": "video"
+        },
+        {
+          "label": "Particle Life — Sandbox Science",
+          "url": "https://sandbox-science.com/particle-life",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Describe a moment of emergence you have experienced in a game — a situation the designers almost certainly did not script but that arose naturally from the rules. What conditions in the game made that moment possible? How would you design a rule set to encourage more moments like it?",
+      "activity": {
+        "title": "Prototype for Emergence",
+        "steps": [
+          "Write three simple rules that can interact without scripting outcomes.",
+          "Run a short tabletop or paper simulation.",
+          "Log an unexpected behavior and the conditions that enabled it."
+        ],
+        "deliverable": "An emergence log with rules, observed behavior, and a next experiment."
+      },
+      "visualizationKey": "emergence-sandbox",
+      "part": {
+        "id": 1,
+        "label": "Part 1",
+        "title": "The Foundations of Game Design",
+        "description": "Learn the systems, rules, players, and communities that make games work. Build a shared vocabulary for analyzing games, then recreate and question systems through low-fidelity, playable design experiments.",
+        "color": "#58a6ff"
+      }
+    },
+    {
+      "num": "07",
+      "title": "Choice and Chance",
+      "partId": 2,
+      "overview": "Meaningful decisions and elements of chance are two of the most powerful tools in a game designer's toolkit. This module examines how choice and randomness function in games — how to design decisions that feel genuinely meaningful, how to use chance to create tension and variety, and how to balance the two so that players feel both in control and surprised. You will analyze dice mechanics, card draws, probability curves, and branching decision trees, and practice designing choice architectures for tabletop game prototypes.",
+      "objectives": [
+        "Distinguish between meaningful choice and illusory choice in game design",
+        "Explain how randomness functions as a design tool for tension, variety, and fairness",
+        "Analyze probability distributions and their effect on player experience and game balance",
+        "Design a choice architecture or chance mechanism for a tabletop game prototype"
+      ],
+      "topics": [
+        "Meaningful vs. Illusory Choice",
+        "Randomness and Probability",
+        "Dice and Card Mechanics",
+        "Risk vs. Reward Structures",
+        "Luck Mitigation Mechanics",
+        "Decision Trees",
+        "Balancing Skill and Luck"
+      ],
+      "duration": "~45 min",
+      "resources": [
+        {
+          "label": "Meaningful Choice in Games: Practical Guide & Case Studies",
+          "url": "https://www.gamedeveloper.com/design/meaningful-choice-in-games-practical-guide-case-studies",
+          "type": "reading"
+        },
+        {
+          "label": "James Ernest: Probability for Game Designers (Lecture)",
+          "url": "https://www.youtube.com/watch?v=vo3QHqwbtCY",
+          "type": "video"
+        },
+        {
+          "label": "McDie — Visual Probability Analysis Tool for Board Game Designers",
+          "url": "https://gengelstein.itch.io/mcdie",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Think of a game where you felt a decision was truly meaningful — where your choice genuinely mattered. Now think of a game where a decision felt like an illusion. What made the difference? How would you apply that insight to a mechanic you are designing?",
+      "activity": {
+        "title": "Design Choice and Chance",
+        "steps": [
+          "Define one meaningful choice with at least two viable options.",
+          "Add a chance mechanism and calculate its rough outcome distribution.",
+          "Explain how a player can make an informed risk decision."
+        ],
+        "deliverable": "A choice architecture or chance mechanism with a fairness note."
+      },
+      "visualizationKey": "choice-chance",
+      "part": {
+        "id": 2,
+        "label": "Part 2",
+        "title": "Tabletop and Low Fidelity Prototyping",
+        "description": "Explore ideation, playtesting, usability, iteration, and responsible design as you move from a concept to a testable tabletop experience.",
+        "color": "#3fb950"
+      }
+    },
+    {
+      "num": "08",
+      "title": "Ideation and Concepts",
+      "partId": 2,
+      "overview": "Every great game begins with a generative creative process. This module introduces a toolkit of ideation methodologies used by professional game designers: structured brainstorming, SCAMPER, constraint-based design, concept mapping, and reference gathering. You will practice generating large quantities of ideas, filtering them using design criteria, and developing the most promising concepts into clear, communicable design briefs. You will also learn how constraints — of time, materials, or theme — can serve as powerful creative catalysts rather than limitations.",
+      "objectives": [
+        "Apply structured ideation methodologies including SCAMPER, mind mapping, and constraint-based design",
+        "Generate and evaluate game concepts using design criteria such as novelty, feasibility, and player appeal",
+        "Write a concise, compelling design brief or concept statement for an original game idea",
+        "Identify how creative constraints can accelerate and sharpen the ideation process"
+      ],
+      "topics": [
+        "Brainstorming Techniques",
+        "SCAMPER Method",
+        "Constraint-Based Design",
+        "Concept Mapping",
+        "Reference Gathering",
+        "Design Brief Writing",
+        "Concept Filtering and Prioritization"
+      ],
+      "duration": "~50 min",
+      "resources": [
+        {
+          "label": "Purdue Extension / 4-H — SCAMPER Part 1",
+          "url": "https://extension.purdue.edu/4-H/_docs/volunteer/resources-and-development/stem/3-5-lesson-scamper-part-1.pdf",
+          "type": "reading"
+        },
+        {
+          "label": "Game Maker’s Toolkit — How to find amazing game ideas",
+          "url": "https://www.youtube.com/watch?v=0m60QbT85Tc",
+          "type": "video"
+        },
+        {
+          "label": "WiseMapping — free online mind-map editor",
+          "url": "https://www.wisemapping.com/",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Using the SCAMPER method, take a game you know well and generate at least three new concept variations by substituting, combining, or reversing one of its core elements. Which variation excites you most, and why? What design brief would you write for it?",
+      "activity": {
+        "title": "Generate and Select Concepts",
+        "steps": [
+          "Generate three concepts using a constraint such as one mechanic or one emotion.",
+          "Compare them against audience, novelty, and feasibility.",
+          "Select one and write the next testable design question."
+        ],
+        "deliverable": "A three-concept sheet plus a justified concept decision."
+      },
+      "visualizationKey": "ideation-matrix",
+      "part": {
+        "id": 2,
+        "label": "Part 2",
+        "title": "Tabletop and Low Fidelity Prototyping",
+        "description": "Explore ideation, playtesting, usability, iteration, and responsible design as you move from a concept to a testable tabletop experience.",
+        "color": "#3fb950"
+      }
+    },
+    {
+      "num": "09",
+      "title": "Fundamentals of Prototyping",
+      "partId": 2,
+      "overview": "A prototype is a designer's most important thinking tool — a physical or digital artifact that makes ideas testable. This module covers the principles and practices of low-fidelity prototyping for tabletop games: when to prototype, what to prototype, and how to build prototypes that answer specific design questions quickly and cheaply. You will create paper prototypes, card-based prototypes, and tile-based prototypes, learning to iterate rapidly without over-investing in any single version. The goal is not a finished game — it is a question answered.",
+      "objectives": [
+        "Explain the purpose and value of low-fidelity prototyping in the design process",
+        "Identify the specific design question each prototype is built to answer",
+        "Construct a paper, card, or tile-based prototype for a simple game concept",
+        "Evaluate a prototype's effectiveness at answering its intended design question"
+      ],
+      "topics": [
+        "What is a Prototype?",
+        "Fidelity Spectrum",
+        "Paper Prototyping",
+        "Card and Tile Prototyping",
+        "Prototype Goals and Questions",
+        "Rapid Iteration Principles",
+        "Prototyping Materials and Tools"
+      ],
+      "duration": "~55 min",
+      "resources": [
+        {
+          "label": "MIT ICE Lab — Unit 5 Activity 2: Low-Fidelity Prototyping",
+          "url": "https://virtuality.mit.edu/mazestar-curriculum/unit5-activity2.html",
+          "type": "reading"
+        },
+        {
+          "label": "MIT OpenCourseWare — Project 1, Low Fidelity Prototyping",
+          "url": "https://www.youtube.com/watch?v=j8ZGpRo8jd4",
+          "type": "video"
+        },
+        {
+          "label": "PlayingCards.io — Blank/custom virtual tabletop room",
+          "url": "https://playingcards.io/game/standard-deck",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Build a paper prototype of a single mechanic from a game concept you have been thinking about. What design question did you set out to answer? What did the prototype reveal that you could not have discovered just by thinking about it?",
+      "activity": {
+        "title": "Make a Low-Fidelity Prototype",
+        "steps": [
+          "Reduce one mechanic to paper, cards, tokens, or a clickable sketch.",
+          "Define the smallest playable loop.",
+          "List what the prototype is deliberately not trying to prove."
+        ],
+        "deliverable": "A playable prototype brief with setup, loop, and question."
+      },
+      "visualizationKey": "prototype-fidelity",
+      "part": {
+        "id": 2,
+        "label": "Part 2",
+        "title": "Tabletop and Low Fidelity Prototyping",
+        "description": "Explore ideation, playtesting, usability, iteration, and responsible design as you move from a concept to a testable tabletop experience.",
+        "color": "#3fb950"
+      }
+    },
+    {
+      "num": "10",
+      "title": "Playtesting and Iteration",
+      "partId": 2,
+      "overview": "Playtesting is the engine of game design improvement. Without it, a designer is guessing. This module teaches you how to design and run effective playtests, observe player behavior without interfering, collect meaningful feedback, and translate that feedback into specific design changes. You will learn the difference between internal and external playtesting, how to write a playtest protocol, and how to manage the emotional challenge of watching your design fail — and using that failure productively to drive the next iteration.",
+      "objectives": [
+        "Design a structured playtest session with clear objectives and observation protocols",
+        "Distinguish between internal and external playtesting and know when to use each",
+        "Collect and analyze qualitative and quantitative playtest feedback without biasing results",
+        "Translate playtest findings into specific, prioritized design changes for the next iteration"
+      ],
+      "topics": [
+        "Types of Playtesting",
+        "Writing a Playtest Protocol",
+        "Observation Techniques",
+        "Think-Aloud Protocol",
+        "Feedback Collection Methods",
+        "Internal vs. External Playtesting",
+        "Iteration Cycles and Documentation"
+      ],
+      "duration": "~60 min",
+      "resources": [
+        {
+          "label": "Level Design Book: Playtesting",
+          "url": "https://book.leveldesignbook.com/process/blockout/playtesting",
+          "type": "reading"
+        },
+        {
+          "label": "The ULTIMATE Playtest Guide",
+          "url": "https://www.youtube.com/watch?v=zXNRJuc48Ek",
+          "type": "video"
+        },
+        {
+          "label": "itch.io Limited Playtests & Releases",
+          "url": "https://itch.io/docs/creators/limited-releases",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "After your most recent playtest session, what was the single most surprising thing you observed? Did players use a mechanic in a way you did not anticipate? How did that observation change your next design decision?",
+      "activity": {
+        "title": "Run a Structured Playtest",
+        "steps": [
+          "Write a test objective and a neutral observation protocol.",
+          "Observe at least one player without coaching.",
+          "Turn observations into prioritized changes, not just opinions."
+        ],
+        "deliverable": "A playtest brief containing protocol, evidence, findings, and next iteration."
+      },
+      "visualizationKey": "playtest-loop",
+      "part": {
+        "id": 2,
+        "label": "Part 2",
+        "title": "Tabletop and Low Fidelity Prototyping",
+        "description": "Explore ideation, playtesting, usability, iteration, and responsible design as you move from a concept to a testable tabletop experience.",
+        "color": "#3fb950"
+      }
+    },
+    {
+      "num": "11",
+      "title": "Usability",
+      "partId": 2,
+      "overview": "A game that is hard to understand is a game that does not get played. This module applies usability principles from human-computer interaction and UX design to game design, focusing on how to make games learnable, legible, and enjoyable from the very first moment of play. You will study cognitive load, onboarding design, visual clarity, and rule communication — and learn to evaluate games for usability through structured observation and heuristic analysis. The goal is to remove friction between the player and the experience you want them to have.",
+      "objectives": [
+        "Apply core usability heuristics to the design of game rules, components, and interfaces",
+        "Identify and diagnose common usability failures in tabletop and digital games",
+        "Design an onboarding experience that reduces cognitive load and supports new player learning",
+        "Evaluate a game's usability through structured observation and heuristic analysis"
+      ],
+      "topics": [
+        "Usability Heuristics for Games",
+        "Cognitive Load and Player Attention",
+        "Onboarding and Tutorial Design",
+        "Visual Clarity and Information Hierarchy",
+        "Rule Communication",
+        "Learnability and First-Play Experience",
+        "Usability Testing Methods"
+      ],
+      "duration": "~45 min",
+      "resources": [
+        {
+          "label": "10 Usability Heuristics Applied to Video Games",
+          "url": "https://www.nngroup.com/articles/usability-heuristics-applied-video-games/",
+          "type": "reading"
+        },
+        {
+          "label": "The Gamer's Brain, Part 2: UX of Onboarding and Player Engagement",
+          "url": "https://www.youtube.com/watch?v=Paf6B1jleCo",
+          "type": "video"
+        },
+        {
+          "label": "Useberry Free Plan — student usability study tool",
+          "url": "https://www.useberry.com/",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Think about a game that taught you how to play without a tutorial — where the design itself guided you. What specific design choices made that possible? Now think about a game where the onboarding failed you. What would you change?",
+      "activity": {
+        "title": "Audit Learnability",
+        "steps": [
+          "Choose a game onboarding or first-play experience.",
+          "Evaluate signposting, cognitive load, feedback, and rule communication.",
+          "Redesign one moment for clearer learning without removing discovery."
+        ],
+        "deliverable": "A usability audit with one annotated redesign."
+      },
+      "visualizationKey": "usability-check",
+      "part": {
+        "id": 2,
+        "label": "Part 2",
+        "title": "Tabletop and Low Fidelity Prototyping",
+        "description": "Explore ideation, playtesting, usability, iteration, and responsible design as you move from a concept to a testable tabletop experience.",
+        "color": "#3fb950"
+      }
+    },
+    {
+      "num": "12",
+      "title": "Cultural Responsibility",
+      "partId": 2,
+      "overview": "Games reflect and reinforce cultural values — and game designers bear responsibility for the messages their games send. This module examines how games represent culture, identity, and power, and how designers can approach their work with greater cultural awareness and accountability. You will analyze case studies of games that have caused harm through cultural insensitivity or stereotyping, explore frameworks for conducting culturally informed research, and develop strategies for designing games that are respectful, accurate, and genuinely inclusive of the cultures they engage with.",
+      "objectives": [
+        "Identify how games represent and reinforce cultural narratives, identities, and power structures",
+        "Analyze case studies of cultural misrepresentation or harm in published games",
+        "Apply a cultural responsibility framework to evaluate a design in progress",
+        "Develop strategies for conducting culturally informed research during the design process"
+      ],
+      "topics": [
+        "Cultural Representation in Games",
+        "Stereotyping and Harmful Tropes",
+        "Cultural Appropriation vs. Appreciation",
+        "Power, Identity, and Narrative",
+        "Case Studies in Cultural Harm",
+        "Community Consultation Methods",
+        "Ethical Design Practice"
+      ],
+      "duration": "~50 min",
+      "resources": [
+        {
+          "label": "Playing For Keeps: Digital Games to Preserve Indigenous Languages & Traditions",
+          "url": "https://dl.digra.org/index.php/dl/article/download/1384/1384/1381",
+          "type": "reading"
+        },
+        {
+          "label": "Indigenous Culture in Video Games — Phoebe Watson",
+          "url": "https://www.youtube.com/watch?v=GCmszt3jeCk",
+          "type": "video"
+        },
+        {
+          "label": "International Indigenous Design Charter: Protocols for Sharing Indigenous Knowledge in Professional Design Practice",
+          "url": "https://www.theicod.org/storage/app/media/resources/International_IDC_book_small_web.pdf",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Identify a game that engages with a culture other than the designer's own. How well does it represent that culture? What research or consultation would have improved it? If you were designing a game that engaged with a culture you are not part of, what steps would you take?",
+      "activity": {
+        "title": "Write a Responsibility Memo",
+        "steps": [
+          "Identify a representation, cultural, or impact risk in a game concept.",
+          "Separate evidence from assumption and consult an affected perspective where possible.",
+          "Propose a mitigation or a reasoned decision to change scope."
+        ],
+        "deliverable": "A short cultural-responsibility memo with an action decision."
+      },
+      "visualizationKey": "responsibility-lens",
+      "part": {
+        "id": 2,
+        "label": "Part 2",
+        "title": "Tabletop and Low Fidelity Prototyping",
+        "description": "Explore ideation, playtesting, usability, iteration, and responsible design as you move from a concept to a testable tabletop experience.",
+        "color": "#3fb950"
+      }
+    },
+    {
+      "num": "13",
+      "title": "Inclusivity and Accessibility",
+      "partId": 3,
+      "overview": "Inclusive game design means creating games that can be played and enjoyed by the widest possible range of people — regardless of ability, age, background, or identity. This module covers accessibility standards for digital games, inclusive design principles, and practical techniques for accommodating players with visual, auditory, motor, and cognitive differences. You will study the Game Accessibility Guidelines, examine how leading studios have implemented accessibility features, and conduct an accessibility audit of an existing game to propose concrete, implementable improvements.",
+      "objectives": [
+        "Define inclusive design and accessibility in the context of digital and tabletop game design",
+        "Identify the major categories of accessibility barriers across visual, auditory, motor, and cognitive dimensions",
+        "Apply the Game Accessibility Guidelines to evaluate and improve a game design",
+        "Conduct an accessibility audit of an existing game and propose actionable design improvements"
+      ],
+      "topics": [
+        "Inclusive Design Principles",
+        "Accessibility Standards and Guidelines",
+        "Visual Accessibility (colorblind modes, contrast)",
+        "Auditory Accessibility (subtitles, visual cues)",
+        "Motor Accessibility (remapping, assist modes)",
+        "Cognitive Accessibility (difficulty settings, clarity)",
+        "Accessibility Auditing"
+      ],
+      "duration": "~45 min",
+      "resources": [
+        {
+          "label": "Xbox Accessibility Guidelines V3.2 — Microsoft Game Development",
+          "url": "https://learn.microsoft.com/en-us/xbox/accessibility/guidelines",
+          "type": "reading"
+        },
+        {
+          "label": "Accessible Player Experiences (APX) — AbleGamers / Accessible Games",
+          "url": "https://accessible.games/accessible-player-experiences/",
+          "type": "reading"
+        },
+        {
+          "label": "Gaming Accessibility Fundamentals Learning Path — Microsoft Learn",
+          "url": "https://learn.microsoft.com/en-us/xbox/accessibility/gaf-info",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Choose a game you know well and conduct a quick accessibility audit using the Game Accessibility Guidelines. Which category of accessibility — visual, auditory, motor, or cognitive — is most neglected? What is one concrete change that would make the biggest difference for the most players?",
+      "activity": {
+        "title": "Run an Accessibility Audit",
+        "steps": [
+          "Review a game across visual, auditory, motor, and cognitive access.",
+          "Record barriers and the player impact of each one.",
+          "Prioritize changes by reach and implementation effort."
+        ],
+        "deliverable": "An accessibility backlog with priorities and acceptance criteria."
+      },
+      "visualizationKey": "accessibility-audit",
+      "part": {
+        "id": 3,
+        "label": "Part 3",
+        "title": "Using a Game Engine",
+        "description": "Bring systems into digital space while designing for teams and players. Explore inclusive game feel, team workflows, project scope, and the technical questions that shape a confident digital prototype.",
+        "color": "#f6c90e"
+      }
+    },
+    {
+      "num": "14",
+      "title": "Digital Prototyping in Teams",
+      "partId": 3,
+      "overview": "Digital game prototyping is rarely a solo endeavor. This module focuses on the collaborative practices, tools, and workflows that enable small teams to build digital prototypes efficiently using a game engine. You will explore version control for game projects, asset pipelines, task management, and communication strategies for distributed teams. Through a hands-on sprint, you will contribute to a shared digital prototype — practicing the coordination and communication skills that professional game development demands.",
+      "objectives": [
+        "Describe the roles and responsibilities within a small digital game development team",
+        "Use version control (Git) to manage a shared game project and resolve conflicts",
+        "Apply agile task management practices to plan and execute a digital prototyping sprint",
+        "Build a simple interactive prototype collaboratively using a game engine"
+      ],
+      "topics": [
+        "Team Roles in Game Development",
+        "Version Control with Git",
+        "Asset Pipelines and Naming Conventions",
+        "Agile Sprints for Game Teams",
+        "Task Management Tools",
+        "Collaborative Prototyping Workflow",
+        "Communication and Design Handoffs"
+      ],
+      "duration": "~60 min",
+      "resources": [
+        {
+          "label": "Godot Engine documentation — Version control systems",
+          "url": "https://docs.godotengine.org/en/stable/tutorials/best_practices/version_control_systems.html",
+          "type": "reading"
+        },
+        {
+          "label": "GitHub Docs — About repositories",
+          "url": "https://docs.github.com/en/repositories/creating-and-managing-repositories/about-repositories",
+          "type": "tool"
+        },
+        {
+          "label": "QuickStart to Git version control for Godot 4.2",
+          "url": "https://www.youtube.com/watch?v=yrpOQ4CWfrk",
+          "type": "video"
+        }
+      ],
+      "reflectionPrompt": "Reflect on a collaborative project you have worked on — in games or any other field. What was the biggest communication or coordination challenge? How did it affect the outcome? What workflow or tool would have helped most, and why?",
+      "activity": {
+        "title": "Plan a Team Prototype",
+        "steps": [
+          "Define a small digital prototype and the roles needed to make it.",
+          "Design a handoff between design, art, and engineering.",
+          "Choose a shared definition of done for the next build."
+        ],
+        "deliverable": "A team workflow map and one sprint-ready prototype brief."
+      },
+      "visualizationKey": "team-workflow",
+      "part": {
+        "id": 3,
+        "label": "Part 3",
+        "title": "Using a Game Engine",
+        "description": "Bring systems into digital space while designing for teams and players. Explore inclusive game feel, team workflows, project scope, and the technical questions that shape a confident digital prototype.",
+        "color": "#f6c90e"
+      }
+    },
+    {
+      "num": "15",
+      "title": "Development Practices",
+      "partId": 3,
+      "overview": "Professional game development follows established practices that keep projects on track, teams aligned, and quality high. This module introduces industry-standard development practices including pre-production planning, milestone-based scheduling, game design documentation, and quality assurance. You will learn how to write a game design document (GDD) that communicates your vision clearly, how to scope a project realistically for your resources, and how to manage the critical transition from prototype to production without losing the design's core intent.",
+      "objectives": [
+        "Describe the stages of a professional game development pipeline from concept to release",
+        "Write a concise game design document (GDD) that communicates a design vision clearly to a team",
+        "Apply milestone-based planning to a game project of defined scope and resources",
+        "Identify common development pitfalls — scope creep, feature drift, poor documentation — and strategies for avoiding them"
+      ],
+      "topics": [
+        "Game Development Pipeline",
+        "Pre-Production Planning",
+        "Game Design Documents (GDDs)",
+        "Milestone-Based Scheduling",
+        "Quality Assurance Basics",
+        "Scope Management",
+        "Prototype-to-Production Transition"
+      ],
+      "duration": "~55 min",
+      "resources": [
+        {
+          "label": "How To: Write a Game Design Document — Game Developer",
+          "url": "https://www.gamedeveloper.com/design/how-to-write-a-game-design-document",
+          "type": "reading"
+        },
+        {
+          "label": "The Art of Pre-Production — GDC Festival of Gaming",
+          "url": "https://www.youtube.com/watch?v=s2u4jhpZkTQ",
+          "type": "video"
+        },
+        {
+          "label": "GitHub Issues & Projects — official planning and tracking documentation",
+          "url": "https://docs.github.com/en/issues/tracking-your-work-with-issues/learning-about-issues/planning-and-tracking-work-for-your-team-or-project",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Write a one-page GDD for a game concept you have been developing. What was hardest to articulate clearly — the mechanics, the tone, the target audience, or the core loop? What does that difficulty tell you about where your design still needs more thinking?",
+      "activity": {
+        "title": "Create a Development Practice",
+        "steps": [
+          "Choose a versioning, backlog, review, and playtest cadence.",
+          "Define how design decisions will be documented.",
+          "Identify one risk that the cadence should surface early."
+        ],
+        "deliverable": "A lightweight development plan with review checkpoints."
+      },
+      "visualizationKey": "development-cadence",
+      "part": {
+        "id": 3,
+        "label": "Part 3",
+        "title": "Using a Game Engine",
+        "description": "Bring systems into digital space while designing for teams and players. Explore inclusive game feel, team workflows, project scope, and the technical questions that shape a confident digital prototype.",
+        "color": "#f6c90e"
+      }
+    },
+    {
+      "num": "16",
+      "title": "Game Feel",
+      "partId": 3,
+      "overview": "Game feel — sometimes called 'juice' — is the tactile, moment-to-moment sensation of interacting with a well-crafted game. It is what makes a jump feel satisfying, a hit feel impactful, or a menu feel responsive. This module explores the principles behind game feel: input responsiveness, animation feedback, sound design, screen shake, particle effects, and the subtle tuning that separates a polished game from a rough prototype. You will implement game feel improvements in a game engine and evaluate the difference they make to the player experience.",
+      "objectives": [
+        "Define game feel and articulate its role in player satisfaction and engagement",
+        "Identify the key components of game feel: input latency, visual feedback, animation, and audio",
+        "Implement basic game feel improvements — screen shake, particles, sound — in a game engine prototype",
+        "Evaluate the game feel of an existing game using a structured rubric"
+      ],
+      "topics": [
+        "What is Game Feel?",
+        "Input Responsiveness and Latency",
+        "Visual Feedback: Screen Shake and Particles",
+        "Animation Feedback Loops",
+        "Sound Design and Audio Feedback",
+        "Polishing Techniques",
+        "Game Feel Evaluation"
+      ],
+      "duration": "~50 min",
+      "resources": [
+        {
+          "label": "Designing Game Feel. A Survey — Martin Pichlmair and Mads Johansen",
+          "url": "https://arxiv.org/abs/2011.09201",
+          "type": "reading"
+        },
+        {
+          "label": "Juice it or lose it — Martin Jonasson and Petri Purho",
+          "url": "https://www.youtube.com/watch?v=Fy0aCDmgnxg",
+          "type": "video"
+        },
+        {
+          "label": "Godot Engine documentation: Controllers, gamepads, and joysticks",
+          "url": "https://docs.godotengine.org/en/stable/tutorials/inputs/controllers_gamepads_joysticks.html",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Play a game for 10 minutes with your full attention on game feel rather than strategy. What specific moment felt the most satisfying? Break it down: what combination of input response, animation, sound, and visual feedback created that feeling? How would you recreate it?",
+      "activity": {
+        "title": "Score Game Feel",
+        "steps": [
+          "Choose one player action and list its visual, animation, audio, and haptic feedback.",
+          "Rate responsiveness and feedback clarity before changes.",
+          "Propose a small polish pass and rate the expected improvement."
+        ],
+        "deliverable": "A game-feel scorecard with a focused polish experiment."
+      },
+      "visualizationKey": "game-feel",
+      "part": {
+        "id": 3,
+        "label": "Part 3",
+        "title": "Using a Game Engine",
+        "description": "Bring systems into digital space while designing for teams and players. Explore inclusive game feel, team workflows, project scope, and the technical questions that shape a confident digital prototype.",
+        "color": "#f6c90e"
+      }
+    },
+    {
+      "num": "17",
+      "title": "Project Scoping",
+      "partId": 3,
+      "overview": "One of the most common — and most preventable — causes of unfinished games is scope creep: the gradual expansion of a project beyond what a team can realistically deliver. This module teaches you how to scope a game project appropriately for your resources, timeline, and team size. You will practice identifying the minimum viable version of a game, cutting features without killing the design's core vision, and communicating scope decisions clearly to teammates and stakeholders. Realistic scoping is not a creative compromise — it is what makes shipping possible.",
+      "objectives": [
+        "Define project scope and explain why scope management is critical in game development",
+        "Apply the 'core loop first' principle to identify the minimum viable version of a game",
+        "Use prioritization frameworks (MoSCoW, design pillars) to decide which features to cut, defer, or keep",
+        "Communicate scope decisions clearly in a project brief or design document"
+      ],
+      "topics": [
+        "Scope Creep and Its Causes",
+        "Minimum Viable Game (MVG)",
+        "Core Loop Prioritization",
+        "MoSCoW Prioritization Framework",
+        "Design Pillars",
+        "Feature Triage",
+        "Scope Documentation and Communication"
+      ],
+      "duration": "~45 min",
+      "resources": [
+        {
+          "label": "Unity Learn — Create your production plan",
+          "url": "https://learn.unity.com/course/practical-game-accessibility/unit/project-pre-production/tutorial/create-your-production-plan",
+          "type": "reading"
+        },
+        {
+          "label": "Extra Credits — Making Your First Game: Minimum Viable Product — Scope Small, Start Right",
+          "url": "https://www.youtube.com/watch?v=UvCri1tqIxQ",
+          "type": "video"
+        },
+        {
+          "label": "GitHub Projects — About Projects",
+          "url": "https://docs.github.com/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Take a game concept you are working on and list every feature you want it to have. Now cut the list in half — keep only the features that are essential to the core experience. What did you cut? Was it painful? What does that tell you about what your game is really about?",
+      "activity": {
+        "title": "Scope the Smallest Viable Game",
+        "steps": [
+          "Write the player promise in one sentence.",
+          "Place features on an impact-versus-effort matrix.",
+          "Cut or defer work until the core loop can be tested quickly."
+        ],
+        "deliverable": "A scope sheet with must-have, should-have, and later features."
+      },
+      "visualizationKey": "scope-matrix",
+      "part": {
+        "id": 3,
+        "label": "Part 3",
+        "title": "Using a Game Engine",
+        "description": "Bring systems into digital space while designing for teams and players. Explore inclusive game feel, team workflows, project scope, and the technical questions that shape a confident digital prototype.",
+        "color": "#f6c90e"
+      }
+    },
+    {
+      "num": "18",
+      "title": "Opening the Black Box",
+      "partId": 3,
+      "overview": "Modern game engines do an enormous amount of work invisibly — which can make it hard for designers to understand what is actually happening under the hood. This module demystifies the game engine by examining its core systems: the game loop, rendering pipeline, physics simulation, input handling, and audio engine. Understanding these systems helps designers make better-informed decisions, communicate more effectively with engineers, and anticipate the technical constraints that will shape their designs. No prior programming experience is required.",
+      "objectives": [
+        "Describe the core systems of a game engine and how they interact to produce a running game",
+        "Explain the game loop and its implications for design decisions and performance",
+        "Identify how rendering, physics, and audio systems affect and constrain design choices",
+        "Use engine profiling and diagnostic tools to identify basic performance issues in a prototype"
+      ],
+      "topics": [
+        "The Game Loop",
+        "Rendering Pipeline Basics",
+        "Physics Simulation",
+        "Input Handling Systems",
+        "Audio Engine Architecture",
+        "Engine Profiling Tools",
+        "Designer-Engineer Communication"
+      ],
+      "duration": "~50 min",
+      "resources": [
+        {
+          "label": "Game Programming Patterns — Game Loop",
+          "url": "https://gameprogrammingpatterns.com/game-loop.html",
+          "type": "reading"
+        },
+        {
+          "label": "Unity — Unity Profiler Walkthrough & Tutorial",
+          "url": "https://www.youtube.com/watch?v=xjsqv8nj0cw",
+          "type": "video"
+        },
+        {
+          "label": "Godot Engine — free/open-source engine with built-in Profiler",
+          "url": "https://godotengine.org/download/",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Think about a design idea you have had that you were not sure was technically feasible. After this module, do you have a better sense of whether it is possible — and what the trade-offs might be? What would you ask an engineer to help you understand better?",
+      "activity": {
+        "title": "Open the Black Box",
+        "steps": [
+          "Explain one technical system in plain language for a collaborator.",
+          "List assumptions, inputs, outputs, and failure cases.",
+          "Name the next question that needs an experiment rather than a guess."
+        ],
+        "deliverable": "A system brief that makes hidden dependencies visible."
+      },
+      "visualizationKey": "black-box",
+      "part": {
+        "id": 3,
+        "label": "Part 3",
+        "title": "Using a Game Engine",
+        "description": "Bring systems into digital space while designing for teams and players. Explore inclusive game feel, team workflows, project scope, and the technical questions that shape a confident digital prototype.",
+        "color": "#f6c90e"
+      }
+    },
+    {
+      "num": "19",
+      "title": "Demonstrating Game Ideas",
+      "partId": 4,
+      "overview": "Before a game gets made, it must be communicated — to collaborators, publishers, investors, or players. This module focuses on the art and craft of demonstrating game ideas: how to create compelling pitches, design documents, vertical slices, and playable demos that convey the essence of a game to different audiences. You will practice presenting your game idea in multiple formats — verbal, written, and interactive — and receive structured feedback on the clarity, persuasiveness, and accuracy of your demonstrations.",
+      "objectives": [
+        "Identify the appropriate format for demonstrating a game idea to different audiences (publishers, teammates, players)",
+        "Create a concise, compelling pitch for an original game concept in both verbal and written forms",
+        "Design or describe a vertical slice that demonstrates a game's core experience authentically",
+        "Give and receive structured, actionable feedback on game pitches and demonstrations"
+      ],
+      "topics": [
+        "Pitch Formats: Elevator Pitch, One-Pager, Full Pitch",
+        "Anatomy of a Game Pitch",
+        "Vertical Slice Design",
+        "Playable Demo Principles",
+        "Tailoring Pitches to Different Audiences",
+        "Visual and Interactive Pitch Materials",
+        "Feedback Protocols for Pitches"
+      ],
+      "duration": "~55 min",
+      "resources": [
+        {
+          "label": "New Mexico State University Learning Games Lab Toolkit — Presentation Final Game Pitch",
+          "url": "https://learninggameslabtoolkit.org/design-final_game_pitch.html",
+          "type": "reading"
+        },
+        {
+          "label": "tinyBuildGAMES — How to Pitch Games (in 2024), presentation by Alex Nichiporchik",
+          "url": "https://www.youtube.com/watch?v=t5MZhwGgXbk",
+          "type": "video"
+        },
+        {
+          "label": "Twine — official open-source interactive-story tool",
+          "url": "https://twinery.org/",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Write a 60-second elevator pitch for your capstone game concept. Read it aloud and time it. What did you have to cut to fit the time? What does that cutting process reveal about what is most essential in your game?",
+      "activity": {
+        "title": "Prepare a Demonstration",
+        "steps": [
+          "Write a 60-second elevator pitch.",
+          "Choose the smallest playable or visual slice that proves the idea.",
+          "Tailor the demonstration to a player, peer, or decision-maker."
+        ],
+        "deliverable": "A timed pitch outline plus a demonstration checklist."
+      },
+      "visualizationKey": "pitch-builder",
+      "part": {
+        "id": 4,
+        "label": "Part 4",
+        "title": "Putting It All Together",
+        "description": "Connect business context, industry voices, pitch practice, sound thinking, and your final capstone into a portfolio-ready design story.",
+        "color": "#f85149"
+      }
+    },
+    {
+      "num": "20",
+      "title": "Business of Games",
+      "partId": 4,
+      "overview": "Understanding the business side of games is essential for any designer who wants to see their work reach players. This module covers the economics of the games industry: revenue models, publishing deals, self-publishing, crowdfunding, marketing fundamentals, and the financial realities of both indie and studio development. You will analyze different business models and their player experience implications, examine the ethics of monetization, and develop a basic business plan for a hypothetical game project.",
+      "objectives": [
+        "Describe the major revenue models used in the games industry: premium, free-to-play, subscription, and hybrid",
+        "Compare the trade-offs between self-publishing, traditional publishing, and crowdfunding",
+        "Identify the key components of a game marketing plan and community-building strategy",
+        "Develop a basic business plan for a hypothetical game project, including revenue model and target market"
+      ],
+      "topics": [
+        "Games Industry Overview and Market Size",
+        "Revenue Models: Premium, F2P, Subscription",
+        "Monetization Ethics",
+        "Publishing vs. Self-Publishing",
+        "Crowdfunding Strategies",
+        "Marketing and Community Building",
+        "Business Plan Basics"
+      ],
+      "duration": "~60 min",
+      "resources": [
+        {
+          "label": "Newzoo's Global Games Market Report 2026 — Free Edition",
+          "url": "https://newzoo.com/reports/newzoo-s-global-games-market-report-2026",
+          "type": "reading"
+        },
+        {
+          "label": "Growing your mobile game — Unity Learn",
+          "url": "https://learn.unity.com/course/growing-your-mobile-game",
+          "type": "reading"
+        },
+        {
+          "label": "Kickstarter Creator Handbook",
+          "url": "https://www.kickstarter.com/help/handbook",
+          "type": "reading"
+        }
+      ],
+      "reflectionPrompt": "Choose a revenue model for your capstone game concept and justify it. Why does that model fit your game's design and target audience? What are the ethical implications of that model — and how would you address them in your design?",
+      "activity": {
+        "title": "Draft a Business Model",
+        "steps": [
+          "Define audience, value, discovery path, and sustainable revenue options.",
+          "Identify one monetization or business risk that could harm player trust.",
+          "Choose a model that fits the game’s intended experience."
+        ],
+        "deliverable": "A one-page business canvas with an ethics check."
+      },
+      "visualizationKey": "business-model",
+      "part": {
+        "id": 4,
+        "label": "Part 4",
+        "title": "Putting It All Together",
+        "description": "Connect business context, industry voices, pitch practice, sound thinking, and your final capstone into a portfolio-ready design story.",
+        "color": "#f85149"
+      }
+    },
+    {
+      "num": "21",
+      "title": "Industry Voices I",
+      "partId": 4,
+      "overview": "Hear directly from working professionals across the games industry — designers, producers, studio leads, and developers — about their careers, creative processes, and the lessons they have learned from shipped games. This first installment focuses on career paths into the industry, what it is like to work in a game studio, and how professionals approach the design challenges they face every day. Their perspectives will help you connect the skills you are building to the realities of professional practice.",
+      "objectives": [
+        "Identify diverse career paths into and within the games industry across different roles and studio sizes",
+        "Describe the day-to-day realities of working as a game designer in a professional studio context",
+        "Reflect on how industry professionals approach design challenges, creative decisions, and collaboration",
+        "Connect industry perspectives to your own developing design practice and career goals"
+      ],
+      "topics": [
+        "Career Paths in Game Design",
+        "Breaking into the Industry",
+        "Studio Culture and Team Dynamics",
+        "Lessons from Shipped Games",
+        "Portfolio and Job Application Advice",
+        "Professional Development Strategies"
+      ],
+      "duration": "~45 min",
+      "resources": [
+        {
+          "label": "ScreenSkills — Careers in games",
+          "url": "https://www.screenskills.com/job-profiles/browse/games/",
+          "type": "reading"
+        },
+        {
+          "label": "ScreenSkills — Build your games portfolio",
+          "url": "https://www.screenskills.com/starting-your-career/building-your-portfolio/build-your-games-portfolio/",
+          "type": "reading"
+        },
+        {
+          "label": "Ubisoft — How to Prepare Yourself to be Employed as a Junior Games Designer (Zachary Preece)",
+          "url": "https://www.youtube.com/watch?v=tEXzBrF8Rnw",
+          "type": "video"
+        }
+      ],
+      "reflectionPrompt": "After hearing from industry professionals, which career path resonates most with you — and why? What skills or experiences do you still need to develop? What is one concrete step you could take in the next month to move toward that path?",
+      "activity": {
+        "title": "Build a Career Map",
+        "steps": [
+          "Compare two industry roles or disciplines represented in the course.",
+          "List skills, evidence, and collaborators each role requires.",
+          "Choose one skill gap to address in your portfolio next."
+        ],
+        "deliverable": "A role comparison and a 30-day evidence-building plan."
+      },
+      "visualizationKey": "industry-map",
+      "part": {
+        "id": 4,
+        "label": "Part 4",
+        "title": "Putting It All Together",
+        "description": "Connect business context, industry voices, pitch practice, sound thinking, and your final capstone into a portfolio-ready design story.",
+        "color": "#f85149"
+      }
+    },
+    {
+      "num": "22",
+      "title": "Industry Voices II",
+      "partId": 4,
+      "overview": "This module continues the conversation with industry professionals, turning the spotlight on specialized disciplines and unconventional paths. You will hear from sound designers, narrative designers, accessibility advocates, and independent developers who have charted their own routes through the industry. Their perspectives illuminate the full spectrum of creative contributions that make games come alive, and offer insight into the emerging trends and opportunities shaping the future of the field.",
+      "objectives": [
+        "Describe the craft and role of specialized game development disciplines including sound design and narrative design",
+        "Analyze how independent developers approach creative and business challenges differently from studio developers",
+        "Identify emerging trends and opportunities in the games industry based on practitioner perspectives",
+        "Articulate how the perspectives heard in this module inform your own approach to game design and career planning"
+      ],
+      "topics": [
+        "Sound Design for Games",
+        "Narrative Design and Interactive Writing",
+        "Accessibility Advocacy in Practice",
+        "Independent Development and Self-Publishing",
+        "Emerging Trends in the Industry",
+        "Unconventional Career Paths"
+      ],
+      "duration": "~45 min",
+      "resources": [
+        {
+          "label": "Finding Space For Sound: Acoustics in Avatar: Frontiers of Pandora — GDC Festival of Gaming",
+          "url": "https://www.youtube.com/watch?v=3vtR-m0U7TY",
+          "type": "video"
+        },
+        {
+          "label": "Game Accessibility Guidelines — Full list",
+          "url": "https://gameaccessibilityguidelines.com/full-list/",
+          "type": "reading"
+        },
+        {
+          "label": "Your first itch.io page — itch.io Creator Documentation",
+          "url": "https://itch.io/docs/creators/getting-started",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Which specialized discipline covered in this module — sound design, narrative design, accessibility, or independent development — most changed how you think about your own design practice? What is one thing you will do differently in your capstone project as a result?",
+      "activity": {
+        "title": "Conduct an Industry Voice Study",
+        "steps": [
+          "Choose an industry talk, interview, or postmortem.",
+          "Extract two decisions and the constraints behind them.",
+          "Draft questions you would ask the practitioner in a follow-up conversation."
+        ],
+        "deliverable": "An industry-voice memo with takeaways and questions."
+      },
+      "visualizationKey": "industry-voices",
+      "part": {
+        "id": 4,
+        "label": "Part 4",
+        "title": "Putting It All Together",
+        "description": "Connect business context, industry voices, pitch practice, sound thinking, and your final capstone into a portfolio-ready design story.",
+        "color": "#f85149"
+      }
+    },
+    {
+      "num": "23",
+      "title": "Designing a Game I",
+      "partId": 4,
+      "overview": "This is the first of two capstone modules in which you apply everything you have learned to design an original game from concept to functional prototype. In this module, you will define your game concept, write a design brief, build an initial prototype, and conduct a first round of structured playtesting. The emphasis is on moving quickly from idea to testable artifact — and using early feedback to sharpen your design direction before committing to a full iteration cycle in the next module.",
+      "objectives": [
+        "Define and articulate an original game concept in a structured design brief",
+        "Build an initial prototype that embodies the core mechanic of your game concept",
+        "Conduct a structured playtest session and document observations and feedback systematically",
+        "Use playtest findings to identify the most critical design problems to address in the next iteration"
+      ],
+      "topics": [
+        "Capstone Project Brief and Requirements",
+        "Concept Development and Refinement",
+        "Design Brief Writing",
+        "Initial Prototyping",
+        "First Playtest Session",
+        "Feedback Analysis and Iteration Planning"
+      ],
+      "duration": "~90 min",
+      "resources": [
+        {
+          "label": "Unity Learn — Design and Publish Your Original Game: Unity USC Games Unlocked",
+          "url": "https://learn.unity.com/course/design-and-publish-your-original-game-unity-usc-games-unlocked",
+          "type": "reading"
+        },
+        {
+          "label": "Indie Game Academy — How to Paper Prototype Your Video Game",
+          "url": "https://www.youtube.com/watch?v=oW5EeDbY88A",
+          "type": "video"
+        },
+        {
+          "label": "Twine — official open-source browser prototyping tool",
+          "url": "https://twinery.org/",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "After your first playtest of your capstone prototype, what is the single most important thing you learned about your game? Was it something you expected, or did it surprise you? How will it change the direction of your design in Module 24?",
+      "activity": {
+        "title": "Start the Capstone",
+        "steps": [
+          "Write a concise design brief and player promise.",
+          "Build the smallest prototype that tests your riskiest assumption.",
+          "Run a first playtest and capture evidence in the Diary."
+        ],
+        "deliverable": "A capstone concept brief, prototype link or photos, and first-playtest notes."
+      },
+      "visualizationKey": "capstone-plan",
+      "part": {
+        "id": 4,
+        "label": "Part 4",
+        "title": "Putting It All Together",
+        "description": "Connect business context, industry voices, pitch practice, sound thinking, and your final capstone into a portfolio-ready design story.",
+        "color": "#f85149"
+      }
+    },
+    {
+      "num": "24",
+      "title": "Designing a Game II",
+      "partId": 4,
+      "overview": "In this final capstone module, you iterate on your game prototype based on playtest feedback, refine the design, and prepare a complete presentation of your work. You will add your completed game to your Game Diary as a professional portfolio piece, reflecting on what you designed, why you made the decisions you did, and what you would do differently. The module concludes with peer presentations — a celebration of the design journey and a demonstration of the full range of skills you have developed throughout the certificate.",
+      "objectives": [
+        "Iterate on a game prototype based on structured playtest feedback from Module 23",
+        "Prepare a complete game presentation including concept, prototype, and design rationale",
+        "Document the full design process in your Game Diary as a professional portfolio piece",
+        "Reflect critically on your design decisions and articulate the lessons learned throughout the certificate"
+      ],
+      "topics": [
+        "Design Iteration and Prototype Refinement",
+        "Final Playtesting",
+        "Preparing a Portfolio Presentation",
+        "Design Rationale Documentation",
+        "Game Diary Finalization",
+        "Peer Review and Capstone Showcase",
+        "Reflective Practice"
+      ],
+      "duration": "~90 min",
+      "resources": [
+        {
+          "label": "Towards an Iterative Design for Serious Games — Viudes-Carbonell et al.",
+          "url": "https://www.mdpi.com/2071-1050/13/6/3290",
+          "type": "reading"
+        },
+        {
+          "label": "Prototyping for Game Design with Behaviour Interactive — Concordia University/Behaviour Interactive",
+          "url": "https://www.youtube.com/watch?v=Yn3OPBh1y0I",
+          "type": "video"
+        },
+        {
+          "label": "Your first itch.io page — official creator documentation",
+          "url": "https://itch.io/docs/creators/getting-started",
+          "type": "tool"
+        }
+      ],
+      "reflectionPrompt": "Looking back across the entire certificate, what is the most important thing you have learned about yourself as a game designer? What kind of games do you want to make — and what is the first step you will take after completing this program?",
+      "activity": {
+        "title": "Finish the Capstone",
+        "steps": [
+          "Iterate from structured playtest evidence.",
+          "Prepare a presentation with concept, prototype, and design rationale.",
+          "Publish the process and final reflection as a portfolio-ready Diary entry."
+        ],
+        "deliverable": "A capstone showcase package and a final Game Diary reflection."
+      },
+      "visualizationKey": "capstone-showcase",
+      "part": {
+        "id": 4,
+        "label": "Part 4",
+        "title": "Putting It All Together",
+        "description": "Connect business context, industry voices, pitch practice, sound thinking, and your final capstone into a portfolio-ready design story.",
+        "color": "#f85149"
+      }
+    }
+  ]
+}

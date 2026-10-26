@@ -439,3 +439,22 @@ export const newsletterSubscribers = mysqlTable("newsletter_subscribers", {
 export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
 export type InsertNewsletterSubscriber =
   typeof newsletterSubscribers.$inferInsert;
+
+// ─── Game Design Diary Entries ───────────────────────────────────────────────
+// These records are intentionally scoped to the Game Design course so the
+// learner's reflections become a persistent, searchable portfolio trail.
+export const gameDesignDiaryEntries = mysqlTable("game_design_diary_entries", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  courseId: int("courseId").notNull(),
+  moduleId: int("moduleId"),
+  week: varchar("week", { length: 64 }),
+  title: varchar("title", { length: 255 }).notNull(),
+  body: text("body").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type GameDesignDiaryEntry = typeof gameDesignDiaryEntries.$inferSelect;
+export type InsertGameDesignDiaryEntry =
+  typeof gameDesignDiaryEntries.$inferInsert;

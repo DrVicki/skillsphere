@@ -31,11 +31,18 @@ import QuantumVisualizations from "@/components/QuantumVisualizations";
 import AIDataAnalyticsVisualizations from "@/components/AIDataAnalyticsVisualizations";
 import PythonForgeLab from "@/components/PythonForgeLab";
 import CAIOActivityTemplateDownload from "@/components/CAIOActivityTemplateDownload";
+import GameDesignDiaryPanel from "@/components/GameDesignDiaryPanel";
+import {
+  GameDesignActivityCard,
+  GameDesignKnowledgeCheck,
+  GameDesignVisualization,
+} from "@/components/GameDesignStudioTools";
 import { parseGuidedMoveLabs, stripGuidedMoveLabs } from "@/lib/cubeMoveLabs";
 import { getQuantumVisualizationForModule } from "@/lib/quantumVisualizations";
 import { getAIDataAnalyticsVisualizationForModule } from "@/lib/aiDataAnalyticsVisualizations";
 import { getPythonForgeActivityForModule } from "@/lib/pythonForgeActivities";
 import { getCAIOActivityTemplateForModule } from "@/lib/caioActivityTemplates";
+import { getGameDesignInteractionForModule } from "@/lib/gameDesignCourse";
 import { getVideoPlayback } from "@/lib/embedContent";
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Link } from "wouter";
@@ -57,6 +64,7 @@ export default function LearnCourse({ params }: Props) {
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
   const [showCertificate, setShowCertificate] = useState(false);
+  const [activeTab, setActiveTab] = useState("content");
 
   const { data: course } = trpc.courses.bySlug.useQuery(params.slug);
   const { data: modules } = trpc.modules.byCourse.useQuery(course?.id ?? 0, {
@@ -116,6 +124,10 @@ export default function LearnCourse({ params }: Props) {
     activeModule?.title
   );
   const caioActivityTemplate = getCAIOActivityTemplateForModule(
+    course?.slug,
+    activeModule?.title
+  );
+  const gameDesignInteraction = getGameDesignInteractionForModule(
     course?.slug,
     activeModule?.title
   );
@@ -288,7 +300,7 @@ export default function LearnCourse({ params }: Props) {
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto">
-          <Tabs defaultValue="content" className="h-full flex flex-col">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
             <div className="bg-white border-b border-border px-4">
               <TabsList className="h-10 bg-transparent border-0 gap-0">
                 <TabsTrigger
@@ -309,6 +321,14 @@ export default function LearnCourse({ params }: Props) {
                 >
                   <Users className="h-4 w-4 mr-1.5" /> Live Chat
                 </TabsTrigger>
+                {course.slug === "professional-certificate-game-design" && (
+                  <TabsTrigger
+                    value="diary"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent"
+                  >
+                    <BookOpen className="h-4 w-4 mr-1.5" /> Game Diary
+                  </TabsTrigger>
+                )}
               </TabsList>
             </div>
 
@@ -422,6 +442,44 @@ export default function LearnCourse({ params }: Props) {
                       <CAIOActivityTemplateDownload
                         template={caioActivityTemplate}
                       />
+                    )}
+
+                    {gameDesignInteraction && (
+                      <>
+                        <GameDesignActivityCard
+                          activity={gameDesignInteraction.activity}
+                          onWriteDiary={
+                            course.slug === "professional-certificate-game-design"
+                              ? () => setActiveTab("diary")
+                              : undefined
+                          }
+                        />
+                        <GameDesignVisualization
+                          visualizationKey={gameDesignInteraction.visualizationKey}
+                        />
+                        <GameDesignKnowledgeCheck
+                          questions={gameDesignInteraction.knowledgeCheck}
+                        />
+                        <div className="mt-6 rounded-xl border border-[#58a6ff]/25 bg-[#EEF4FF]/50 p-5">
+                          <div className="flex items-center gap-2 text-sm font-semibold text-[#1e3a6e]">
+                            <BookOpen className="h-4 w-4 text-[#2A63BF]" /> Reflection prompt
+                          </div>
+                          <p className="mt-2 text-sm leading-6 text-foreground">
+                            {gameDesignInteraction.reflectionPrompt}
+                          </p>
+                          {hasCourseAccess && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="mt-3 border-[#2A63BF]/30 text-[#2A63BF] hover:bg-[#EEF4FF]"
+                              onClick={() => setActiveTab("diary")}
+                            >
+                              Write in Game Diary <ChevronRight className="ml-1.5 h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </>
                     )}
 
                     {/* Assessment */}
@@ -604,6 +662,18 @@ export default function LearnCourse({ params }: Props) {
                 </div>
               )}
             </TabsContent>
+
+            {course.slug === "professional-certificate-game-design" && (
+              <TabsContent value="diary" className="flex-1 overflow-y-auto p-6 mt-0">
+                <GameDesignDiaryPanel
+                  courseId={course.id}
+                  moduleId={activeModule?.id}
+                  moduleTitle={activeModule?.title}
+                  reflectionPrompt={gameDesignInteraction?.reflectionPrompt}
+                  canWrite={hasCourseAccess}
+                />
+              </TabsContent>
+            )}
 
             {/* Discussion Tab */}
             <TabsContent value="discussion" className="flex-1 p-6 mt-0">
