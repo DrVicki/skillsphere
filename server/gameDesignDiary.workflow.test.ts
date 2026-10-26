@@ -35,6 +35,9 @@ describe("Game Design Diary workflow", () => {
     expect(db).toContain("capstoneModules");
     expect(db).toContain("/designing a game|capstone/i");
     expect(diaryPanel).toContain('link.download = "game-design-portfolio.md"');
+    expect(diaryPanel).toContain('const { jsPDF } = await import("jspdf")');
+    expect(diaryPanel).toContain("SkillSphere-Game-Design-Portfolio-");
+    expect(diaryPanel).toContain("learnerName?.trim() || \"Learner\"");
     expect(diaryPanel).toContain("Capstone evidence");
   });
 

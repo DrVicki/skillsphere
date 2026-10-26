@@ -690,6 +690,7 @@ export default function LearnCourse({ params }: Props) {
               <TabsContent value="diary" className="flex-1 overflow-y-auto p-6 mt-0">
                 <GameDesignDiaryPanel
                   courseId={course.id}
+                  learnerName={user?.name?.trim() || user?.email?.split("@")[0]?.trim() || "Learner"}
                   moduleId={activeModule?.id}
                   moduleTitle={activeModule?.title}
                   reflectionPrompt={gameDesignInteraction?.reflectionPrompt}

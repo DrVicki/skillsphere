@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 interface GameDesignDiaryPanelProps {
   courseId: number;
+  learnerName?: string;
   moduleId?: number;
   moduleTitle?: string;
   reflectionPrompt?: string;
@@ -19,6 +20,7 @@ interface GameDesignDiaryPanelProps {
 
 export default function GameDesignDiaryPanel({
   courseId,
+  learnerName,
   moduleId,
   moduleTitle,
   reflectionPrompt,
@@ -38,6 +40,7 @@ export default function GameDesignDiaryPanel({
   const [body, setBody] = useState("");
   const [week, setWeek] = useState("");
   const [showOnboardingTip, setShowOnboardingTip] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
 
   useEffect(() => {
     setShowOnboardingTip(window.localStorage.getItem("skillsphere.game-diary.onboarding-seen") !== "1");
@@ -156,6 +159,126 @@ export default function GameDesignDiaryPanel({
     URL.revokeObjectURL(url);
   };
 
+  const exportPortfolioPdf = async () => {
+    if (!portfolio) return;
+    setIsExportingPdf(true);
+    try {
+      const { jsPDF } = await import("jspdf");
+      const doc = new jsPDF({ unit: "pt", format: "letter" });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 44;
+      const navy = "#0F2747";
+      const blue = "#2A63BF";
+      const gold = "#F5B942";
+      const muted = "#536273";
+      let y = 0;
+
+      const plainText = (value: string) => value
+        .replace(/<[^>]*>/g, " ")
+        .replace(/```[\s\S]*?```/g, "[code excerpt]")
+        .replace(/[#*_>`]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      const startPage = () => {
+        doc.setFillColor(navy);
+        doc.rect(0, 0, pageWidth, 64, "F");
+        doc.setFillColor(gold);
+        doc.rect(0, 64, pageWidth, 4, "F");
+        doc.setTextColor("#FFFFFF");
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(18);
+        doc.text("SkillSphere", margin, 29);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor("#DCEBFF");
+        doc.text("Empowering Skills. Building Futures.", margin, 44);
+        doc.setTextColor("#1F2937");
+        y = 96;
+      };
+
+      const ensureSpace = (height: number) => {
+        if (y + height > pageHeight - 42) {
+          doc.addPage();
+          startPage();
+        }
+      };
+
+      const addParagraph = (text: string, options?: { size?: number; color?: string; bold?: boolean; gap?: number }) => {
+        const cleaned = plainText(text) || "—";
+        const size = options?.size ?? 10;
+        const lines = doc.splitTextToSize(cleaned, pageWidth - margin * 2) as string[];
+        doc.setFont("helvetica", options?.bold ? "bold" : "normal");
+        doc.setFontSize(size);
+        doc.setTextColor(options?.color ?? "#1F2937");
+        for (const line of lines) {
+          ensureSpace(size + 6);
+          doc.text(line, margin, y);
+          y += size + 4;
+        }
+        y += options?.gap ?? 5;
+      };
+
+      const addSectionTitle = (title: string) => {
+        ensureSpace(38);
+        doc.setFillColor("#EEF4FF");
+        doc.roundedRect(margin - 6, y - 18, pageWidth - margin * 2 + 12, 28, 5, 5, "F");
+        doc.setTextColor(blue);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(13);
+        doc.text(title, margin, y);
+        y += 25;
+      };
+
+      startPage();
+      doc.setTextColor(navy);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(23);
+      doc.text("Game Design Portfolio", margin, y);
+      y += 25;
+      addParagraph(portfolio.course?.title ?? "Professional Certificate in Game Design", { size: 13, color: blue, bold: true, gap: 2 });
+      addParagraph(`Learner: ${learnerName?.trim() || "Learner"}`, { color: navy, bold: true, gap: 0 });
+      addParagraph(`Generated: ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}`, { size: 9, color: muted, gap: 14 });
+      doc.setDrawColor(gold);
+      doc.setLineWidth(1.5);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 24;
+
+      addSectionTitle("Capstone evidence");
+      if (portfolio.capstoneModules.length === 0) {
+        addParagraph("No capstone modules found yet.", { color: muted });
+      } else {
+        portfolio.capstoneModules.forEach(module => {
+          addParagraph(module.title, { size: 11, color: navy, bold: true, gap: 1 });
+          addParagraph(`Status: ${module.completed ? "Completed" : "Not completed yet"}`, { size: 9, color: module.completed ? "#207A35" : muted, gap: 2 });
+          addParagraph(module.content ?? "", { size: 9, color: muted, gap: 10 });
+        });
+      }
+
+      addSectionTitle("Game Diary entries");
+      if (portfolio.entries.length === 0) {
+        addParagraph("No Diary entries yet.", { color: muted });
+      } else {
+        portfolio.entries.forEach(entry => {
+          addParagraph(entry.title, { size: 11, color: navy, bold: true, gap: 1 });
+          addParagraph(`${entry.week ?? "Game Design Diary"} · Review status: ${entry.reviewStatus.replace("_", " ")}`, { size: 9, color: muted, gap: 2 });
+          addParagraph(entry.body, { size: 10, gap: 2 });
+          if (entry.instructorFeedback) addParagraph(`Instructor feedback: ${entry.instructorFeedback}`, { size: 9, color: "#7A4B00", gap: 8 });
+        });
+      }
+
+      const filename = `SkillSphere-Game-Design-Portfolio-${(learnerName?.trim() || "Learner").replace(/[^a-z0-9]+/gi, "-")}.pdf`;
+      doc.save(filename);
+      toast.success("Branded PDF portfolio downloaded");
+    } catch (error) {
+      console.error("Portfolio PDF generation failed", error);
+      toast.error("Unable to create the PDF portfolio. Try the Markdown export instead.");
+    } finally {
+      setIsExportingPdf(false);
+    }
+  };
+
   const dismissOnboardingTip = () => {
     window.localStorage.setItem("skillsphere.game-diary.onboarding-seen", "1");
     setShowOnboardingTip(false);
@@ -194,6 +317,9 @@ export default function GameDesignDiaryPanel({
               <p className="mt-2 max-w-2xl text-sm leading-6 text-blue-100">Capture design decisions, playtest evidence, and reflection as you move through the 24-module certificate.</p>
             </div>
             <div className="flex gap-2">
+              <Button type="button" variant="outline" size="sm" className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white" onClick={exportPortfolioPdf} disabled={!portfolio || isExportingPdf}>
+                <Download className="mr-1.5 h-4 w-4" /> {isExportingPdf ? "Creating PDF…" : "PDF portfolio"}
+              </Button>
               <Button type="button" variant="outline" size="sm" className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white" onClick={exportPortfolio} disabled={!portfolio}>
                 <Download className="mr-1.5 h-4 w-4" /> Portfolio
               </Button>
