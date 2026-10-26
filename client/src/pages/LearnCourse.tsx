@@ -334,6 +334,29 @@ export default function LearnCourse({ params }: Props) {
 
             {/* Content Tab */}
             <TabsContent value="content" className="flex-1 p-6 mt-0">
+              {course.slug === "professional-certificate-game-design" && (
+                <div className="mx-auto mb-6 flex max-w-3xl flex-col gap-4 rounded-2xl border border-[#2A63BF]/20 bg-gradient-to-r from-[#EEF4FF] to-[#F8FBFF] p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
+                  <div className="flex items-start gap-3">
+                    <div className="rounded-xl bg-white p-2.5 text-[#2A63BF] shadow-sm" aria-hidden="true">
+                      <BookOpen className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-[#1e3a6e]">Keep a Game Diary</p>
+                      <p className="mt-1 text-sm leading-5 text-muted-foreground">
+                        Capture design decisions, experiments, evidence, and your next question as you learn.
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full shrink-0 border-[#2A63BF]/30 bg-white text-[#2A63BF] hover:bg-[#EEF4FF] sm:w-auto"
+                    onClick={() => setActiveTab("diary")}
+                  >
+                    Open Game Diary <ChevronRight className="ml-1.5 h-4 w-4" />
+                  </Button>
+                </div>
+              )}
               {activeModule ? (
                 canAccessModule(activeModule) ? (
                   <div className="max-w-3xl mx-auto">
