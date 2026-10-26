@@ -58,7 +58,11 @@ import {
   getNewsletterSubscribers,
   createGameDesignDiaryEntry,
   deleteGameDesignDiaryEntry,
+  getGameDesignDiaryEntriesForReview,
+  getGameDesignPortfolio,
   getGameDesignDiaryEntries,
+  reviewGameDesignDiaryEntry,
+  submitGameDesignDiaryEntry,
   updateGameDesignDiaryEntry,
   getBlogPosts,
   getBlogPostBySlug,
@@ -797,6 +801,15 @@ export const appRouter = router({
       return getGameDesignDiaryEntries(ctx.user.id, input);
     }),
 
+    portfolio: protectedProcedure.input(z.number()).query(async ({ ctx, input }) => {
+      const course = await requireGameDesignCourse(input);
+      const enrollment = await getEnrollment(ctx.user.id, input);
+      if (!enrollment && course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in the course before exporting your portfolio." });
+      }
+      return getGameDesignPortfolio(ctx.user.id, input);
+    }),
+
     create: protectedProcedure
       .input(
         z.object({
@@ -840,6 +853,49 @@ export const appRouter = router({
         await requireGameDesignCourse(input.courseId);
         const { id, courseId, ...data } = input;
         await updateGameDesignDiaryEntry(id, ctx.user.id, courseId, data);
+        return { success: true };
+      }),
+
+    submit: protectedProcedure
+      .input(z.object({ id: z.number(), courseId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await requireGameDesignCourse(input.courseId);
+        await submitGameDesignDiaryEntry(input.id, ctx.user.id, input.courseId);
+        return { success: true };
+      }),
+
+    reviewQueue: trainerProcedure
+      .input(z.object({
+        courseId: z.number(),
+        status: z.enum(["draft", "submitted", "needs_revision", "approved"]).optional(),
+      }))
+      .query(async ({ ctx, input }) => {
+        const course = await requireGameDesignCourse(input.courseId);
+        if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "You do not review this course." });
+        }
+        return getGameDesignDiaryEntriesForReview(input.courseId, input.status);
+      }),
+
+    review: trainerProcedure
+      .input(z.object({
+        id: z.number(),
+        courseId: z.number(),
+        reviewStatus: z.enum(["needs_revision", "approved"]),
+        instructorFeedback: z.string().trim().max(5000).default(""),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const course = await requireGameDesignCourse(input.courseId);
+        if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "You do not review this course." });
+        }
+        await reviewGameDesignDiaryEntry(
+          input.id,
+          input.courseId,
+          ctx.user.id,
+          input.reviewStatus,
+          input.instructorFeedback
+        );
         return { success: true };
       }),
 

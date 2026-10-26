@@ -451,6 +451,11 @@ export const gameDesignDiaryEntries = mysqlTable("game_design_diary_entries", {
   week: varchar("week", { length: 64 }),
   title: varchar("title", { length: 255 }).notNull(),
   body: text("body").notNull(),
+  reviewStatus: mysqlEnum("reviewStatus", ["draft", "submitted", "needs_revision", "approved"]).default("draft").notNull(),
+  instructorFeedback: text("instructorFeedback"),
+  reviewedBy: int("reviewedBy"),
+  reviewedAt: timestamp("reviewedAt"),
+  submittedAt: timestamp("submittedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

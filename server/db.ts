@@ -559,6 +559,10 @@ export async function updateGameDesignDiaryEntry(
       ...(data.week !== undefined ? { week: data.week?.trim() || null } : {}),
       ...(data.title !== undefined ? { title: data.title.trim() } : {}),
       ...(data.body !== undefined ? { body: data.body.trim() } : {}),
+      reviewStatus: "draft",
+      reviewedBy: null,
+      reviewedAt: null,
+      submittedAt: null,
     })
     .where(
       and(
@@ -585,6 +589,86 @@ export async function deleteGameDesignDiaryEntry(
         eq(gameDesignDiaryEntries.courseId, courseId)
       )
     );
+}
+
+export async function getGameDesignDiaryEntriesForReview(
+  courseId: number,
+  status?: "draft" | "submitted" | "needs_revision" | "approved"
+) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select({
+      id: gameDesignDiaryEntries.id,
+      userId: gameDesignDiaryEntries.userId,
+      courseId: gameDesignDiaryEntries.courseId,
+      moduleId: gameDesignDiaryEntries.moduleId,
+      moduleTitle: modules.title,
+      week: gameDesignDiaryEntries.week,
+      title: gameDesignDiaryEntries.title,
+      body: gameDesignDiaryEntries.body,
+      reviewStatus: gameDesignDiaryEntries.reviewStatus,
+      instructorFeedback: gameDesignDiaryEntries.instructorFeedback,
+      reviewedBy: gameDesignDiaryEntries.reviewedBy,
+      reviewedAt: gameDesignDiaryEntries.reviewedAt,
+      submittedAt: gameDesignDiaryEntries.submittedAt,
+      createdAt: gameDesignDiaryEntries.createdAt,
+      updatedAt: gameDesignDiaryEntries.updatedAt,
+      learnerName: users.name,
+      learnerEmail: users.email,
+    })
+    .from(gameDesignDiaryEntries)
+    .leftJoin(users, eq(gameDesignDiaryEntries.userId, users.id))
+    .leftJoin(modules, eq(gameDesignDiaryEntries.moduleId, modules.id))
+    .where(
+      status
+        ? and(eq(gameDesignDiaryEntries.courseId, courseId), eq(gameDesignDiaryEntries.reviewStatus, status))
+        : eq(gameDesignDiaryEntries.courseId, courseId)
+    )
+    .orderBy(desc(gameDesignDiaryEntries.submittedAt), desc(gameDesignDiaryEntries.updatedAt));
+}
+
+export async function submitGameDesignDiaryEntry(id: number, userId: number, courseId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db
+    .update(gameDesignDiaryEntries)
+    .set({ reviewStatus: "submitted", submittedAt: new Date(), reviewedBy: null, reviewedAt: null })
+    .where(and(eq(gameDesignDiaryEntries.id, id), eq(gameDesignDiaryEntries.userId, userId), eq(gameDesignDiaryEntries.courseId, courseId)));
+}
+
+export async function reviewGameDesignDiaryEntry(
+  id: number,
+  courseId: number,
+  reviewedBy: number,
+  reviewStatus: "needs_revision" | "approved",
+  instructorFeedback: string
+) {
+  const db = await getDb();
+  if (!db) return;
+  await db
+    .update(gameDesignDiaryEntries)
+    .set({ reviewStatus, instructorFeedback: instructorFeedback.trim() || null, reviewedBy, reviewedAt: new Date() })
+    .where(and(eq(gameDesignDiaryEntries.id, id), eq(gameDesignDiaryEntries.courseId, courseId)));
+}
+
+export async function getGameDesignPortfolio(userId: number, courseId: number) {
+  const db = await getDb();
+  if (!db) return { course: undefined, entries: [], capstoneModules: [], progress: [] };
+  const course = await getCourseById(courseId);
+  const entries = await getGameDesignDiaryEntries(userId, courseId);
+  const allModules = await getModulesByCourse(courseId);
+  const progress = await getModuleProgress(userId, courseId);
+  const capstoneModules = allModules
+    .filter(module => (module.sortOrder ?? 0) >= 23 || /designing a game|capstone/i.test(module.title))
+    .map(module => ({
+      id: module.id,
+      title: module.title,
+      content: module.content,
+      sortOrder: module.sortOrder,
+      completed: progress.some(item => item.moduleId === module.id && item.isCompleted),
+    }));
+  return { course, entries, capstoneModules, progress };
 }
 
 // ─── Classrooms ──────────────────────────────────────────────────────────────

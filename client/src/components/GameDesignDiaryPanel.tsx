@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BookOpen, Download, Edit3, FilePenLine, Plus, Search, Trash2, X } from "lucide-react";
+import { BookOpen, Download, Edit3, FilePenLine, Info, Plus, Search, Send, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface GameDesignDiaryPanelProps {
   courseId: number;
@@ -27,12 +28,20 @@ export default function GameDesignDiaryPanel({
   const { data: entries, isLoading } = trpc.gameDesignDiary.list.useQuery(courseId, {
     enabled: canWrite,
   });
+  const { data: portfolio } = trpc.gameDesignDiary.portfolio.useQuery(courseId, {
+    enabled: canWrite,
+  });
   const [isWriting, setIsWriting] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [week, setWeek] = useState("");
+  const [showOnboardingTip, setShowOnboardingTip] = useState(false);
+
+  useEffect(() => {
+    setShowOnboardingTip(window.localStorage.getItem("skillsphere.game-diary.onboarding-seen") !== "1");
+  }, []);
 
   const createEntry = trpc.gameDesignDiary.create.useMutation({
     onSuccess: async () => {
@@ -54,6 +63,14 @@ export default function GameDesignDiaryPanel({
     onSuccess: async () => {
       toast.success("Diary entry deleted");
       await utils.gameDesignDiary.list.invalidate(courseId);
+    },
+    onError: error => toast.error(error.message),
+  });
+  const submitEntry = trpc.gameDesignDiary.submit.useMutation({
+    onSuccess: async () => {
+      toast.success("Diary entry submitted for instructor review");
+      await utils.gameDesignDiary.list.invalidate(courseId);
+      await utils.gameDesignDiary.portfolio.invalidate(courseId);
     },
     onError: error => toast.error(error.message),
   });
@@ -121,6 +138,29 @@ export default function GameDesignDiaryPanel({
     URL.revokeObjectURL(url);
   };
 
+  const exportPortfolio = () => {
+    if (!portfolio) return;
+    const capstone = portfolio.capstoneModules
+      .map(module => `## ${module.title}\nStatus: ${module.completed ? "Completed" : "Not completed yet"}\n\n${module.content ?? ""}`)
+      .join("\n\n---\n\n");
+    const diary = portfolio.entries
+      .map(entry => `## ${entry.title}\n${entry.week ?? "Game Design Diary"}\nReview status: ${entry.reviewStatus.replace("_", " ")}\n${entry.instructorFeedback ? `Instructor feedback: ${entry.instructorFeedback}\n` : ""}\n${entry.body}`)
+      .join("\n\n---\n\n");
+    const markdown = `# Game Design Portfolio\n\nCourse: ${portfolio.course?.title ?? "Professional Certificate in Game Design"}\nGenerated: ${new Date().toLocaleDateString()}\n\n## Capstone evidence\n\n${capstone || "No capstone modules found."}\n\n# Game Diary\n\n${diary || "No Diary entries yet."}\n`;
+    const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "game-design-portfolio.md";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const dismissOnboardingTip = () => {
+    window.localStorage.setItem("skillsphere.game-diary.onboarding-seen", "1");
+    setShowOnboardingTip(false);
+  };
+
   if (!canWrite) {
     return (
       <Card className="mx-auto mt-6 max-w-3xl border-[#58a6ff]/20 bg-[#EEF4FF]/50">
@@ -140,10 +180,23 @@ export default function GameDesignDiaryPanel({
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <Badge variant="outline" className="mb-2 border-white/30 text-white">Portfolio studio</Badge>
-              <CardTitle className="flex items-center gap-2 text-2xl"><BookOpen className="h-6 w-6" /> Game Diary</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <BookOpen className="h-6 w-6" /> Game Diary
+                <Tooltip open={showOnboardingTip} onOpenChange={setShowOnboardingTip}>
+                  <TooltipTrigger asChild>
+                    <button type="button" aria-label="How Game Diary saving works" className="rounded-full text-blue-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white">
+                      <Info className="h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="max-w-xs">Entries save privately to your SkillSphere account when you click Save entry. Submit an entry when you want your instructor to review it; feedback and status will appear here.</TooltipContent>
+                </Tooltip>
+              </CardTitle>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-blue-100">Capture design decisions, playtest evidence, and reflection as you move through the 24-module certificate.</p>
             </div>
             <div className="flex gap-2">
+              <Button type="button" variant="outline" size="sm" className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white" onClick={exportPortfolio} disabled={!portfolio}>
+                <Download className="mr-1.5 h-4 w-4" /> Portfolio
+              </Button>
               <Button type="button" variant="outline" size="sm" className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white" onClick={exportDiary} disabled={!entries?.length}>
                 <Download className="mr-1.5 h-4 w-4" /> Export
               </Button>
@@ -154,6 +207,12 @@ export default function GameDesignDiaryPanel({
           </div>
         </CardHeader>
         <CardContent className="space-y-4 p-5">
+          {showOnboardingTip && (
+            <div className="flex items-start justify-between gap-3 rounded-lg border border-[#58a6ff]/25 bg-[#EEF4FF] px-3 py-2 text-xs text-[#1e3a6e]">
+              <span><strong>How saving works:</strong> Save drafts privately, then use Submit for review when you want instructor feedback.</span>
+              <Button type="button" variant="ghost" size="sm" className="h-6 shrink-0 px-2 text-[#1e3a6e]" onClick={dismissOnboardingTip}>Got it</Button>
+            </div>
+          )}
           {isWriting && (
             <div className="rounded-xl border border-[#58a6ff]/25 bg-[#EEF4FF]/50 p-4">
               <div className="mb-3 flex items-center justify-between gap-3">
@@ -188,7 +247,10 @@ export default function GameDesignDiaryPanel({
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <h3 className="font-semibold text-[#1e3a6e]">{entry.title}</h3>
-                      <p className="mt-1 text-xs text-muted-foreground">{entry.week || "Game Design Diary"} · Updated {new Date(entry.updatedAt).toLocaleDateString()}</p>
+                      <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                        {entry.week || "Game Design Diary"} · Updated {new Date(entry.updatedAt).toLocaleDateString()} ·
+                        <Badge variant="outline" className="capitalize">{entry.reviewStatus === "needs_revision" ? "Needs revision" : entry.reviewStatus}</Badge>
+                      </p>
                     </div>
                     <div className="flex gap-1">
                       <Button type="button" variant="ghost" size="icon" onClick={() => startEdit(entry)} aria-label={`Edit ${entry.title}`}><Edit3 className="h-4 w-4" /></Button>
@@ -196,6 +258,8 @@ export default function GameDesignDiaryPanel({
                     </div>
                   </div>
                   <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-foreground">{entry.body}</p>
+                  {entry.instructorFeedback && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950"><p className="font-semibold">Instructor feedback</p><p className="mt-1 whitespace-pre-wrap leading-6">{entry.instructorFeedback}</p></div>}
+                  {(entry.reviewStatus === "draft" || entry.reviewStatus === "needs_revision") && <Button type="button" size="sm" className="mt-3 bg-[#2A63BF] text-white hover:bg-[#1e4fa3]" onClick={() => submitEntry.mutate({ id: entry.id, courseId })} disabled={submitEntry.isPending}><Send className="mr-1.5 h-4 w-4" /> Submit for review</Button>}
                 </article>
               ))}
             </div>

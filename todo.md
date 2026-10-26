@@ -123,3 +123,8 @@
 - [x] Preserve visible Dr. Vicki's Tech Talk navigation link
 - [x] Generate and apply the Diary schema migration
 - [x] Validate browser preview, TypeScript, production build, git diff check, and all Vitest tests
+- [x] Add a first-use onboarding tooltip explaining private saves and instructor submission
+- [x] Add a downloadable Markdown portfolio export combining Diary entries and capstone module evidence
+- [x] Add learner review statuses and instructor feedback persistence
+- [x] Add the admin instructor review queue with revision-request and approval actions
+- [x] Ensure certificates use the authenticated learner name, with a safe email fallback

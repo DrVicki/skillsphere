@@ -3,6 +3,7 @@ import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import GameDesignDiaryReviewPanel from "@/components/GameDesignDiaryReviewPanel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -47,6 +48,7 @@ export default function AdminDashboard() {
 
   const revenueData = revenueByMonthData ?? [];
   const enrollmentData: any[] = [];
+  const gameDesignCourseId = allCourses?.find(course => course.slug === "professional-certificate-game-design")?.id ?? 0;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -131,6 +133,8 @@ export default function AdminDashboard() {
               )}
             </div>
           </div>
+
+          {gameDesignCourseId > 0 && <GameDesignDiaryReviewPanel courseId={gameDesignCourseId} />}
 
           {/* Top Courses */}
           {analytics?.topCourses && analytics.topCourses.length > 0 && (

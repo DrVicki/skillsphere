@@ -983,7 +983,7 @@ export default function LearnCourse({ params }: Props) {
         <CourseCertificate
           open={showCertificate}
           onClose={() => setShowCertificate(false)}
-          learnerName={user?.name ?? "Learner"}
+          learnerName={user?.name?.trim() || user?.email?.split("@")[0]?.trim() || "Learner"}
           courseTitle={course.title}
           completionDate={new Date()}
           certificateId={certId}

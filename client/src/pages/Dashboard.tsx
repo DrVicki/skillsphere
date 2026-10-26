@@ -38,6 +38,13 @@ import { toast } from "sonner";
 
 const LOGO_URL = "/manus-storage/skillsphere-logo-circle_8ea1006a.png";
 
+function certificateName(user: { name?: string | null; email?: string | null } | null | undefined) {
+  const savedName = user?.name?.trim();
+  if (savedName) return savedName;
+  const emailName = user?.email?.split("@")[0]?.trim();
+  return emailName || "Learner";
+}
+
 interface CertificateState {
   open: boolean;
   courseTitle: string;
@@ -619,7 +626,7 @@ export default function Dashboard() {
 
                             {/* Learner name */}
                             <p className="text-white text-xl font-bold mb-1 leading-tight">
-                              {user?.name ?? "Learner"}
+                              {certificateName(user)}
                             </p>
 
                             {/* Course title */}
@@ -899,7 +906,7 @@ export default function Dashboard() {
         <CourseCertificate
           open={cert.open}
           onClose={() => setCert(null)}
-          learnerName={certName.trim() || user?.name || "Learner"}
+          learnerName={certName.trim() || certificateName(user)}
           courseTitle={cert.courseTitle}
           completionDate={cert.completionDate}
           certificateId={cert.certificateId}
