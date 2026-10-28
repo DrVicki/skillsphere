@@ -33,6 +33,7 @@ function isHost(hostname: string, domain: string) {
 function youtubeEmbed(url: URL): EmbedContent | null {
   const host = url.hostname.toLowerCase();
   let videoId = "";
+  const playlistId = url.searchParams.get("list") ?? "";
 
   if (isHost(host, "youtu.be")) {
     videoId = url.pathname.split("/").filter(Boolean)[0] ?? "";
@@ -45,6 +46,16 @@ function youtubeEmbed(url: URL): EmbedContent | null {
     else if (url.pathname.startsWith("/shorts/"))
       videoId = url.pathname.split("/")[2] ?? "";
     else videoId = url.searchParams.get("v") ?? "";
+  }
+
+  if (!videoId && playlistId && (isHost(host, "youtube.com") || isHost(host, "youtube-nocookie.com"))) {
+    const params = new URLSearchParams({ list: playlistId, rel: "0", modestbranding: "1" });
+    return {
+      src: `https://www.youtube-nocookie.com/embed/videoseries?${params.toString()}`,
+      title: "YouTube playlist",
+      provider: "YouTube",
+      kind: "video",
+    };
   }
 
   if (!videoId) return null;

@@ -55,6 +55,21 @@ describe("normalizeEmbedContent", () => {
     );
   });
 
+  it("converts YouTube playlist links into a playlist player", () => {
+    expect(
+      normalizeVideoLessonUrl(
+        "https://youtube.com/playlist?list=PLBfr9Gu76okk&si=4icoqHXncYYCeZYu"
+      )
+    ).toBe(
+      "https://www.youtube-nocookie.com/embed/videoseries?list=PLBfr9Gu76okk&rel=0&modestbranding=1"
+    );
+    expect(getVideoPlayback("https://youtube.com/playlist?list=PLBfr9Gu76okk")).toMatchObject({
+      mode: "embed",
+      provider: "YouTube",
+      src: expect.stringContaining("embed/videoseries?list=PLBfr9Gu76okk"),
+    });
+  });
+
   it("rejects unsafe or malformed sources", () => {
     expect(() => normalizeEmbedContent("javascript:alert(1)")).toThrow(
       "Only secure HTTPS embed sources are allowed."

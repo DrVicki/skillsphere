@@ -724,10 +724,10 @@ export default function AdminCourses() {
                   onChange={e =>
                     setModuleForm(f => ({ ...f, videoUrl: e.target.value }))
                   }
-                  placeholder="Paste a YouTube/Vimeo URL or iframe, or /manus-storage/video.mp4"
+                  placeholder="Paste a YouTube video or playlist URL/iframe, Vimeo URL, or /manus-storage/video.mp4"
                 />
                 <p className="mt-1.5 text-xs text-gray-500">
-                  Paste a public YouTube or Vimeo link or its iframe code for an
+                  Paste a public YouTube video or playlist link, Vimeo link, or its iframe code for an
                   embedded player, or use a direct HTTPS or Manus-storage media
                   URL.
                 </p>
