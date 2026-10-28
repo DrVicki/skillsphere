@@ -339,7 +339,9 @@ export default function AdminClassrooms() {
                               </h4>
                               <p className="text-xs text-gray-500">
                                 A new course enrolls every active student
-                                automatically.
+                                automatically. Classroom access is provided at
+                                no charge; students are not sent through
+                                checkout.
                               </p>
                             </div>
                             <Badge variant="outline">

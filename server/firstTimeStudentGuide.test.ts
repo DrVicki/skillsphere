@@ -15,6 +15,11 @@ describe("first-time student course guide", () => {
     expect(guide).toContain("Pass every knowledge check or assessment");
     expect(guide).toContain("Complete the final project or capstone");
     expect(guide).toContain("Reach 100% and download your certificate");
+    expect(guide).toContain("Classroom invitations provide access at no charge");
+    expect(guide).toContain("skillsphere-student-welcome_432e7ca4.mp4");
+    expect(guide).toContain("Recommended four-week plan");
+    expect(guide).toContain("Using AI in Data Analytics");
+    expect(guide).toContain("Week 4 · Capstone");
   });
 
   it("can be dismissed and reopened without changing learner progress", () => {
@@ -29,5 +34,11 @@ describe("first-time student course guide", () => {
     expect(learnCourse).toContain("<FirstTimeStudentGuide");
     expect(learnCourse).toContain("hasCourseAccess");
     expect(learnCourse).toContain("lessonCount={modules?.length}");
+  });
+
+  it("documents that classroom assignments do not send students through checkout", () => {
+    const classrooms = fs.readFileSync(new URL("../client/src/pages/admin/AdminClassrooms.tsx", import.meta.url), "utf8");
+    expect(classrooms).toContain("Classroom access is provided at");
+    expect(classrooms).toContain("students are not sent through");
   });
 });

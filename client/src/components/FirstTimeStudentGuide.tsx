@@ -20,11 +20,49 @@ interface FirstTimeStudentGuideProps {
   compact?: boolean;
 }
 
+const coursePlans = [
+  {
+    match: "using ai in data analytics",
+    label: "Using AI in Data Analytics",
+    weeks: [
+      "Week 1 · Foundations: understand the analytics workflow, data preparation, and responsible AI use.",
+      "Week 2 · Methods and tools: practice analysis techniques, visualization, prompting, and interpretation.",
+      "Week 3 · Applied analytics: complete the case-study lessons, check your findings, and plan your dashboard.",
+      "Week 4 · Capstone: build the Customer Analytics Dashboard, document insights, and submit your evidence.",
+    ],
+  },
+  {
+    match: "chief ai officer",
+    label: "Chief AI Officer BootCamp",
+    weeks: [
+      "Week 1 · Win the seat: understand the CAIO role and create your evidence baseline.",
+      "Week 2 · Lead the conversation: map value, risk, stakeholders, and a practical pilot.",
+      "Week 3 · Scale the work: build governance, operating rhythms, and reusable delivery artifacts.",
+      "Week 4 · Capstone: prepare the 90-day leadership briefing and CAIO engagement brief.",
+    ],
+  },
+  {
+    match: "professional certificate in game design",
+    label: "Professional Certificate in Game Design",
+    weeks: [
+      "Week 1 · Foundations: study game systems, rules, players, and the designer’s field notes.",
+      "Week 2 · Making: move through ideation, prototyping, playtesting, usability, and accessibility.",
+      "Week 3 · Practice: develop game feel, scope the project, and communicate the design clearly.",
+      "Week 4 · Portfolio: complete the two-part game project, save Diary evidence, and prepare your portfolio.",
+    ],
+  },
+];
+
+function getCoursePlan(courseTitle?: string) {
+  const normalized = courseTitle?.toLowerCase() ?? "";
+  return coursePlans.find(plan => normalized.includes(plan.match));
+}
+
 const steps = [
   {
     icon: GraduationCap,
     title: "Sign in with the email used for your invitation",
-    body: "Open SkillSphere and choose Sign In. Use the same email address your instructor or classroom manager added to the classroom. Your assigned course becomes available after your first successful sign-in.",
+    body: "Open SkillSphere and choose Sign In. Use the same email address your instructor or classroom manager added to the classroom. Classroom invitations provide access at no charge; they do not ask you to pay again. Your assigned course becomes available after your first successful sign-in.",
   },
   {
     icon: BookOpenCheck,
@@ -71,6 +109,7 @@ export default function FirstTimeStudentGuide({
   const storageKey = `skillsphere.first-student-guide.${courseTitle ?? "course"}`;
   const [open, setOpen] = useState(true);
   const [hasSeen, setHasSeen] = useState(false);
+  const coursePlan = getCoursePlan(courseTitle);
 
   useEffect(() => {
     const seen = window.localStorage.getItem(storageKey) === "1";
@@ -126,6 +165,39 @@ export default function FirstTimeStudentGuide({
         </div>
       </CardHeader>
       <CardContent className={compact ? "p-4 pt-0" : "p-5 pt-2"}>
+        {!compact && (
+          <div className="mb-5 overflow-hidden rounded-xl border border-[#2A63BF]/15 bg-[#0f2747]">
+            <video
+              className="aspect-video w-full bg-[#0f2747] object-cover"
+              controls
+              preload="metadata"
+              playsInline
+              aria-label="SkillSphere welcome video for first-time students"
+            >
+              <source src="/manus-storage/skillsphere-student-welcome_432e7ca4.mp4" type="video/mp4" />
+              Your browser does not support the welcome video. Follow the written steps below.
+            </video>
+            <p className="px-3 py-2 text-xs text-[#DCEBFF]">Welcome video · 20 seconds · captions are included in the video</p>
+          </div>
+        )}
+        {coursePlan && (
+          <div className="mb-5 rounded-xl border border-[#F5B942]/35 bg-[#FFF9EA] p-4">
+            <div className="flex items-start gap-2">
+              <Target className="mt-0.5 h-4 w-4 shrink-0 text-[#9A6500]" aria-hidden="true" />
+              <div>
+                <h3 className="text-sm font-semibold text-[#704900]">Recommended four-week plan for {coursePlan.label}</h3>
+                <p className="mt-1 text-xs leading-5 text-[#7A5B20]">Plan for about 3–5 focused hours each week. Your instructor’s deadlines always take priority.</p>
+              </div>
+            </div>
+            <ol className="mt-3 grid gap-2 sm:grid-cols-2">
+              {coursePlan.weeks.map((week, index) => (
+                <li key={week} className="rounded-lg bg-white/75 p-3 text-xs leading-5 text-[#5C4A24]">
+                  <span className="font-bold text-[#9A6500]">{index + 1}. </span>{week}
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
         <ol className="space-y-3">
           {steps.map((step, index) => {
             const Icon = step.icon;
