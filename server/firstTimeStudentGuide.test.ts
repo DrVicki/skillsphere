@@ -7,6 +7,7 @@ const learnCourse = fs.readFileSync(new URL("../client/src/pages/LearnCourse.tsx
 const courseDetail = fs.readFileSync(new URL("../client/src/pages/CourseDetail.tsx", import.meta.url), "utf8");
 const contact = fs.readFileSync(new URL("../client/src/pages/Contact.tsx", import.meta.url), "utf8");
 const adminDashboard = fs.readFileSync(new URL("../client/src/pages/AdminDashboard.tsx", import.meta.url), "utf8");
+const paymentsPage = fs.readFileSync(new URL("../client/src/pages/Payments.tsx", import.meta.url), "utf8");
 
 describe("first-time student course guide", () => {
   it("covers access, lessons, activities, assessments, capstone, and certificate completion", () => {
@@ -61,5 +62,9 @@ describe("first-time student course guide", () => {
     expect(contact).toContain("Promotion codes are entered in Stripe Checkout after you select Enroll Now");
     expect(adminDashboard).toContain("Promo Redemptions");
     expect(adminDashboard).toContain("promotionDiscountTotal");
+    expect(adminDashboard).toContain("Monthly Promotion Redemptions");
+    expect(adminDashboard).toContain("promotionRedemptionsByMonth");
+    expect(paymentsPage).toContain("Promotion:");
+    expect(paymentsPage).toContain("Saved $");
   });
 });

@@ -39,6 +39,7 @@ import {
   getPaymentsByUser,
   getRepliesByThread,
   getRevenueByMonth,
+  getPromotionRedemptionsByMonth,
   getReviewsByCourse,
   getSubscriptionsByUser,
   getThreadById,
@@ -1213,6 +1214,7 @@ export const appRouter = router({
   analytics: router({
     overview: adminProcedure.query(() => getAnalyticsOverview()),
     revenueByMonth: adminProcedure.query(() => getRevenueByMonth()),
+    promotionRedemptionsByMonth: adminProcedure.query(() => getPromotionRedemptionsByMonth()),
     trainerStats: trainerProcedure.query(({ ctx }) =>
       getTrainerAnalytics(ctx.user.id)
     ),

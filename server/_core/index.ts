@@ -69,7 +69,16 @@ async function startServer() {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = parseInt(session.metadata?.user_id ?? "0");
         const courseId = parseInt(session.metadata?.course_id ?? "0");
-        const couponCode = session.metadata?.coupon_code ?? undefined;
+        let couponCode = session.metadata?.coupon_code ?? undefined;
+        const promotionCodeId = session.discounts?.[0]?.promotion_code;
+        if (!couponCode && typeof promotionCodeId === "string") {
+          try {
+            const promotion = await stripe.promotionCodes.retrieve(promotionCodeId);
+            couponCode = promotion.code;
+          } catch (promotionError) {
+            console.warn("[Webhook] Could not resolve Stripe promotion code:", promotionError);
+          }
+        }
         const discountAmount = ((session.total_details?.amount_discount ?? 0) / 100).toFixed(2);
         if (userId && courseId) {
           await updatePaymentBySessionId(session.id, {

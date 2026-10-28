@@ -67,7 +67,12 @@ export default function Payments() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground">{payment.courseTitle ?? "Course Purchase"}</p>
                       <p className="text-xs text-muted-foreground">{new Date(payment.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</p>
-                      {payment.couponCode && <p className="text-xs text-green-600 mt-0.5">Coupon: {payment.couponCode}</p>}
+                      {payment.couponCode && (
+                        <p className="text-xs text-green-600 mt-0.5">
+                          Promotion: <strong>{payment.couponCode}</strong>
+                          {parseFloat(payment.discountAmount ?? "0") > 0 && ` · Saved $${parseFloat(payment.discountAmount ?? "0").toFixed(2)}`}
+                        </p>
+                      )}
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-sm font-bold text-foreground">${parseFloat(payment.amount ?? "0").toFixed(2)}</p>

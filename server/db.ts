@@ -1351,6 +1351,7 @@ export async function getPaymentsByUser(userId: number) {
       amount: payments.amount,
       status: payments.status,
       couponCode: payments.couponCode,
+      discountAmount: payments.discountAmount,
       stripeSessionId: payments.stripeSessionId,
       createdAt: payments.createdAt,
       courseTitle: courses.title,
@@ -1381,6 +1382,26 @@ export async function getAllPayments() {
     .leftJoin(courses, eq(payments.courseId, courses.id))
     .orderBy(desc(payments.createdAt))
     .limit(200);
+}
+
+export async function getPromotionRedemptionsByMonth() {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select({
+      month: sql<string>`DATE_FORMAT(${payments.createdAt}, '%Y-%m')`,
+      redemptions: sql<number>`COUNT(*)`,
+      savings: sql<string>`COALESCE(SUM(${payments.discountAmount}), 0)`,
+    })
+    .from(payments)
+    .where(
+      and(
+        eq(payments.status, "completed"),
+        sql`CAST(${payments.discountAmount} AS DECIMAL(10,2)) > 0`
+      )
+    )
+    .groupBy(sql`DATE_FORMAT(${payments.createdAt}, '%Y-%m')`)
+    .orderBy(sql`DATE_FORMAT(${payments.createdAt}, '%Y-%m')`);
 }
 
 // ─── Subscriptions ────────────────────────────────────────────────────────────

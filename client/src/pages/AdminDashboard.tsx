@@ -21,6 +21,7 @@ export default function AdminDashboard() {
 
   const { data: analytics } = trpc.analytics.overview.useQuery(undefined, { enabled: isAuthenticated && user?.role === "admin" });
   const { data: revenueByMonthData } = trpc.analytics.revenueByMonth.useQuery(undefined, { enabled: isAuthenticated && user?.role === "admin" });
+  const { data: promotionRedemptionsData } = trpc.analytics.promotionRedemptionsByMonth.useQuery(undefined, { enabled: isAuthenticated && user?.role === "admin" });
   const { data: users, refetch: refetchUsers } = trpc.auth.listUsers.useQuery(undefined, { enabled: isAuthenticated && user?.role === "admin" });
   const { data: allCourses } = trpc.courses.list.useQuery({ limit: 100 }, { enabled: isAuthenticated && user?.role === "admin" });
 
@@ -47,6 +48,7 @@ export default function AdminDashboard() {
   );
 
   const revenueData = revenueByMonthData ?? [];
+  const promotionData = promotionRedemptionsData ?? [];
   const enrollmentData: any[] = [];
   const gameDesignCourseId = allCourses?.find(course => course.slug === "professional-certificate-game-design")?.id ?? 0;
 
@@ -132,6 +134,27 @@ export default function AdminDashboard() {
               ) : (
                 <div className="h-[220px] flex items-center justify-center text-muted-foreground text-sm">No enrollment data yet</div>
               )}
+            </div>
+
+            {/* Promotion Redemptions Chart */}
+            <div className="bg-white rounded-xl border border-border p-6">
+              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                <TicketPercent className="h-5 w-5 text-rose-500" /> Monthly Promotion Redemptions
+              </h3>
+              {promotionData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={220}>
+                  <LineChart data={promotionData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                    <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+                    <Tooltip formatter={(value: any) => [value, "Redemptions"]} />
+                    <Line type="monotone" dataKey="redemptions" stroke="#e11d48" strokeWidth={2} dot={{ fill: "#e11d48", r: 4 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-[220px] flex items-center justify-center text-muted-foreground text-sm">No promotion redemptions yet</div>
+              )}
+              {promotionData.length > 0 && <p className="mt-2 text-xs text-muted-foreground">Completed payments only; savings are recorded alongside each redemption.</p>}
             </div>
           </div>
 
