@@ -137,7 +137,42 @@ export async function getAllUsers() {
     .limit(100);
 }
 
-export async function getUsersPage(data: {
+type UserDirectoryFilters = {
+  search?: string;
+  role?: "admin" | "trainer" | "learner" | "user";
+  lastLogin?: "all" | "last7" | "last30" | "never";
+  enrollmentStatus?: "all" | "enrolled" | "not-enrolled";
+};
+
+function getUserDirectoryWhere(filters: UserDirectoryFilters) {
+  const conditions = [];
+  const search = filters.search?.trim();
+  if (search) {
+    conditions.push(
+      or(
+        like(users.name, `%${search}%`),
+        like(users.email, `%${search}%`)
+      )
+    );
+  }
+  if (filters.role) conditions.push(eq(users.role, filters.role));
+  if (filters.lastLogin === "never") conditions.push(isNull(users.lastSignedIn));
+  if (filters.lastLogin === "last7") {
+    conditions.push(sql`${users.lastSignedIn} >= DATE_SUB(NOW(), INTERVAL 7 DAY)`);
+  }
+  if (filters.lastLogin === "last30") {
+    conditions.push(sql`${users.lastSignedIn} >= DATE_SUB(NOW(), INTERVAL 30 DAY)`);
+  }
+  if (filters.enrollmentStatus === "enrolled") {
+    conditions.push(sql`EXISTS (SELECT 1 FROM enrollments e WHERE e.userId = ${users.id})`);
+  }
+  if (filters.enrollmentStatus === "not-enrolled") {
+    conditions.push(sql`NOT EXISTS (SELECT 1 FROM enrollments e WHERE e.userId = ${users.id})`);
+  }
+  return conditions.length ? and(...conditions) : undefined;
+}
+
+export async function getUsersPage(data: UserDirectoryFilters & {
   search?: string;
   limit?: number;
   offset?: number;
@@ -145,13 +180,7 @@ export async function getUsersPage(data: {
   const db = await getDb();
   if (!db) return { users: [], total: 0 };
 
-  const search = data.search?.trim();
-  const where = search
-    ? or(
-        like(users.name, `%${search}%`),
-        like(users.email, `%${search}%`)
-      )
-    : undefined;
+  const where = getUserDirectoryWhere(data);
   const limit = Math.min(Math.max(data.limit ?? 50, 1), 100);
   const offset = Math.max(data.offset ?? 0, 0);
 
@@ -164,6 +193,7 @@ export async function getUsersPage(data: {
         role: users.role,
         createdAt: users.createdAt,
         lastSignedIn: users.lastSignedIn,
+        enrollmentStatus: sql<number>`EXISTS (SELECT 1 FROM enrollments e WHERE e.userId = ${users.id})`,
       })
       .from(users)
       .where(where)
@@ -177,6 +207,45 @@ export async function getUsersPage(data: {
   ]);
 
   return { users: rows, total: Number(countRows[0]?.total ?? 0) };
+}
+
+function csvCell(value: unknown) {
+  const text = value == null ? "" : String(value);
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
+export async function exportUsersCsv(data: UserDirectoryFilters) {
+  const db = await getDb();
+  if (!db) return "";
+  const where = getUserDirectoryWhere(data);
+  const rows = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      role: users.role,
+      createdAt: users.createdAt,
+      lastSignedIn: users.lastSignedIn,
+      enrollmentStatus: sql<number>`EXISTS (SELECT 1 FROM enrollments e WHERE e.userId = ${users.id})`,
+    })
+    .from(users)
+    .where(where)
+    .orderBy(desc(users.createdAt), desc(users.id))
+    .limit(10000);
+
+  const header = ["ID", "Name", "Email", "Role", "Joined", "Last Login", "Enrollment Status"];
+  const lines = rows.map(row =>
+    [
+      row.id,
+      row.name,
+      row.email,
+      row.role,
+      row.createdAt?.toISOString?.() ?? row.createdAt,
+      row.lastSignedIn?.toISOString?.() ?? row.lastSignedIn,
+      Number(row.enrollmentStatus) ? "Enrolled" : "Not enrolled",
+    ].map(csvCell).join(",")
+  );
+  return [header.map(csvCell).join(","), ...lines].join("\n");
 }
 
 export async function updateUserProfile(

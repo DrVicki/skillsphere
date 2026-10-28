@@ -21,6 +21,7 @@ import {
   getAllPayments,
   getAllUsers,
   getUsersPage,
+  exportUsersCsv,
   getAnalyticsOverview,
   getBundles,
   getChatMessages,
@@ -188,11 +189,24 @@ export const appRouter = router({
       .input(
         z.object({
           search: z.string().trim().max(255).optional(),
+          role: z.enum(["admin", "trainer", "learner", "user"]).optional(),
+          lastLogin: z.enum(["all", "last7", "last30", "never"]).optional(),
+          enrollmentStatus: z.enum(["all", "enrolled", "not-enrolled"]).optional(),
           limit: z.number().int().min(1).max(100).optional(),
           offset: z.number().int().min(0).optional(),
         })
       )
       .query(({ input }) => getUsersPage(input)),
+    exportUsersCsv: adminProcedure
+      .input(
+        z.object({
+          search: z.string().trim().max(255).optional(),
+          role: z.enum(["admin", "trainer", "learner", "user"]).optional(),
+          lastLogin: z.enum(["all", "last7", "last30", "never"]).optional(),
+          enrollmentStatus: z.enum(["all", "enrolled", "not-enrolled"]).optional(),
+        })
+      )
+      .query(({ input }) => exportUsersCsv(input)),
   }),
 
   // ─── Courses ──────────────────────────────────────────────────────────────
