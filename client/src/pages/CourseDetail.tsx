@@ -11,28 +11,20 @@ import { toast } from "sonner";
 import DOMPurify from "dompurify";
 import {
   Star, Users, BookOpen, Clock, Award, CheckCircle, Play, FileText,
-  ClipboardList, Lock, ArrowRight, Tag
+  ClipboardList, Lock, ArrowRight
 } from "lucide-react";
-import { useState } from "react";
 import { Link, useLocation } from "wouter";
 
 interface Props { params: { slug: string } }
 
 export default function CourseDetail({ params }: Props) {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
-  const [couponCode, setCouponCode] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState<{ discountType: string; discountValue: string } | null>(null);
 
   const { data: course, isLoading } = trpc.courses.bySlug.useQuery(params.slug);
   const { data: modules } = trpc.modules.byCourse.useQuery(course?.id ?? 0, { enabled: !!course?.id });
   const { data: enrollment } = trpc.enrollments.check.useQuery(course?.id ?? 0, { enabled: !!course?.id && isAuthenticated });
   const { data: reviews } = trpc.reviews.byCourse.useQuery(course?.id ?? 0, { enabled: !!course?.id });
-
-  const { data: couponData, refetch: validateCoupon } = trpc.payments.validateCoupon.useQuery(
-    { code: couponCode, courseId: course?.id },
-    { enabled: false }
-  );
 
   const enrollFree = trpc.enrollments.enrollFree.useMutation({
     onSuccess: () => { toast.success("Enrolled successfully!"); navigate(`/learn/${params.slug}`); },
@@ -46,28 +38,11 @@ export default function CourseDetail({ params }: Props) {
     onError: (e) => toast.error(e.message),
   });
 
-  const handleApplyCoupon = async () => {
-    const result = await validateCoupon();
-    if (result.data?.valid && result.data.coupon) {
-      setAppliedCoupon(result.data.coupon);
-      toast.success("Coupon applied!");
-    } else {
-      toast.error(result.data?.message ?? "Invalid coupon");
-    }
-  };
-
-  const getDiscountedPrice = () => {
-    if (!course || !appliedCoupon) return parseFloat(course?.price ?? "0");
-    const base = parseFloat(course.price ?? "0");
-    if (appliedCoupon.discountType === "percent") return base * (1 - parseFloat(appliedCoupon.discountValue) / 100);
-    return Math.max(0, base - parseFloat(appliedCoupon.discountValue));
-  };
-
   const handleEnroll = () => {
     if (!isAuthenticated) { window.location.href = getLoginUrl(`/courses/${params.slug}`); return; }
     if (!course) return;
     if (course.isFree) { enrollFree.mutate(course.id); return; }
-    createCheckout.mutate({ courseId: course.id, couponCode: appliedCoupon ? couponCode : undefined, origin: window.location.origin });
+    createCheckout.mutate({ courseId: course.id, origin: window.location.origin });
   };
 
   const moduleTypeIcon = (type: string) => {
@@ -96,7 +71,7 @@ export default function CourseDetail({ params }: Props) {
   );
 
   const isEnrolled = enrollment?.enrolled;
-  const price = getDiscountedPrice();
+  const price = parseFloat(course.price ?? "0");
   const descriptionIsHTML = /<[a-z][\s\S]*>/i.test(course.description?.trim() ?? "");
 
   return (
@@ -136,9 +111,6 @@ export default function CourseDetail({ params }: Props) {
                 ) : (
                   <div>
                     <p className="text-3xl font-bold text-foreground">${price.toFixed(2)}</p>
-                    {appliedCoupon && (
-                      <p className="text-sm text-muted-foreground line-through">${parseFloat(course.price ?? "0").toFixed(2)}</p>
-                    )}
                   </div>
                 )}
               </div>
@@ -151,28 +123,6 @@ export default function CourseDetail({ params }: Props) {
                 </Button>
               ) : (
                 <>
-                  {!course.isFree && (
-                    <div className="mb-3">
-                      <div className="flex gap-2">
-                        <div className="relative flex-1">
-                          <Tag className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-                          <input
-                            type="text"
-                            placeholder="Coupon code"
-                            value={couponCode}
-                            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                            className="w-full pl-8 pr-3 py-2 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30"
-                          />
-                        </div>
-                        <Button variant="outline" size="sm" onClick={handleApplyCoupon}>Apply</Button>
-                      </div>
-                      {appliedCoupon && (
-                        <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
-                          <CheckCircle className="h-3 w-3" /> Coupon applied!
-                        </p>
-                      )}
-                    </div>
-                  )}
                   <Button
                     className="w-full bg-primary hover:bg-primary/90 text-white font-semibold"
                     onClick={handleEnroll}
@@ -180,6 +130,11 @@ export default function CourseDetail({ params }: Props) {
                   >
                     {enrollFree.isPending || createCheckout.isPending ? "Processing..." : course.isFree ? "Enroll for Free" : `Enroll Now — $${price.toFixed(2)}`}
                   </Button>
+                  {!course.isFree && (
+                    <p className="mt-2 text-center text-xs text-muted-foreground">
+                      Promotion codes can be entered securely after checkout opens.
+                    </p>
+                  )}
                 </>
               )}
 

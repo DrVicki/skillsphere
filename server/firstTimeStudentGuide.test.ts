@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const guide = fs.readFileSync(new URL("../client/src/components/FirstTimeStudentGuide.tsx", import.meta.url), "utf8");
 const dashboard = fs.readFileSync(new URL("../client/src/pages/Dashboard.tsx", import.meta.url), "utf8");
 const learnCourse = fs.readFileSync(new URL("../client/src/pages/LearnCourse.tsx", import.meta.url), "utf8");
+const courseDetail = fs.readFileSync(new URL("../client/src/pages/CourseDetail.tsx", import.meta.url), "utf8");
 
 describe("first-time student course guide", () => {
   it("covers access, lessons, activities, assessments, capstone, and certificate completion", () => {
@@ -43,5 +44,12 @@ describe("first-time student course guide", () => {
     const classrooms = fs.readFileSync(new URL("../client/src/pages/admin/AdminClassrooms.tsx", import.meta.url), "utf8");
     expect(classrooms).toContain("Classroom access is provided at");
     expect(classrooms).toContain("students are not sent through");
+  });
+
+  it("keeps promotion-code entry inside checkout instead of the course card", () => {
+    expect(courseDetail).toContain("Promotion codes can be entered securely after checkout opens.");
+    expect(courseDetail).not.toContain('placeholder="Coupon code"');
+    expect(courseDetail).not.toContain("validateCoupon");
+    expect(courseDetail).toContain("createCheckout.mutate({ courseId: course.id, origin: window.location.origin })");
   });
 });
