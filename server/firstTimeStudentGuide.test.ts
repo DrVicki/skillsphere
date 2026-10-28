@@ -20,6 +20,9 @@ describe("first-time student course guide", () => {
     expect(guide).toContain("Recommended four-week plan");
     expect(guide).toContain("Using AI in Data Analytics");
     expect(guide).toContain("Week 4 · Capstone");
+    expect(guide).toContain("How to use a PROMO coupon code");
+    expect(guide).toContain("Add promotion code");
+    expect(guide).toContain("confirm that the discount and updated total appear");
   });
 
   it("can be dismissed and reopened without changing learner progress", () => {

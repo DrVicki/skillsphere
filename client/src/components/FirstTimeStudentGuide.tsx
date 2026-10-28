@@ -9,6 +9,7 @@ import {
   HelpCircle,
   ListChecks,
   PlayCircle,
+  TicketPercent,
   Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -198,6 +199,20 @@ export default function FirstTimeStudentGuide({
             </ol>
           </div>
         )}
+        <div className="mb-5 rounded-xl border border-[#2A63BF]/20 bg-[#F8FBFF] p-4">
+          <div className="flex items-start gap-2">
+            <TicketPercent className="mt-0.5 h-4 w-4 shrink-0 text-[#2A63BF]" aria-hidden="true" />
+            <div>
+              <h3 className="text-sm font-semibold text-[#1e3a6e]">How to use a PROMO coupon code</h3>
+              <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-xs leading-5 text-muted-foreground">
+                <li>If you were assigned this course through a classroom, you do not need a promo code or payment. Open the course from your Dashboard.</li>
+                <li>If you are enrolling directly in a paid course, choose Enroll Now or Get Started and continue to secure checkout.</li>
+                <li>In checkout, select <strong className="text-foreground">Add promotion code</strong>, enter the PROMO code exactly as provided, and select Apply.</li>
+                <li>Before completing payment, confirm that the discount and updated total appear. If the code is rejected, do not submit payment; check spelling, expiration, and course eligibility with your instructor.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
         <ol className="space-y-3">
           {steps.map((step, index) => {
             const Icon = step.icon;
