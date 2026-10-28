@@ -133,7 +133,50 @@ export async function getAllUsers() {
       lastSignedIn: users.lastSignedIn,
     })
     .from(users)
-    .orderBy(desc(users.createdAt));
+    .orderBy(desc(users.createdAt), desc(users.id))
+    .limit(100);
+}
+
+export async function getUsersPage(data: {
+  search?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  const db = await getDb();
+  if (!db) return { users: [], total: 0 };
+
+  const search = data.search?.trim();
+  const where = search
+    ? or(
+        like(users.name, `%${search}%`),
+        like(users.email, `%${search}%`)
+      )
+    : undefined;
+  const limit = Math.min(Math.max(data.limit ?? 50, 1), 100);
+  const offset = Math.max(data.offset ?? 0, 0);
+
+  const [rows, countRows] = await Promise.all([
+    db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        role: users.role,
+        createdAt: users.createdAt,
+        lastSignedIn: users.lastSignedIn,
+      })
+      .from(users)
+      .where(where)
+      .orderBy(desc(users.createdAt), desc(users.id))
+      .limit(limit)
+      .offset(offset),
+    db
+      .select({ total: sql<number>`count(*)` })
+      .from(users)
+      .where(where),
+  ]);
+
+  return { users: rows, total: Number(countRows[0]?.total ?? 0) };
 }
 
 export async function updateUserProfile(

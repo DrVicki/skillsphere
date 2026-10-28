@@ -13,7 +13,7 @@ import { Link } from "wouter";
 export default function AdminOverview() {
   const { data: analytics } = trpc.analytics.overview.useQuery();
   const { data: courses } = trpc.courses.listAll.useQuery();
-  const { data: users } = trpc.auth.listUsers.useQuery();
+  const { data: usersPage } = trpc.auth.listUsersPage.useQuery({ limit: 1 });
   const { data: blogPosts } = trpc.blog.listAll.useQuery();
   const { data: classrooms } = trpc.classrooms.listManaged.useQuery();
 
@@ -27,7 +27,7 @@ export default function AdminOverview() {
     },
     {
       label: "Total Users",
-      value: users?.length ?? 0,
+      value: usersPage?.total ?? 0,
       icon: Users,
       color: "bg-violet-500",
       href: "/admin/users",

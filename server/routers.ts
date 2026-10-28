@@ -20,6 +20,7 @@ import {
   getAllCoupons,
   getAllPayments,
   getAllUsers,
+  getUsersPage,
   getAnalyticsOverview,
   getBundles,
   getChatMessages,
@@ -183,6 +184,15 @@ export const appRouter = router({
         return { success: true };
       }),
     listUsers: adminProcedure.query(() => getAllUsers()),
+    listUsersPage: adminProcedure
+      .input(
+        z.object({
+          search: z.string().trim().max(255).optional(),
+          limit: z.number().int().min(1).max(100).optional(),
+          offset: z.number().int().min(0).optional(),
+        })
+      )
+      .query(({ input }) => getUsersPage(input)),
   }),
 
   // ─── Courses ──────────────────────────────────────────────────────────────

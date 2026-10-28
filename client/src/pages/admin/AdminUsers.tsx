@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { Users, ShieldCheck, User } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -16,11 +17,19 @@ const ROLE_COLORS: Record<string, string> = {
 
 export default function AdminUsers() {
   const utils = trpc.useUtils();
-  const { data: users, isLoading } = trpc.auth.listUsers.useQuery();
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const queryInput = useMemo(
+    () => ({ search: search.trim() || undefined, limit: 50, offset: page * 50 }),
+    [page, search]
+  );
+  const { data, isLoading, isError, error } = trpc.auth.listUsersPage.useQuery(queryInput);
+  const users = data?.users ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / 50));
 
   const updateRole = trpc.auth.updateRole.useMutation({
-    onSuccess: () => { utils.auth.listUsers.invalidate(); toast.success("Role updated!"); },
+    onSuccess: () => { utils.auth.listUsers.invalidate(); utils.auth.listUsersPage.invalidate(); toast.success("Role updated!"); },
     onError: (e) => toast.error(e.message),
   });
 
@@ -35,16 +44,22 @@ export default function AdminUsers() {
           <Input
             placeholder="Search users..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={e => { setSearch(e.target.value); setPage(0); }}
             className="w-64"
           />
-          <span className="text-sm text-gray-500">{filtered.length} users</span>
+          <span className="text-sm text-gray-500">{total.toLocaleString()} users</span>
         </div>
       </div>
 
       {isLoading && (
         <div className="space-y-3">
           {[1,2,3,4].map(i => <div key={i} className="h-16 bg-gray-100 rounded-xl animate-pulse" />)}
+        </div>
+      )}
+
+      {isError && (
+        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          Unable to load users right now. {error.message}
         </div>
       )}
 
@@ -106,6 +121,22 @@ export default function AdminUsers() {
           </div>
         )}
       </div>
+      {!isLoading && total > 0 && (
+        <div className="mt-4 flex items-center justify-between gap-3">
+          <p className="text-xs text-gray-500">
+            Showing {page * 50 + 1}–{Math.min((page + 1) * 50, total)} of {total.toLocaleString()}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button type="button" size="sm" variant="outline" onClick={() => setPage(current => Math.max(0, current - 1))} disabled={page === 0}>
+              <ChevronLeft className="mr-1 h-4 w-4" /> Previous
+            </Button>
+            <span className="text-xs text-gray-500">Page {page + 1} of {totalPages}</span>
+            <Button type="button" size="sm" variant="outline" onClick={() => setPage(current => Math.min(totalPages - 1, current + 1))} disabled={page >= totalPages - 1}>
+              Next <ChevronRight className="ml-1 h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
     </AdminLayout>
   );
 }

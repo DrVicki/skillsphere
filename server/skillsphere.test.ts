@@ -97,6 +97,12 @@ describe("admin-only procedures", () => {
     await expect(caller.auth.listUsers()).rejects.toMatchObject({ code: "FORBIDDEN" });
   });
 
+  it("throws FORBIDDEN when a learner calls auth.listUsersPage", async () => {
+    const { ctx } = createContext({ role: "learner" });
+    const caller = appRouter.createCaller(ctx);
+    await expect(caller.auth.listUsersPage({ limit: 50, offset: 0 })).rejects.toMatchObject({ code: "FORBIDDEN" });
+  });
+
   it("throws FORBIDDEN when a learner calls analytics.overview", async () => {
     const { ctx } = createContext({ role: "learner" });
     const caller = appRouter.createCaller(ctx);
