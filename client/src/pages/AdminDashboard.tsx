@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import {
   Users, BookOpen, DollarSign, TrendingUp, Shield, BarChart3,
-  Award, Activity
+  Award, Activity, TicketPercent
 } from "lucide-react";
 import { Link } from "wouter";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from "recharts";
@@ -70,12 +70,13 @@ export default function AdminDashboard() {
 
           {/* KPI Stats */}
           {analytics && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {[
                 { label: "Total Users", value: analytics.totalUsers, icon: Users, color: "text-blue-600 bg-blue-50", change: "+12%" },
                 { label: "Total Courses", value: analytics.totalCourses, icon: BookOpen, color: "text-purple-600 bg-purple-50", change: "+5%" },
                 { label: "Total Revenue", value: `$${parseFloat(analytics.totalRevenue ?? "0").toLocaleString()}`, icon: DollarSign, color: "text-yellow-600 bg-yellow-50", change: "+23%" },
                 { label: "Enrollments", value: analytics.totalEnrollments, icon: TrendingUp, color: "text-green-600 bg-green-50", change: "+18%" },
+                { label: "Promo Redemptions", value: analytics.promotionRedemptions, icon: TicketPercent, color: "text-rose-600 bg-rose-50", change: `$${parseFloat(analytics.promotionDiscountTotal ?? "0").toFixed(0)} saved` },
               ].map((stat) => (
                 <div key={stat.label} className="bg-white rounded-xl border border-border p-5">
                   <div className="flex items-center justify-between mb-3">

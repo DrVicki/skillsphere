@@ -33,6 +33,10 @@ const FAQ_ITEMS = [
     a: "Yes — we offer a 30-day money-back guarantee on all paid courses if you are not satisfied with the content.",
   },
   {
+    q: "Why can't I see the promotion-code field?",
+    a: "Promotion codes are entered in Stripe Checkout after you select Enroll Now. If the field is not visible, confirm that you are checking out for a paid course, use a current browser window, and expand the order summary if needed. Classroom-assigned and free courses do not use checkout promotion codes.",
+  },
+  {
     q: "Do you offer team or corporate plans?",
     a: "Absolutely. We have tailored plans for teams and organizations. Contact us via the Partnerships category and we'll set up a call.",
   },

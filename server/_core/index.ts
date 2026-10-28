@@ -70,8 +70,14 @@ async function startServer() {
         const userId = parseInt(session.metadata?.user_id ?? "0");
         const courseId = parseInt(session.metadata?.course_id ?? "0");
         const couponCode = session.metadata?.coupon_code ?? undefined;
+        const discountAmount = ((session.total_details?.amount_discount ?? 0) / 100).toFixed(2);
         if (userId && courseId) {
-          await updatePaymentBySessionId(session.id, { status: "completed", stripePaymentIntentId: session.payment_intent as string });
+          await updatePaymentBySessionId(session.id, {
+            status: "completed",
+            stripePaymentIntentId: session.payment_intent as string,
+            ...(couponCode ? { couponCode } : {}),
+            discountAmount,
+          });
           const existing = await getEnrollment(userId, courseId);
           if (!existing) {
             await createEnrollment({ userId, courseId, amountPaid: ((session.amount_total ?? 0) / 100).toFixed(2), stripePaymentIntentId: session.payment_intent as string });

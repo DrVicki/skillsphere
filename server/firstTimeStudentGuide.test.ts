@@ -5,6 +5,8 @@ const guide = fs.readFileSync(new URL("../client/src/components/FirstTimeStudent
 const dashboard = fs.readFileSync(new URL("../client/src/pages/Dashboard.tsx", import.meta.url), "utf8");
 const learnCourse = fs.readFileSync(new URL("../client/src/pages/LearnCourse.tsx", import.meta.url), "utf8");
 const courseDetail = fs.readFileSync(new URL("../client/src/pages/CourseDetail.tsx", import.meta.url), "utf8");
+const contact = fs.readFileSync(new URL("../client/src/pages/Contact.tsx", import.meta.url), "utf8");
+const adminDashboard = fs.readFileSync(new URL("../client/src/pages/AdminDashboard.tsx", import.meta.url), "utf8");
 
 describe("first-time student course guide", () => {
   it("covers access, lessons, activities, assessments, capstone, and certificate completion", () => {
@@ -51,5 +53,13 @@ describe("first-time student course guide", () => {
     expect(courseDetail).not.toContain('placeholder="Coupon code"');
     expect(courseDetail).not.toContain("validateCoupon");
     expect(courseDetail).toContain("createCheckout.mutate({ courseId: course.id, origin: window.location.origin })");
+    expect(courseDetail).toContain("select Add promotion code in Stripe Checkout");
+  });
+
+  it("explains missing promotion fields and shows redemption analytics", () => {
+    expect(contact).toContain("Why can't I see the promotion-code field?");
+    expect(contact).toContain("Promotion codes are entered in Stripe Checkout after you select Enroll Now");
+    expect(adminDashboard).toContain("Promo Redemptions");
+    expect(adminDashboard).toContain("promotionDiscountTotal");
   });
 });

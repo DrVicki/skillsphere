@@ -33,7 +33,10 @@ export default function CourseDetail({ params }: Props) {
 
   const createCheckout = trpc.payments.createCheckout.useMutation({
     onSuccess: (data) => {
-      if (data.url) { toast.info("Redirecting to checkout..."); window.open(data.url, "_blank"); }
+      if (data.url) {
+        toast.info("Checkout opened. To use a promotion code, select Add promotion code in Stripe Checkout.", { duration: 7000 });
+        window.open(data.url, "_blank");
+      }
     },
     onError: (e) => toast.error(e.message),
   });

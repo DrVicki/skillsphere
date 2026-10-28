@@ -1325,7 +1325,12 @@ export async function createPayment(data: {
 
 export async function updatePaymentBySessionId(
   sessionId: string,
-  data: { status: string; stripePaymentIntentId?: string }
+  data: {
+    status: string;
+    stripePaymentIntentId?: string;
+    couponCode?: string;
+    discountAmount?: string;
+  }
 ) {
   const db = await getDb();
   if (!db) return;
@@ -1651,6 +1656,18 @@ export async function getAnalyticsOverview() {
     .select({ total: sql<string>`COALESCE(SUM(amount), 0)` })
     .from(payments)
     .where(eq(payments.status, "completed"));
+  const [promotionStats] = await db
+    .select({
+      redemptions: sql<number>`count(*)`,
+      discountTotal: sql<string>`COALESCE(SUM(discountAmount), 0)`,
+    })
+    .from(payments)
+    .where(
+      and(
+        eq(payments.status, "completed"),
+        sql`CAST(${payments.discountAmount} AS DECIMAL(10,2)) > 0`
+      )
+    );
   const topCourses = await db
     .select({
       id: courses.id,
@@ -1672,6 +1689,8 @@ export async function getAnalyticsOverview() {
     totalCourses: courseCount?.count ?? 0,
     totalEnrollments: enrollCount?.count ?? 0,
     totalRevenue: revenue?.total ?? "0",
+    promotionRedemptions: Number(promotionStats?.redemptions ?? 0),
+    promotionDiscountTotal: promotionStats?.discountTotal ?? "0",
     topCourses,
   };
 }

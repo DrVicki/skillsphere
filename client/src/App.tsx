@@ -40,6 +40,7 @@ function Router() {
       <Route path="/admin/blog/new" component={AdminBlogEditor} />
       <Route path="/admin/blog/edit/:id" component={AdminBlogEditor} />
       <Route path="/admin/users" component={AdminUsers} />
+      <Route path="/admin/analytics" component={AdminDashboard} />
       <Route path="/payments" component={Payments} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
