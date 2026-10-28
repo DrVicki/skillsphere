@@ -32,6 +32,7 @@ import AIDataAnalyticsVisualizations from "@/components/AIDataAnalyticsVisualiza
 import PythonForgeLab from "@/components/PythonForgeLab";
 import CAIOActivityTemplateDownload from "@/components/CAIOActivityTemplateDownload";
 import GameDesignDiaryPanel from "@/components/GameDesignDiaryPanel";
+import FirstTimeStudentGuide from "@/components/FirstTimeStudentGuide";
 import {
   GameDesignActivityCard,
   GameDesignKnowledgeCheck,
@@ -334,6 +335,15 @@ export default function LearnCourse({ params }: Props) {
 
             {/* Content Tab */}
             <TabsContent value="content" className="flex-1 p-6 mt-0">
+              {hasCourseAccess && (
+                <div className="mx-auto mb-6 max-w-3xl">
+                  <FirstTimeStudentGuide
+                    courseTitle={course.title}
+                    lessonCount={modules?.length}
+                    compact
+                  />
+                </div>
+              )}
               {course.slug === "professional-certificate-game-design" && (
                 <div className="mx-auto mb-6 flex max-w-3xl flex-col gap-4 rounded-2xl border border-[#2A63BF]/20 bg-gradient-to-r from-[#EEF4FF] to-[#F8FBFF] p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
                   <div className="flex items-start gap-3">

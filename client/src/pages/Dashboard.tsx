@@ -4,6 +4,7 @@ import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CourseCertificate from "@/components/CourseCertificate";
+import FirstTimeStudentGuide from "@/components/FirstTimeStudentGuide";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -355,6 +356,13 @@ export default function Dashboard() {
 
             {/* ── My Courses Tab ── */}
             <TabsContent value="learning">
+              {(enrollments?.length ?? 0) > 0 && (
+                <div className="mb-8">
+                  <FirstTimeStudentGuide
+                    courseTitle={enrollments?.length === 1 ? enrollments[0]?.course?.title ?? undefined : undefined}
+                  />
+                </div>
+              )}
               {/* In Progress */}
               {inProgressCourses.length > 0 && (
                 <div className="mb-8">
