@@ -46,7 +46,7 @@ export default function TrainerDashboard() {
   const { data: analytics } = trpc.analytics.trainerStats.useQuery(undefined, { enabled: isAuthenticated });
   const caioCourseId = myCourses?.find(course => course.slug === "chief-ai-officer-caio-4-week-bootcamp")?.id ?? 0;
   const { data: caioModules } = trpc.modules.byCourse.useQuery(caioCourseId, { enabled: caioCourseId > 0 });
-  const caioAssessmentModuleId = caioModules?.find(module => module.title.toLowerCase().includes("the proof ladder"))?.id ?? 0;
+  const caioAssessmentModuleId = caioModules?.find(module => module.title.toLowerCase().includes("choose your path"))?.id ?? 0;
 
   const createCourse = trpc.courses.create.useMutation({
     onSuccess: () => { toast.success("Course created!"); setCourseDialogOpen(false); refetchCourses(); resetCourseForm(); },

@@ -131,7 +131,7 @@ export default function LearnCourse({ params }: Props) {
   );
   const isCAIOPathAssessmentLesson =
     course?.slug === "chief-ai-officer-caio-4-week-bootcamp" &&
-    activeModule?.title?.toLowerCase().includes("the proof ladder");
+    activeModule?.title?.toLowerCase().includes("choose your path");
   const gameDesignInteraction = getGameDesignInteractionForModule(
     course?.slug,
     activeModule?.title

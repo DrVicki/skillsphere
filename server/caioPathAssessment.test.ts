@@ -18,11 +18,12 @@ describe("CAIO Path Assessment", () => {
     expect(assessment).toContain("Math.max(0, 3 - answer -");
   });
 
-  it("is placed in the CAIO Week 2 Proof Ladder lesson", () => {
-    const weekTwo = curriculum.weeks.find((week: any) => week.number === 2);
-    const lesson = weekTwo.lessons[0];
-    expect(lesson.title).toContain("The Proof Ladder");
+  it("is placed in the CAIO Week 1 Lesson 4 path-planning lesson", () => {
+    const weekOne = curriculum.weeks.find((week: any) => week.number === 1);
+    const lesson = weekOne.lessons[3];
+    expect(lesson.title).toContain("Choose Your Path");
     expect(learnCourse).toContain("isCAIOPathAssessmentLesson");
+    expect(learnCourse).toContain('includes("choose your path")');
     expect(learnCourse).toContain("<CAIOPathAssessment");
   });
 });

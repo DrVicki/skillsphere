@@ -54,7 +54,7 @@ export default function AdminDashboard() {
   const promotionData = promotionRedemptionsData ?? [];
   const enrollmentData: any[] = [];
   const gameDesignCourseId = allCourses?.find(course => course.slug === "professional-certificate-game-design")?.id ?? 0;
-  const caioAssessmentModuleId = caioModules?.find(module => module.title.toLowerCase().includes("the proof ladder"))?.id ?? 0;
+  const caioAssessmentModuleId = caioModules?.find(module => module.title.toLowerCase().includes("choose your path"))?.id ?? 0;
 
   return (
     <div className="min-h-screen flex flex-col">

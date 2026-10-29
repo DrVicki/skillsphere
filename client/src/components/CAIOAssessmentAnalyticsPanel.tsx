@@ -12,9 +12,9 @@ export default function CAIOAssessmentAnalyticsPanel({ courseId, moduleId }: { c
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
         <h3 className="flex items-center gap-2 font-semibold text-foreground"><BarChart3 className="h-5 w-5 text-primary" /> CAIO Path Assessment Analytics</h3>
-        <p className="mt-1 text-sm text-muted-foreground">Instructor view of saved Week 2 assessment attempts. Individual responses are shown only in the recent-attempt table.</p>
+        <p className="mt-1 text-sm text-muted-foreground">Instructor view of saved Week 1 assessment attempts. Individual responses are shown only in the recent-attempt table.</p>
       </div>
-      <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">Week 2 · Proof Ladder</span>
+      <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">Week 1 · Choose Your Path</span>
     </div>
     {isLoading && <div className="mt-6 h-28 animate-pulse rounded-lg bg-muted" aria-label="Loading assessment analytics" />}
     {isError && <p className="mt-6 rounded-lg bg-red-50 p-4 text-sm text-red-700">Assessment analytics could not be loaded. Confirm that you are the course instructor or an administrator.</p>}

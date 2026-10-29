@@ -851,8 +851,8 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         const course = await requireCaioCourse(input.courseId);
         const module = await getModuleById(input.moduleId);
-        if (!module || module.courseId !== course.id || !module.title.toLowerCase().includes("the proof ladder")) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Assessment must be saved from the CAIO Proof Ladder lesson." });
+        if (!module || module.courseId !== course.id || !module.title.toLowerCase().includes("choose your path")) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Assessment must be saved from the CAIO Week 1 path-planning lesson." });
         }
         const enrollment = await getEnrollment(ctx.user.id, input.courseId);
         if (!enrollment) throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in the CAIO BootCamp before saving assessment results." });
