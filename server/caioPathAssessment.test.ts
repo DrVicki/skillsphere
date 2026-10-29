@@ -16,6 +16,10 @@ describe("CAIO Path Assessment", () => {
     expect(assessment).toContain("Dot size shows industry depth");
     expect(assessment).toContain("Question 4 + Question 5 + Question 6");
     expect(assessment).toContain("Math.max(0, 3 - answer -");
+    expect(assessment).toContain("Scoring grid and route map");
+    expect(assessment).toContain("Fractional or Agency if Rule One holds");
+    expect(assessment).toContain("Your route from the scoring grid");
+    expect(assessment).toContain("function getRoute(anchor: number, freedom: number)");
   });
 
   it("is placed in the CAIO Week 1 Lesson 4 path-planning lesson", () => {

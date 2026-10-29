@@ -37,6 +37,28 @@ const SCORE_MEANINGS = {
   industry: "Outside both totals. It is the multiplier for the fractional and agency paths, and appears as its own condition in the routing rules.",
 };
 
+const ROUTE_GRID = [
+  { freedom: "0 to 3", lowAnchor: "Climb Inside, at a better employer (Ch10)", highAnchor: "Climb Inside (Ch10)" },
+  { freedom: "4 to 6", lowAnchor: "Moonlight Ladder (Ch11)", highAnchor: "Climb Inside and Moonlight in parallel (Ch10 + Ch11)" },
+  { freedom: "7 to 9", lowAnchor: "Fractional or Agency if Rule One holds, otherwise Moonlight, fast (Ch11/Ch12/Ch13)", highAnchor: "Fractional or Agency (Ch12/Ch13), if Rule One holds" },
+] as const;
+
+function getRoute(anchor: number, freedom: number) {
+  const row = freedom <= 3 ? ROUTE_GRID[0] : freedom <= 6 ? ROUTE_GRID[1] : ROUTE_GRID[2];
+  return { ...row, route: anchor <= 3 ? row.lowAnchor : row.highAnchor };
+}
+
+function ScoringGrid() {
+  return <div className="mt-7 overflow-x-auto rounded-2xl border-2 border-[#f1d493] bg-[#102a57] p-3">
+    <h4 className="mb-3 font-serif text-xl font-bold text-[#ffd76a]">Scoring grid and route map</h4>
+    <table className="w-full min-w-[680px] border-collapse text-left text-sm text-white">
+      <caption className="sr-only">Freedom and Anchor score combinations mapped to CAIO routes</caption>
+      <thead><tr className="bg-[#071631] text-[#ffd76a]"><th scope="col" className="border border-[#6f87aa] p-3">Freedom score</th><th scope="col" className="border border-[#6f87aa] p-3">Anchor 0 to 3</th><th scope="col" className="border border-[#6f87aa] p-3">Anchor 4 to 6</th></tr></thead>
+      <tbody>{ROUTE_GRID.map(row => <tr key={row.freedom}><th scope="row" className="border border-[#6f87aa] bg-[#0b1d3f] p-3 font-semibold text-[#e5edf8]">{row.freedom}</th><td className="border border-[#6f87aa] p-3 align-top">{row.lowAnchor}</td><td className="border border-[#6f87aa] p-3 align-top">{row.highAnchor}</td></tr>)}</tbody>
+    </table>
+  </div>;
+}
+
 function scoreFor(answer: number | null, index: number, veto = false) {
   if (answer === null) return 0;
   return Math.max(0, 3 - answer - (veto && (index === 3 || index === 5) ? 1 : 0));
@@ -115,10 +137,11 @@ export default function CAIOPathAssessment({ courseId, moduleId, learnerName = "
     const score = (index: number, withVeto = false) => scoreFor(answers[index], index, withVeto);
     return { anchor: score(0) + score(1), freedom: score(3) + score(4) + score(5), industry: score(2), vetoFreedom: score(3, true) + score(4, true) + score(5, true) };
   }, [answers]);
+  const route = getRoute(totals.anchor, totals.freedom);
 
   const startOver = () => { setAnswers(Array(6).fill(null)); setVeto(false); setCopied(false); setHasSavedAttempt(false); setHydratedSavedAttempt(true); setStep(-1); };
   const copyScores = async () => {
-    const text = `CAIO Path Assessment\nAnchor score (Q1 + Q2): ${totals.anchor}/6\nFreedom score (Q4 + Q5 + Q6): ${totals.freedom}/9\nIndustry depth (Q3): ${totals.industry}/3`;
+    const text = `CAIO Path Assessment\nAnchor score (Q1 + Q2): ${totals.anchor}/6\nFreedom score (Q4 + Q5 + Q6): ${totals.freedom}/9\nIndustry depth (Q3): ${totals.industry}/3\nRecommended route: ${route.route}`;
     try { await navigator.clipboard.writeText(text); setCopied(true); window.setTimeout(() => setCopied(false), 2200); } catch { setCopied(false); }
   };
 
@@ -154,6 +177,8 @@ export default function CAIOPathAssessment({ courseId, moduleId, learnerName = "
     addWrapped(`Learner: ${learnerName}`, 11, [5, 15, 36]);
     addWrapped(`Completed: ${new Date().toLocaleString()}`, 9, [105, 116, 140]);
     addWrapped(`Anchor score: ${totals.anchor}/6 · Freedom score: ${totals.freedom}/9 · Industry depth: ${totals.industry}/3`, 13, [185, 138, 44]);
+    addWrapped(`Recommended route: ${route.route}`, 13, [5, 15, 36]);
+    addWrapped("Scoring grid: Freedom 0–3 routes to Climb Inside; Freedom 4–6 routes to Moonlight Ladder or Climb Inside and Moonlight in parallel; Freedom 7–9 routes to Fractional or Agency when Rule One holds, otherwise Moonlight fast. Anchor 0–3 and Anchor 4–6 select the left or right column.", 9, [55, 65, 85]);
     addWrapped("Anchor measures the strength of your position inside employment. Freedom measures your capacity to earn independently. Industry depth stands alone and acts as a multiplier for fractional and agency paths.");
     if (veto) addWrapped(`Household veto test: Freedom ${totals.freedom}/9 → ${totals.vetoFreedom}/9. Anchor remains ${totals.anchor}/6; industry depth remains ${totals.industry}/3.`, 10, [145, 75, 65]);
     addWrapped("Answer review", 16, [5, 15, 36]);
@@ -169,7 +194,8 @@ export default function CAIOPathAssessment({ courseId, moduleId, learnerName = "
     <h3 className="font-serif text-3xl font-bold leading-tight sm:text-5xl">Which path fits your <em className="font-normal text-[#f1d493]">facts</em>, not your hopes?</h3>
     <p className="mt-4 max-w-2xl text-[#e5edf8]">Six questions, graded at the end. You finish with two numbers — Anchor and Freedom — plus a separate reading of your industry depth.</p>
     <div className="mt-7 rounded-2xl border-l-4 border-[#ffd76a] bg-[#102a57] p-5"><h4 className="font-serif text-lg font-bold text-[#ffd76a]">One calibration check before you start</h4><p className="mt-2 text-sm leading-6 text-[#f0f5fc]">This instrument has a known fault: <strong className="text-white">people score their hopes, not their facts.</strong> The two questions most commonly inflated are <strong className="text-white">network</strong> and <strong className="text-white">risk appetite</strong>.</p><p className="mt-2 text-sm leading-6 text-[#f0f5fc]">If you live with someone whose finances are tied to yours, read them your six answers and let them veto the generous ones.</p></div>
-    <Button className="mt-7 bg-[#e3b85a] text-[#2a1d02] hover:bg-[#f1d493]" onClick={() => setStep(0)}>Begin the assessment <ArrowRight className="ml-2 h-4 w-4" /></Button>
+    <ScoringGrid />
+    <Button className="mt-7 bg-[#ffd76a] font-semibold text-[#071631] hover:bg-[#fff0a8]" onClick={() => setStep(0)}>Begin the assessment <ArrowRight className="ml-2 h-4 w-4" /></Button>
   </section>;
 
   if (step < QUESTIONS.length) {
@@ -188,6 +214,8 @@ export default function CAIOPathAssessment({ courseId, moduleId, learnerName = "
     <div className="flex flex-wrap items-end justify-between gap-3"><div><span className="text-xs uppercase tracking-[0.22em] text-[#ffd76a]">CAIO Path Assessment</span><h3 className="mt-2 font-serif text-4xl font-bold">Your <em className="font-normal text-[#ffd76a]">scores</em></h3></div><BarChart3 className="h-9 w-9 text-[#ffd76a]" /></div>
     <p className="mt-3 text-[#e5edf8]">Keep the three numbers together; they are read side by side.</p>
     <div className="mt-7 grid gap-4 md:grid-cols-3"><ScoreCard label="Anchor score" value={totals.anchor} max={6} formula="Question 1 + Question 2" meaning={SCORE_MEANINGS.anchor} /><ScoreCard label="Freedom score" value={totals.freedom} max={9} formula="Question 4 + Question 5 + Question 6" meaning={SCORE_MEANINGS.freedom} /><ScoreCard label="Industry depth" value={totals.industry} max={3} formula="Question 3 · stands alone" meaning={SCORE_MEANINGS.industry} /></div>
+    <div className="mt-6 rounded-2xl border-2 border-[#ffd76a] bg-[#214777] p-5" role="status"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#ffd76a]">Your route from the scoring grid</p><h4 className="mt-2 font-serif text-2xl font-bold text-white">{route.route}</h4><p className="mt-2 text-sm leading-6 text-[#f0f5fc]">This recommendation uses your Anchor score of {totals.anchor}/6 and Freedom score of {totals.freedom}/9. Industry depth remains a separate condition and multiplier.</p></div>
+    <ScoringGrid />
     <div className="mt-6 grid gap-5 lg:grid-cols-[1.05fr_1fr] lg:items-center"><ScorePlot anchor={totals.anchor} freedom={totals.freedom} industry={totals.industry} vetoFreedom={veto ? totals.vetoFreedom : undefined} /><div><label className="flex cursor-pointer gap-3 rounded-2xl border-2 border-dashed border-[#ffd76a] bg-[#102a57] p-4 focus-within:ring-2 focus-within:ring-white"><Checkbox checked={veto} onCheckedChange={value => { setVeto(value === true); setHasSavedAttempt(false); }} className="mt-1 h-5 w-5 border-2 border-[#ffd76a] data-[state=checked]:bg-[#ffd76a] data-[state=checked]:text-[#071631]" /><span><strong className="block font-serif text-lg text-[#ffd76a]">Run the household veto test</strong><span className="text-sm leading-6 text-[#f0f5fc]">What if the people who share your finances veto the generous answers? This lowers Network and Risk appetite by one step each.</span></span></label><p className="mt-3 text-sm text-white">{veto ? `With the veto applied: Freedom score ${totals.freedom} → ${totals.vetoFreedom}. Anchor stays ${totals.anchor}; Industry depth stays ${totals.industry}.` : "Dot size shows your industry depth."}</p></div></div>
     <div className="mt-8"><h4 className="font-serif text-2xl font-bold text-white">Your answers</h4>{QUESTIONS.map((question, index) => <div key={question.id} className="grid gap-3 border-t-2 border-[#486184] py-4 sm:grid-cols-[34px_1fr_auto] sm:items-start"><div className="font-serif text-2xl text-[#ffd76a]">{index + 1}</div><div><b className="text-xs uppercase tracking-[0.14em] text-[#e5edf8]">{question.tag}</b><p className="mt-1 text-sm leading-6 text-white">{question.options[answers[index] ?? 0]}</p>{(index === 3 || index === 5) && <span className="mt-1 inline-block rounded-full border-2 border-[#ffb4a8] bg-[#5a2027] px-2 py-0.5 text-xs font-medium text-white">Most commonly inflated: check it</span>}</div><div className="font-serif text-2xl text-[#ffd76a]">{scoreFor(answers[index], index)}<small className="text-sm text-[#e5edf8]">/3</small></div></div>)}</div>
     <div className="mt-5 rounded-2xl border border-[#6f87aa] bg-[#102a57] p-4 text-sm leading-6 text-[#f0f5fc]"><strong className="text-white">Next step:</strong> take your Anchor score, Freedom score and Industry depth to the chapter's routing rules. This quiz grades the three numbers; it does not choose your path for you.</div>
