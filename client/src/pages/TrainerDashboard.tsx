@@ -3,6 +3,7 @@ import { getLoginUrl } from "@/const";
 import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CAIOAssessmentAnalyticsPanel from "@/components/CAIOAssessmentAnalyticsPanel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -43,6 +44,9 @@ export default function TrainerDashboard() {
   const { data: myCourses, refetch: refetchCourses } = trpc.courses.myTrainerCourses.useQuery(undefined, { enabled: isAuthenticated });
   const { data: myModules, refetch: refetchModules } = trpc.modules.byCourse.useQuery(activeCourseId ?? 0, { enabled: !!activeCourseId });
   const { data: analytics } = trpc.analytics.trainerStats.useQuery(undefined, { enabled: isAuthenticated });
+  const caioCourseId = myCourses?.find(course => course.slug === "chief-ai-officer-caio-4-week-bootcamp")?.id ?? 0;
+  const { data: caioModules } = trpc.modules.byCourse.useQuery(caioCourseId, { enabled: caioCourseId > 0 });
+  const caioAssessmentModuleId = caioModules?.find(module => module.title.toLowerCase().includes("the proof ladder"))?.id ?? 0;
 
   const createCourse = trpc.courses.create.useMutation({
     onSuccess: () => { toast.success("Course created!"); setCourseDialogOpen(false); refetchCourses(); resetCourseForm(); },
@@ -294,6 +298,8 @@ export default function TrainerDashboard() {
               </div>
             )}
           </div>
+
+          {caioCourseId > 0 && caioAssessmentModuleId > 0 && <CAIOAssessmentAnalyticsPanel courseId={caioCourseId} moduleId={caioAssessmentModuleId} />}
 
           {/* Module Manager */}
           {activeCourseId && (

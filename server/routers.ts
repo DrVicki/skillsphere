@@ -55,6 +55,9 @@ import {
   upsertSubscription,
   updatePaymentBySessionId,
   updateUserStripeCustomerId,
+  createCaioAssessmentResult,
+  getLatestCaioAssessmentResult,
+  getCaioAssessmentAnalytics,
   createContactMessage,
   getContactMessages,
   subscribeToNewsletter,
@@ -100,6 +103,7 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
 });
 
 const GAME_DESIGN_COURSE_SLUG = "professional-certificate-game-design";
+const CAIO_COURSE_SLUG = "chief-ai-officer-caio-4-week-bootcamp";
 
 async function requireGameDesignCourse(courseId: number) {
   const course = await getCourseById(courseId);
@@ -109,6 +113,15 @@ async function requireGameDesignCourse(courseId: number) {
       code: "FORBIDDEN",
       message: "The Game Diary is available only for the Game Design certificate.",
     });
+  }
+  return course;
+}
+
+async function requireCaioCourse(courseId: number) {
+  const course = await getCourseById(courseId);
+  if (!course) throw new TRPCError({ code: "NOT_FOUND", message: "Course not found" });
+  if (course.slug !== CAIO_COURSE_SLUG) {
+    throw new TRPCError({ code: "FORBIDDEN", message: "The CAIO assessment is available only for the CAIO BootCamp." });
   }
   return course;
 }
@@ -817,6 +830,69 @@ export const appRouter = router({
         await upsertModuleProgress({ ...input, userId: ctx.user.id });
         return { success: true };
     }),
+  }),
+
+  // ─── CAIO Path Assessment ─────────────────────────────────────────────────
+  caioAssessment: router({
+    latest: protectedProcedure
+      .input(z.object({ courseId: z.number(), moduleId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        await requireCaioCourse(input.courseId);
+        return getLatestCaioAssessmentResult(ctx.user.id, input.courseId, input.moduleId);
+      }),
+
+    save: protectedProcedure
+      .input(z.object({
+        courseId: z.number(),
+        moduleId: z.number(),
+        answers: z.array(z.number().int().min(0).max(3)).length(6),
+        householdVeto: z.boolean(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const course = await requireCaioCourse(input.courseId);
+        const module = await getModuleById(input.moduleId);
+        if (!module || module.courseId !== course.id || !module.title.toLowerCase().includes("the proof ladder")) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Assessment must be saved from the CAIO Proof Ladder lesson." });
+        }
+        const enrollment = await getEnrollment(ctx.user.id, input.courseId);
+        if (!enrollment) throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in the CAIO BootCamp before saving assessment results." });
+        const score = (index: number, veto = false) => Math.max(0, 3 - input.answers[index] - (veto && (index === 3 || index === 5) ? 1 : 0));
+        const anchorScore = score(0) + score(1);
+        const freedomScore = score(3) + score(4) + score(5);
+        const industryDepth = score(2);
+        const vetoFreedomScore = score(3, true) + score(4, true) + score(5, true);
+        const result = await createCaioAssessmentResult({
+          userId: ctx.user.id,
+          moduleId: input.moduleId,
+          courseId: input.courseId,
+          answers: input.answers,
+          anchorScore,
+          freedomScore,
+          industryDepth,
+          vetoFreedomScore,
+          householdVeto: input.householdVeto,
+        });
+        await upsertModuleProgress({
+          userId: ctx.user.id,
+          moduleId: input.moduleId,
+          courseId: input.courseId,
+          assessmentScore: anchorScore + freedomScore + industryDepth,
+          assessmentPassed: true,
+        });
+        return { ...result, anchorScore, freedomScore, industryDepth, vetoFreedomScore };
+      }),
+
+    analytics: trainerProcedure
+      .input(z.object({ courseId: z.number(), moduleId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const course = await requireCaioCourse(input.courseId);
+        if (ctx.user.role !== "admin" && course.trainerId !== ctx.user.id) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Only the course instructor can view assessment analytics." });
+        }
+        const module = await getModuleById(input.moduleId);
+        if (!module || module.courseId !== course.id) throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid CAIO assessment module." });
+        return getCaioAssessmentAnalytics(input.courseId, input.moduleId);
+      }),
   }),
 
   // ─── Game Design Diary ─────────────────────────────────────────────────────

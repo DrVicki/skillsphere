@@ -223,6 +223,32 @@ export const moduleProgress = mysqlTable("module_progress", {
 export type ModuleProgress = typeof moduleProgress.$inferSelect;
 export type InsertModuleProgress = typeof moduleProgress.$inferInsert;
 
+// ─── CAIO Path Assessment Results ────────────────────────────────────────────
+
+export const caioAssessmentResults = mysqlTable(
+  "caio_assessment_results",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: int("userId").notNull(),
+    moduleId: int("moduleId").notNull(),
+    courseId: int("courseId").notNull(),
+    answers: json("answers").notNull(),
+    anchorScore: int("anchorScore").notNull(),
+    freedomScore: int("freedomScore").notNull(),
+    industryDepth: int("industryDepth").notNull(),
+    vetoFreedomScore: int("vetoFreedomScore").notNull(),
+    householdVeto: boolean("householdVeto").notNull().default(false),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [
+    index("caio_assessment_user_course_idx").on(table.userId, table.courseId),
+    index("caio_assessment_course_created_idx").on(table.courseId, table.createdAt),
+  ]
+);
+
+export type CaioAssessmentResult = typeof caioAssessmentResults.$inferSelect;
+export type InsertCaioAssessmentResult = typeof caioAssessmentResults.$inferInsert;
+
 // ─── Payments ────────────────────────────────────────────────────────────────
 
 export const payments = mysqlTable("payments", {

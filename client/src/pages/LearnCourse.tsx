@@ -481,7 +481,14 @@ export default function LearnCourse({ params }: Props) {
                       />
                     )}
 
-                    {isCAIOPathAssessmentLesson && <CAIOPathAssessment />}
+                    {isCAIOPathAssessmentLesson && activeModule && (
+                      <CAIOPathAssessment
+                        courseId={course.id}
+                        moduleId={activeModule.id}
+                        learnerName={user?.name ?? "Learner"}
+                        canPersist={hasCourseAccess}
+                      />
+                    )}
 
                     {gameDesignInteraction && (
                       <>

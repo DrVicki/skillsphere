@@ -21,6 +21,7 @@ import {
   courseReviews,
   newsletterSubscribers,
   gameDesignDiaryEntries,
+  caioAssessmentResults,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -1293,6 +1294,81 @@ export async function upsertModuleProgress(data: {
         eq(enrollments.courseId, data.courseId)
       )
     );
+}
+
+export async function createCaioAssessmentResult(data: {
+  userId: number;
+  moduleId: number;
+  courseId: number;
+  answers: number[];
+  anchorScore: number;
+  freedomScore: number;
+  industryDepth: number;
+  vetoFreedomScore: number;
+  householdVeto: boolean;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.insert(caioAssessmentResults).values(data);
+  return { id: Number(result[0].insertId) };
+}
+
+export async function getLatestCaioAssessmentResult(userId: number, courseId: number, moduleId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const rows = await db.select().from(caioAssessmentResults).where(and(
+    eq(caioAssessmentResults.userId, userId),
+    eq(caioAssessmentResults.courseId, courseId),
+    eq(caioAssessmentResults.moduleId, moduleId),
+  )).orderBy(desc(caioAssessmentResults.createdAt)).limit(1);
+  return rows[0] ?? null;
+}
+
+export async function getCaioAssessmentAnalytics(courseId: number, moduleId: number) {
+  const db = await getDb();
+  if (!db) return { totalAttempts: 0, uniqueLearners: 0, enrolledLearners: 0, completionRate: 0, averageAnchor: 0, averageFreedom: 0, averageIndustry: 0, recent: [] };
+  const [summary, enrollmentSummary, recent] = await Promise.all([
+    db.select({
+      totalAttempts: sql<number>`COUNT(*)`,
+      uniqueLearners: sql<number>`COUNT(DISTINCT ${caioAssessmentResults.userId})`,
+      averageAnchor: sql<number>`COALESCE(AVG(${caioAssessmentResults.anchorScore}), 0)`,
+      averageFreedom: sql<number>`COALESCE(AVG(${caioAssessmentResults.freedomScore}), 0)`,
+      averageIndustry: sql<number>`COALESCE(AVG(${caioAssessmentResults.industryDepth}), 0)`,
+    }).from(caioAssessmentResults).where(and(
+      eq(caioAssessmentResults.courseId, courseId),
+      eq(caioAssessmentResults.moduleId, moduleId),
+    )),
+    db.select({ enrolledLearners: sql<number>`COUNT(DISTINCT ${enrollments.userId})` })
+      .from(enrollments)
+      .where(eq(enrollments.courseId, courseId)),
+    db.select({
+      id: caioAssessmentResults.id,
+      userId: caioAssessmentResults.userId,
+      learnerName: users.name,
+      learnerEmail: users.email,
+      anchorScore: caioAssessmentResults.anchorScore,
+      freedomScore: caioAssessmentResults.freedomScore,
+      industryDepth: caioAssessmentResults.industryDepth,
+      householdVeto: caioAssessmentResults.householdVeto,
+      createdAt: caioAssessmentResults.createdAt,
+    }).from(caioAssessmentResults).leftJoin(users, eq(users.id, caioAssessmentResults.userId)).where(and(
+      eq(caioAssessmentResults.courseId, courseId),
+      eq(caioAssessmentResults.moduleId, moduleId),
+    )).orderBy(desc(caioAssessmentResults.createdAt)).limit(100),
+  ]);
+  const row = summary[0];
+  const enrolledLearners = Number(enrollmentSummary[0]?.enrolledLearners ?? 0);
+  const uniqueLearners = Number(row?.uniqueLearners ?? 0);
+  return {
+    totalAttempts: Number(row?.totalAttempts ?? 0),
+    uniqueLearners,
+    enrolledLearners,
+    completionRate: enrolledLearners > 0 ? Math.round((uniqueLearners / enrolledLearners) * 100) : 0,
+    averageAnchor: Number(row?.averageAnchor ?? 0),
+    averageFreedom: Number(row?.averageFreedom ?? 0),
+    averageIndustry: Number(row?.averageIndustry ?? 0),
+    recent,
+  };
 }
 
 // ─── Payments ─────────────────────────────────────────────────────────────────

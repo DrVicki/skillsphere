@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
-import { AlertTriangle, ArrowLeft, ArrowRight, BarChart3, Check, Clipboard, RotateCcw, Users } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { AlertTriangle, ArrowLeft, ArrowRight, BarChart3, Clipboard, Download, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { trpc } from "@/lib/trpc";
 
 type AssessmentQuestion = {
   id: number;
@@ -70,20 +71,97 @@ function ScorePlot({ anchor, freedom, industry, vetoAnchor, vetoFreedom }: { anc
   </div>;
 }
 
-export default function CAIOPathAssessment() {
+type CAIOPathAssessmentProps = {
+  courseId: number;
+  moduleId: number;
+  learnerName?: string;
+  canPersist?: boolean;
+};
+
+export default function CAIOPathAssessment({ courseId, moduleId, learnerName = "Learner", canPersist = false }: CAIOPathAssessmentProps) {
   const [step, setStep] = useState(-1);
   const [answers, setAnswers] = useState<Array<number | null>>(() => Array(6).fill(null));
   const [veto, setVeto] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [hasSavedAttempt, setHasSavedAttempt] = useState(false);
+  const [hydratedSavedAttempt, setHydratedSavedAttempt] = useState(false);
+  const utils = trpc.useUtils();
+  const { data: savedResult } = trpc.caioAssessment.latest.useQuery(
+    { courseId, moduleId },
+    { enabled: canPersist }
+  );
+  const saveResult = trpc.caioAssessment.save.useMutation({
+    onSuccess: () => {
+      setHasSavedAttempt(true);
+      void utils.caioAssessment.latest.invalidate({ courseId, moduleId });
+    },
+  });
+
+  useEffect(() => {
+    if (!savedResult || hydratedSavedAttempt) return;
+    const storedAnswers = Array.isArray(savedResult.answers)
+      ? savedResult.answers.map(value => typeof value === "number" ? value : null).slice(0, 6)
+      : [];
+    if (storedAnswers.length === 6) {
+      setAnswers(storedAnswers);
+      setVeto(savedResult.householdVeto);
+      setStep(QUESTIONS.length);
+      setHasSavedAttempt(true);
+    }
+    setHydratedSavedAttempt(true);
+  }, [savedResult, hydratedSavedAttempt]);
+
   const totals = useMemo(() => {
     const score = (index: number, withVeto = false) => scoreFor(answers[index], index, withVeto);
     return { anchor: score(0) + score(1), freedom: score(3) + score(4) + score(5), industry: score(2), vetoFreedom: score(3, true) + score(4, true) + score(5, true) };
   }, [answers]);
 
-  const startOver = () => { setAnswers(Array(6).fill(null)); setVeto(false); setCopied(false); setStep(-1); };
+  const startOver = () => { setAnswers(Array(6).fill(null)); setVeto(false); setCopied(false); setHasSavedAttempt(false); setHydratedSavedAttempt(true); setStep(-1); };
   const copyScores = async () => {
     const text = `CAIO Path Assessment\nAnchor score (Q1 + Q2): ${totals.anchor}/6\nFreedom score (Q4 + Q5 + Q6): ${totals.freedom}/9\nIndustry depth (Q3): ${totals.industry}/3`;
     try { await navigator.clipboard.writeText(text); setCopied(true); window.setTimeout(() => setCopied(false), 2200); } catch { setCopied(false); }
+  };
+
+  useEffect(() => {
+    if (step !== QUESTIONS.length || !canPersist || hasSavedAttempt || saveResult.isPending) return;
+    if (answers.some(answer => answer === null)) return;
+    saveResult.mutate({
+      courseId,
+      moduleId,
+      answers: answers as number[],
+      householdVeto: veto,
+    });
+  }, [step, canPersist, hasSavedAttempt, answers, veto, courseId, moduleId]);
+
+  const downloadReport = async () => {
+    const { jsPDF } = await import("jspdf");
+    const doc = new jsPDF({ unit: "pt", format: "letter" });
+    const left = 52;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let y = 54;
+    const addWrapped = (text: string, size = 10, color: [number, number, number] = [55, 65, 85]) => {
+      doc.setFontSize(size);
+      doc.setTextColor(...color);
+      const lines = doc.splitTextToSize(text, pageWidth - left * 2);
+      if (y + lines.length * (size + 5) > 735) { doc.addPage(); y = 54; }
+      doc.text(lines, left, y);
+      y += lines.length * (size + 5) + 8;
+    };
+    doc.setFillColor(5, 15, 36); doc.rect(0, 0, pageWidth, 92, "F");
+    doc.setFontSize(11); doc.setTextColor(227, 184, 90); doc.text("SKILLSPHERE · CAIO BOOTCAMP", left, 34);
+    doc.setFontSize(22); doc.setTextColor(246, 241, 228); doc.text("CAIO Path Assessment Results", left, 68);
+    y = 125;
+    addWrapped(`Learner: ${learnerName}`, 11, [5, 15, 36]);
+    addWrapped(`Completed: ${new Date().toLocaleString()}`, 9, [105, 116, 140]);
+    addWrapped(`Anchor score: ${totals.anchor}/6 · Freedom score: ${totals.freedom}/9 · Industry depth: ${totals.industry}/3`, 13, [185, 138, 44]);
+    addWrapped("Anchor measures the strength of your position inside employment. Freedom measures your capacity to earn independently. Industry depth stands alone and acts as a multiplier for fractional and agency paths.");
+    if (veto) addWrapped(`Household veto test: Freedom ${totals.freedom}/9 → ${totals.vetoFreedom}/9. Anchor remains ${totals.anchor}/6; industry depth remains ${totals.industry}/3.`, 10, [145, 75, 65]);
+    addWrapped("Answer review", 16, [5, 15, 36]);
+    QUESTIONS.forEach((question, index) => {
+      addWrapped(`${index + 1}. ${question.tag} — ${question.options[answers[index] ?? 0]} (${scoreFor(answers[index], index)}/3)`);
+    });
+    addWrapped("Next step: take your three scores to the chapter's routing rules. This assessment grades the numbers; it does not choose your path for you.", 10, [105, 116, 140]);
+    doc.save("caio-path-assessment-results.pdf");
   };
 
   if (step < 0) return <section className="my-10 overflow-hidden rounded-3xl border border-[#e3b85a]/30 bg-[radial-gradient(circle_at_80%_0%,rgba(227,184,90,.14),transparent_45%),#050f24] p-5 text-[#f6f1e4] shadow-xl sm:p-8">
@@ -110,9 +188,10 @@ export default function CAIOPathAssessment() {
     <div className="flex flex-wrap items-end justify-between gap-3"><div><span className="text-xs uppercase tracking-[0.22em] text-[#e3b85a]">CAIO Path Assessment</span><h3 className="mt-2 font-serif text-4xl font-bold">Your <em className="font-normal text-[#f1d493]">scores</em></h3></div><BarChart3 className="h-9 w-9 text-[#e3b85a]" /></div>
     <p className="mt-3 text-[#aab6cf]">Keep the three numbers together; they are read side by side.</p>
     <div className="mt-7 grid gap-4 md:grid-cols-3"><ScoreCard label="Anchor score" value={totals.anchor} max={6} formula="Question 1 + Question 2" meaning={SCORE_MEANINGS.anchor} /><ScoreCard label="Freedom score" value={totals.freedom} max={9} formula="Question 4 + Question 5 + Question 6" meaning={SCORE_MEANINGS.freedom} /><ScoreCard label="Industry depth" value={totals.industry} max={3} formula="Question 3 · stands alone" meaning={SCORE_MEANINGS.industry} /></div>
-    <div className="mt-6 grid gap-5 lg:grid-cols-[1.05fr_1fr] lg:items-center"><ScorePlot anchor={totals.anchor} freedom={totals.freedom} industry={totals.industry} vetoFreedom={veto ? totals.vetoFreedom : undefined} /><div><label className="flex cursor-pointer gap-3 rounded-2xl border border-dashed border-[#e3b85a]/60 p-4"><Checkbox checked={veto} onCheckedChange={value => setVeto(value === true)} className="mt-1 border-[#e3b85a] data-[state=checked]:bg-[#e3b85a] data-[state=checked]:text-[#2a1d02]" /><span><strong className="block font-serif text-lg text-[#f1d493]">Run the household veto test</strong><span className="text-sm leading-6 text-[#aab6cf]">What if the people who share your finances veto the generous answers? This lowers Network and Risk appetite by one step each.</span></span></label><p className="mt-3 text-sm text-[#f6f1e4]">{veto ? `With the veto applied: Freedom score ${totals.freedom} → ${totals.vetoFreedom}. Anchor stays ${totals.anchor}; Industry depth stays ${totals.industry}.` : "Dot size shows your industry depth."}</p></div></div>
+    <div className="mt-6 grid gap-5 lg:grid-cols-[1.05fr_1fr] lg:items-center"><ScorePlot anchor={totals.anchor} freedom={totals.freedom} industry={totals.industry} vetoFreedom={veto ? totals.vetoFreedom : undefined} /><div><label className="flex cursor-pointer gap-3 rounded-2xl border border-dashed border-[#e3b85a]/60 p-4"><Checkbox checked={veto} onCheckedChange={value => { setVeto(value === true); setHasSavedAttempt(false); }} className="mt-1 border-[#e3b85a] data-[state=checked]:bg-[#e3b85a] data-[state=checked]:text-[#2a1d02]" /><span><strong className="block font-serif text-lg text-[#f1d493]">Run the household veto test</strong><span className="text-sm leading-6 text-[#aab6cf]">What if the people who share your finances veto the generous answers? This lowers Network and Risk appetite by one step each.</span></span></label><p className="mt-3 text-sm text-[#f6f1e4]">{veto ? `With the veto applied: Freedom score ${totals.freedom} → ${totals.vetoFreedom}. Anchor stays ${totals.anchor}; Industry depth stays ${totals.industry}.` : "Dot size shows your industry depth."}</p></div></div>
     <div className="mt-8"><h4 className="font-serif text-2xl font-bold">Your answers</h4>{QUESTIONS.map((question, index) => <div key={question.id} className="grid gap-3 border-t border-white/10 py-4 sm:grid-cols-[34px_1fr_auto] sm:items-start"><div className="font-serif text-2xl text-[#e3b85a]">{index + 1}</div><div><b className="text-xs uppercase tracking-[0.14em] text-[#aab6cf]">{question.tag}</b><p className="mt-1 text-sm leading-6">{question.options[answers[index] ?? 0]}</p>{(index === 3 || index === 5) && <span className="mt-1 inline-block rounded-full border border-[#e57d6e]/50 px-2 py-0.5 text-xs text-[#f6c9c2]">Most commonly inflated: check it</span>}</div><div className="font-serif text-2xl text-[#f1d493]">{scoreFor(answers[index], index)}<small className="text-sm text-[#aab6cf]">/3</small></div></div>)}</div>
     <div className="mt-5 rounded-2xl bg-white/5 p-4 text-sm leading-6 text-[#aab6cf]"><strong className="text-[#f6f1e4]">Next step:</strong> take your Anchor score, Freedom score and Industry depth to the chapter's routing rules. This quiz grades the three numbers; it does not choose your path for you.</div>
-    <div className="mt-6 flex flex-wrap gap-3"><Button className="bg-[#e3b85a] text-[#2a1d02] hover:bg-[#f1d493]" onClick={copyScores}><Clipboard className="mr-2 h-4 w-4" />{copied ? "Scores copied" : "Copy my scores"}</Button><Button variant="outline" className="border-white/30 bg-transparent text-[#f6f1e4] hover:bg-white/10" onClick={() => setStep(0)}><ArrowLeft className="mr-2 h-4 w-4" />Change an answer</Button><Button variant="outline" className="border-white/30 bg-transparent text-[#f6f1e4] hover:bg-white/10" onClick={startOver}><RotateCcw className="mr-2 h-4 w-4" />Retake</Button></div>
+    <div className="mt-6 flex flex-wrap gap-3"><Button className="bg-[#e3b85a] text-[#2a1d02] hover:bg-[#f1d493]" onClick={copyScores}><Clipboard className="mr-2 h-4 w-4" />{copied ? "Scores copied" : "Copy my scores"}</Button><Button variant="outline" className="border-white/30 bg-transparent text-[#f6f1e4] hover:bg-white/10" onClick={downloadReport}><Download className="mr-2 h-4 w-4" />Download PDF report</Button><Button variant="outline" className="border-white/30 bg-transparent text-[#f6f1e4] hover:bg-white/10" onClick={() => { setHasSavedAttempt(false); setStep(0); }}><ArrowLeft className="mr-2 h-4 w-4" />Change an answer</Button><Button variant="outline" className="border-white/30 bg-transparent text-[#f6f1e4] hover:bg-white/10" onClick={startOver}><RotateCcw className="mr-2 h-4 w-4" />Retake</Button></div>
+    {canPersist && <p className="mt-3 text-xs text-[#aab6cf]" role="status">{saveResult.isPending ? "Saving your assessment results…" : hasSavedAttempt ? "Your latest assessment results are saved to your learner progress." : "Complete the assessment to save your results."}</p>}
   </section>;
 }

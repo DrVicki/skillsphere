@@ -23,6 +23,6 @@ describe("CAIO Path Assessment", () => {
     const lesson = weekTwo.lessons[0];
     expect(lesson.title).toContain("The Proof Ladder");
     expect(learnCourse).toContain("isCAIOPathAssessmentLesson");
-    expect(learnCourse).toContain("<CAIOPathAssessment />");
+    expect(learnCourse).toContain("<CAIOPathAssessment");
   });
 });

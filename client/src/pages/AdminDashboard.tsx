@@ -4,6 +4,7 @@ import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import GameDesignDiaryReviewPanel from "@/components/GameDesignDiaryReviewPanel";
+import CAIOAssessmentAnalyticsPanel from "@/components/CAIOAssessmentAnalyticsPanel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -24,6 +25,8 @@ export default function AdminDashboard() {
   const { data: promotionRedemptionsData } = trpc.analytics.promotionRedemptionsByMonth.useQuery(undefined, { enabled: isAuthenticated && user?.role === "admin" });
   const { data: users, refetch: refetchUsers } = trpc.auth.listUsers.useQuery(undefined, { enabled: isAuthenticated && user?.role === "admin" });
   const { data: allCourses } = trpc.courses.list.useQuery({ limit: 100 }, { enabled: isAuthenticated && user?.role === "admin" });
+  const caioCourseId = allCourses?.find(course => course.slug === "chief-ai-officer-caio-4-week-bootcamp")?.id ?? 0;
+  const { data: caioModules } = trpc.modules.byCourse.useQuery(caioCourseId, { enabled: caioCourseId > 0 && isAuthenticated && user?.role === "admin" });
 
   const updateRole = trpc.auth.updateRole.useMutation({
     onSuccess: () => { toast.success("Role updated!"); refetchUsers(); },
@@ -51,6 +54,7 @@ export default function AdminDashboard() {
   const promotionData = promotionRedemptionsData ?? [];
   const enrollmentData: any[] = [];
   const gameDesignCourseId = allCourses?.find(course => course.slug === "professional-certificate-game-design")?.id ?? 0;
+  const caioAssessmentModuleId = caioModules?.find(module => module.title.toLowerCase().includes("the proof ladder"))?.id ?? 0;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -159,6 +163,7 @@ export default function AdminDashboard() {
           </div>
 
           {gameDesignCourseId > 0 && <GameDesignDiaryReviewPanel courseId={gameDesignCourseId} />}
+          {caioCourseId > 0 && caioAssessmentModuleId > 0 && <CAIOAssessmentAnalyticsPanel courseId={caioCourseId} moduleId={caioAssessmentModuleId} />}
 
           {/* Top Courses */}
           {analytics?.topCourses && analytics.topCourses.length > 0 && (
