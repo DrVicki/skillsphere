@@ -31,6 +31,7 @@ import QuantumVisualizations from "@/components/QuantumVisualizations";
 import AIDataAnalyticsVisualizations from "@/components/AIDataAnalyticsVisualizations";
 import PythonForgeLab from "@/components/PythonForgeLab";
 import CAIOActivityTemplateDownload from "@/components/CAIOActivityTemplateDownload";
+import CAIOPathAssessment from "@/components/CAIOPathAssessment";
 import GameDesignDiaryPanel from "@/components/GameDesignDiaryPanel";
 import FirstTimeStudentGuide from "@/components/FirstTimeStudentGuide";
 import {
@@ -128,6 +129,9 @@ export default function LearnCourse({ params }: Props) {
     course?.slug,
     activeModule?.title
   );
+  const isCAIOPathAssessmentLesson =
+    course?.slug === "chief-ai-officer-caio-4-week-bootcamp" &&
+    activeModule?.title?.toLowerCase().includes("the proof ladder");
   const gameDesignInteraction = getGameDesignInteractionForModule(
     course?.slug,
     activeModule?.title
@@ -476,6 +480,8 @@ export default function LearnCourse({ params }: Props) {
                         template={caioActivityTemplate}
                       />
                     )}
+
+                    {isCAIOPathAssessmentLesson && <CAIOPathAssessment />}
 
                     {gameDesignInteraction && (
                       <>
