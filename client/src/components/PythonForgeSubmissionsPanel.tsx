@@ -1,10 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Code2, Eye, Search, Users } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 interface Props {
   courseId: number;
@@ -16,6 +18,15 @@ export default function PythonForgeSubmissionsPanel({ courseId }: Props) {
   });
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [feedback, setFeedback] = useState("");
+  const utils = trpc.useUtils();
+  const saveFeedback = trpc.pythonForgeLab.feedback.useMutation({
+    onSuccess: () => {
+      void utils.pythonForgeLab.submissions.invalidate(courseId);
+      toast.success("Feedback saved for the learner.");
+    },
+    onError: error => toast.error(error.message || "Feedback could not be saved."),
+  });
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -29,6 +40,19 @@ export default function PythonForgeSubmissionsPanel({ courseId }: Props) {
   const selected = submissions?.find(item => item.id === selectedId) ?? null;
   const learnerCount = new Set((submissions ?? []).map(item => item.userId)).size;
 
+  useEffect(() => {
+    setFeedback(selected?.instructorFeedback ?? "");
+  }, [selected?.id, selected?.instructorFeedback]);
+
+  const submitFeedback = () => {
+    if (!selected) return;
+    saveFeedback.mutate({
+      id: selected.id,
+      courseId,
+      feedback: feedback.trim() || null,
+    });
+  };
+
   return (
     <section className="rounded-2xl border border-blue-200 bg-white shadow-sm" aria-labelledby="python-forge-submissions-title">
       <div className="flex flex-col gap-4 border-b border-slate-200 p-5 sm:flex-row sm:items-start sm:justify-between">
@@ -38,7 +62,7 @@ export default function PythonForgeSubmissionsPanel({ courseId }: Props) {
             <p className="text-xs font-bold uppercase tracking-[0.15em]">Python Forge instructor view</p>
           </div>
           <h2 id="python-forge-submissions-title" className="mt-1 text-xl font-bold text-slate-900">Learner lab submissions</h2>
-          <p className="mt-1 text-sm text-slate-600">Review the latest saved code for each learner and lesson. This view is read-only.</p>
+          <p className="mt-1 text-sm text-slate-600">Review the latest saved code for each learner and lesson, then leave optional feedback they can read in the lab.</p>
         </div>
         <div className="flex items-center gap-2 rounded-xl bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-800">
           <Users className="h-4 w-4" aria-hidden="true" /> {learnerCount} learners · {submissions?.length ?? 0} saves
@@ -85,7 +109,7 @@ export default function PythonForgeSubmissionsPanel({ courseId }: Props) {
                     </td>
                     <td className="px-4 py-3 text-xs text-slate-500">{item.updatedAt ? new Date(item.updatedAt).toLocaleString() : "Recently"}</td>
                     <td className="px-4 py-3 text-right">
-                      <Button size="sm" variant="outline" onClick={() => setSelectedId(item.id)}><Eye className="mr-1.5 h-3.5 w-3.5" /> View code</Button>
+                      <Button size="sm" variant="outline" onClick={() => setSelectedId(item.id)}><Eye className="mr-1.5 h-3.5 w-3.5" /> Review code</Button>
                     </td>
                   </tr>
                 ))}
@@ -102,6 +126,26 @@ export default function PythonForgeSubmissionsPanel({ courseId }: Props) {
             <DialogDescription>{selected?.learnerEmail || "No email available"} · Last saved {selected?.updatedAt ? new Date(selected.updatedAt).toLocaleString() : "recently"}</DialogDescription>
           </DialogHeader>
           <pre className="max-h-[60vh] overflow-auto rounded-xl bg-slate-950 p-4 text-sm leading-6 text-emerald-100" aria-label="Learner submitted Python code"><code>{selected?.code}</code></pre>
+          <div className="space-y-2">
+            <label htmlFor="python-forge-feedback" className="text-sm font-semibold text-slate-900">Optional instructor feedback</label>
+            <Textarea
+              id="python-forge-feedback"
+              value={feedback}
+              onChange={event => setFeedback(event.target.value)}
+              maxLength={5000}
+              rows={4}
+              placeholder="Share one specific strength and one next step…"
+              aria-describedby="python-forge-feedback-help"
+            />
+            <div className="flex flex-col gap-2 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+              <span id="python-forge-feedback-help">Learners see feedback the next time they open this lab.</span>
+              <span>{feedback.length}/5000</span>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setFeedback("")} disabled={saveFeedback.isPending || !feedback}>Clear draft</Button>
+              <Button onClick={submitFeedback} disabled={saveFeedback.isPending}>{saveFeedback.isPending ? "Saving…" : "Save feedback"}</Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </section>

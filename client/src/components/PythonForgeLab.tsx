@@ -251,6 +251,15 @@ export default function PythonForgeLab({
               {output}
             </pre>
           </div>
+          {persistedCode?.instructorFeedback && (
+            <div className="mt-3 rounded-xl border border-sky-300/25 bg-sky-300/[0.08] p-4" role="status">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-sky-200">Instructor feedback</p>
+              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-sky-50">{persistedCode.instructorFeedback}</p>
+              {persistedCode.feedbackAt && (
+                <p className="mt-2 text-xs text-sky-200/70">Updated {new Date(persistedCode.feedbackAt).toLocaleString()}</p>
+              )}
+            </div>
+          )}
           <p className="mt-3 text-xs leading-5 text-slate-400">
             This browser lab runs standard-library Python locally through
             WebAssembly. Network requests, OS automation, Flask servers, browser

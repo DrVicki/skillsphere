@@ -37,19 +37,26 @@ describe("Python Forge learner lab persistence", () => {
     const db = read("server/db.ts");
     const learnerDashboard = read("client/src/components/PythonForgeProgressDashboard.tsx");
     const instructorDashboard = read("client/src/components/PythonForgeSubmissionsPanel.tsx");
+    const lab = read("client/src/components/PythonForgeLab.tsx");
     const dashboard = read("client/src/pages/Dashboard.tsx");
     const trainer = read("client/src/pages/TrainerDashboard.tsx");
     const admin = read("client/src/pages/AdminDashboard.tsx");
 
     expect(router).toContain("progress: protectedProcedure");
     expect(router).toContain("submissions: trainerProcedure");
+    expect(router).toContain("feedback: trainerProcedure");
+    expect(router).toContain("Only the course instructor can provide lab feedback.");
     expect(router).toContain("Only the course instructor can view lab submissions.");
     expect(db).toContain("getPythonForgeLabProgress");
     expect(db).toContain("getPythonForgeLabSubmissions");
+    expect(db).toContain("updatePythonForgeLabFeedback");
     expect(learnerDashboard).toContain("Python Forge lab progress");
     expect(learnerDashboard).toContain("trpc.pythonForgeLab.progress.useQuery");
     expect(instructorDashboard).toContain("Learner lab submissions");
     expect(instructorDashboard).toContain("trpc.pythonForgeLab.submissions.useQuery");
+    expect(instructorDashboard).toContain("Optional instructor feedback");
+    expect(instructorDashboard).toContain("trpc.pythonForgeLab.feedback.useMutation");
+    expect(lab).toContain("Instructor feedback");
     expect(dashboard).toContain("PythonForgeProgressDashboard");
     expect(trainer).toContain("PythonForgeSubmissionsPanel");
     expect(admin).toContain("PythonForgeSubmissionsPanel");

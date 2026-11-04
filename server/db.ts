@@ -1316,6 +1316,9 @@ export async function getPythonForgeLabSubmissions(courseId: number) {
       sortOrder: modules.sortOrder,
       activityId: pythonForgeLabCode.activityId,
       code: pythonForgeLabCode.code,
+      instructorFeedback: pythonForgeLabCode.instructorFeedback,
+      feedbackBy: pythonForgeLabCode.feedbackBy,
+      feedbackAt: pythonForgeLabCode.feedbackAt,
       updatedAt: pythonForgeLabCode.updatedAt,
     })
     .from(pythonForgeLabCode)
@@ -1329,6 +1332,40 @@ export async function getPythonForgeLabSubmissions(courseId: number) {
     )
     .orderBy(desc(pythonForgeLabCode.updatedAt))
     .limit(500);
+}
+
+export async function updatePythonForgeLabFeedback(data: {
+  id: number;
+  courseId: number;
+  feedback: string | null;
+  feedbackBy: number | null;
+}) {
+  const db = await getDb();
+  if (!db) return undefined;
+  await db
+    .update(pythonForgeLabCode)
+    .set({
+      instructorFeedback: data.feedback,
+      feedbackBy: data.feedback ? data.feedbackBy : null,
+      feedbackAt: data.feedback ? new Date() : null,
+    })
+    .where(
+      and(
+        eq(pythonForgeLabCode.id, data.id),
+        eq(pythonForgeLabCode.courseId, data.courseId)
+      )
+    );
+  const result = await db
+    .select()
+    .from(pythonForgeLabCode)
+    .where(
+      and(
+        eq(pythonForgeLabCode.id, data.id),
+        eq(pythonForgeLabCode.courseId, data.courseId)
+      )
+    )
+    .limit(1);
+  return result[0];
 }
 
 export async function upsertModuleProgress(data: {

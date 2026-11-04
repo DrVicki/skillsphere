@@ -77,6 +77,7 @@ import {
   upsertPythonForgeLabCode,
   getPythonForgeLabProgress,
   getPythonForgeLabSubmissions,
+  updatePythonForgeLabFeedback,
   getBlogPosts,
   getBlogPostBySlug,
   getBlogPostById,
@@ -882,6 +883,27 @@ export const appRouter = router({
           throw new TRPCError({ code: "FORBIDDEN", message: "Only the course instructor can view lab submissions." });
         }
         return getPythonForgeLabSubmissions(input);
+      }),
+
+    feedback: trainerProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          courseId: z.number(),
+          feedback: z.string().trim().max(5000).nullable(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const course = await requirePythonForgeCourse(input.courseId);
+        if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Only the course instructor can provide lab feedback." });
+        }
+        return updatePythonForgeLabFeedback({
+          id: input.id,
+          courseId: input.courseId,
+          feedback: input.feedback || null,
+          feedbackBy: input.feedback ? ctx.user.id : null,
+        });
       }),
 
     latest: protectedProcedure
