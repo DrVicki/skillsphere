@@ -24,6 +24,8 @@ import {
   ChevronRight,
   MessageSquare,
   Send,
+  Bell,
+  Reply,
   BookOpen,
   Users,
   Star,
@@ -69,6 +71,7 @@ export default function LearnCourse({ params }: Props) {
   const [replyBody, setReplyBody] = useState<Record<number, string>>({});
   const [activeThreadId, setActiveThreadId] = useState<number | null>(null);
   const [readThreadId, setReadThreadId] = useState<number | null>(null);
+  const [replyTargetId, setReplyTargetId] = useState<number | null>(null);
   const [chatMsg, setChatMsg] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [reviewRating, setReviewRating] = useState(5);
@@ -100,6 +103,11 @@ export default function LearnCourse({ params }: Props) {
   const { data: replies, refetch: refetchReplies } =
     trpc.discussions.replies.useQuery(activeThreadId ?? 0, {
       enabled: !!activeThreadId,
+    });
+  const { data: discussionNotifications, refetch: refetchDiscussionNotifications } =
+    trpc.discussions.notifications.useQuery(course?.id ?? 0, {
+      enabled: !!course?.id && hasCourseAccess,
+      refetchInterval: 30000,
     });
   const { data: chatMessages, refetch: refetchChat } =
     trpc.chat.messages.useQuery(course?.id ?? 0, {
@@ -187,8 +195,15 @@ export default function LearnCourse({ params }: Props) {
     onSuccess: () => {
       toast.success("Reply posted!");
       setReplyBody({});
+      setReplyTargetId(null);
       refetchReplies();
+      refetchDiscussionNotifications();
     },
+    onError: e => toast.error(e.message),
+  });
+
+  const markDiscussionNotificationRead = trpc.discussions.markNotificationRead.useMutation({
+    onSuccess: () => refetchDiscussionNotifications(),
     onError: e => toast.error(e.message),
   });
 
@@ -220,6 +235,17 @@ export default function LearnCourse({ params }: Props) {
   const certId = course
     ? `SS-${course.id}-${user?.id ?? 0}-${new Date().getFullYear()}`
     : "";
+  const getReplyDepth = (replyId: number) => {
+    let depth = 0;
+    let current = replies?.find(reply => reply.id === replyId);
+    const visited = new Set<number>();
+    while (current?.parentReplyId && !visited.has(current.id) && depth < 4) {
+      visited.add(current.id);
+      depth += 1;
+      current = replies?.find(reply => reply.id === current?.parentReplyId);
+    }
+    return depth;
+  };
 
   if (!course)
     return (
@@ -735,6 +761,31 @@ export default function LearnCourse({ params }: Props) {
             <TabsContent value="discussion" className="flex-1 p-6 mt-0">
               {hasCourseAccess ? (
                 <div className="max-w-3xl mx-auto space-y-6">
+                  {discussionNotifications && discussionNotifications.length > 0 && (
+                    <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+                      <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-primary">
+                        <Bell className="h-4 w-4" /> Instructor responses
+                      </div>
+                      <div className="space-y-2">
+                        {discussionNotifications.slice(0, 5).map(notification => (
+                          <button
+                            key={notification.id}
+                            type="button"
+                            className={`w-full rounded-lg border p-3 text-left transition hover:border-primary/50 ${notification.isRead ? "border-border bg-white" : "border-primary/30 bg-white shadow-sm"}`}
+                            onClick={() => {
+                              setActiveThreadId(notification.threadId);
+                              if (!notification.isRead) markDiscussionNotificationRead.mutate(notification.id);
+                            }}
+                          >
+                            <p className="text-sm font-medium text-foreground">{notification.title}</p>
+                            <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{notification.body}</p>
+                            <p className="mt-1 text-[11px] text-muted-foreground">{new Date(notification.createdAt).toLocaleString()} · {notification.isRead ? "Read" : "New"}</p>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* New Thread */}
                   <div className="bg-white rounded-xl border border-border p-5">
                     <h3 className="font-semibold mb-3">Start a Discussion</h3>
@@ -777,11 +828,10 @@ export default function LearnCourse({ params }: Props) {
                     >
                       <div
                         className="p-5 cursor-pointer hover:bg-gray-50"
-                        onClick={() =>
-                          setActiveThreadId(
-                            activeThreadId === thread.id ? null : thread.id
-                          )
-                        }
+                        onClick={() => {
+                          setReplyTargetId(null);
+                          setActiveThreadId(activeThreadId === thread.id ? null : thread.id);
+                        }}
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div>
@@ -825,7 +875,8 @@ export default function LearnCourse({ params }: Props) {
                           {replies?.map(reply => (
                             <div
                               key={reply.id}
-                              className="bg-white rounded-lg border border-border p-3"
+                              className={`bg-white rounded-lg border border-border p-3 ${reply.parentReplyId ? "border-l-4 border-l-primary/40" : ""}`}
+                              style={{ marginLeft: `${getReplyDepth(reply.id) * 24}px` }}
                             >
                               <div className="flex items-center gap-2 mb-1">
                                 <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">
@@ -843,11 +894,25 @@ export default function LearnCourse({ params }: Props) {
                               <p className="text-sm text-foreground">
                                 {reply.body}
                               </p>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="mt-2 h-7 px-2 text-xs text-primary"
+                                onClick={() => setReplyTargetId(reply.id)}
+                              >
+                                <Reply className="mr-1 h-3.5 w-3.5" /> Reply
+                              </Button>
                             </div>
                           ))}
+                          {replyTargetId && (
+                            <p className="text-xs text-muted-foreground">
+                              Replying to a thread response. <button type="button" className="font-medium text-primary underline" onClick={() => setReplyTargetId(null)}>Cancel</button>
+                            </p>
+                          )}
                           <div className="flex gap-2">
                             <Textarea
-                              placeholder="Write a reply..."
+                              placeholder={replyTargetId ? "Write a threaded reply..." : "Write a reply..."}
                               value={replyBody[thread.id] ?? ""}
                               onChange={e =>
                                 setReplyBody(prev => ({
@@ -864,6 +929,7 @@ export default function LearnCourse({ params }: Props) {
                                 createReply.mutate({
                                   threadId: thread.id,
                                   courseId: course.id,
+                                  parentReplyId: replyTargetId,
                                   body: replyBody[thread.id] ?? "",
                                 })
                               }

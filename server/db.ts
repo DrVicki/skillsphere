@@ -17,6 +17,7 @@ import {
   coupons,
   discussionThreads,
   discussionReplies,
+  discussionNotifications,
   chatMessages,
   courseReviews,
   newsletterSubscribers,
@@ -1629,6 +1630,7 @@ export async function getRepliesByThread(threadId: number) {
     .select({
       id: discussionReplies.id,
       threadId: discussionReplies.threadId,
+      parentReplyId: discussionReplies.parentReplyId,
       userId: discussionReplies.userId,
       body: discussionReplies.body,
       isAccepted: discussionReplies.isAccepted,
@@ -1643,6 +1645,7 @@ export async function createReply(data: {
   threadId: number;
   courseId: number;
   userId: number;
+  parentReplyId?: number | null;
   body: string;
 }) {
   const db = await getDb();
@@ -1653,6 +1656,40 @@ export async function createReply(data: {
     .set({ replyCount: sql`${discussionThreads.replyCount} + 1` })
     .where(eq(discussionThreads.id, data.threadId));
   return (result as any)[0]?.insertId ?? 0;
+}
+
+export async function createDiscussionNotification(data: {
+  userId: number;
+  courseId: number;
+  threadId: number;
+  replyId: number;
+  title: string;
+  body: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(discussionNotifications).values(data);
+  return (result as any)[0]?.insertId ?? 0;
+}
+
+export async function getDiscussionNotifications(userId: number, courseId?: number, limit = 25) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(discussionNotifications)
+    .where(courseId ? and(eq(discussionNotifications.userId, userId), eq(discussionNotifications.courseId, courseId)) : eq(discussionNotifications.userId, userId))
+    .orderBy(desc(discussionNotifications.createdAt))
+    .limit(limit);
+}
+
+export async function markDiscussionNotificationRead(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db
+    .update(discussionNotifications)
+    .set({ isRead: true })
+    .where(and(eq(discussionNotifications.id, id), eq(discussionNotifications.userId, userId)));
 }
 
 // ─── Chat ─────────────────────────────────────────────────────────────────────

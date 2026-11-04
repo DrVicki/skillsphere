@@ -13,6 +13,7 @@ import {
   createModule,
   createPayment,
   createReply,
+  createDiscussionNotification,
   createReview,
   createThread,
   deleteModule,
@@ -38,6 +39,7 @@ import {
   markEnrollmentComplete,
   getPaymentsByUser,
   getRepliesByThread,
+  getDiscussionNotifications,
   getRevenueByMonth,
   getPromotionRedemptionsByMonth,
   getReviewsByCourse,
@@ -51,6 +53,7 @@ import {
   updateModule,
   updateUserProfile,
   updateUserRole,
+  markDiscussionNotificationRead,
   upsertModuleProgress,
   upsertSubscription,
   updatePaymentBySessionId,
@@ -90,7 +93,7 @@ import {
 } from "./db";
 import { storagePut } from "./storage";
 import { invokeLLM } from "./_core/llm";
-import { sendCompletionEmail, sendEnrollmentEmail } from "./email";
+import { sendCompletionEmail, sendDiscussionReplyEmail, sendEnrollmentEmail } from "./email";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
@@ -1203,7 +1206,13 @@ export const appRouter = router({
         return { id };
       }),
 
-    replies: protectedProcedure.input(z.number()).query(async ({ input }) => {
+    replies: protectedProcedure.input(z.number()).query(async ({ ctx, input }) => {
+      const thread = await getThreadById(input);
+      const course = thread ? await getCourseById(thread.courseId) : null;
+      const enrollment = course ? await getEnrollment(ctx.user.id, course.id) : null;
+      if (!thread || (!enrollment && course?.trainerId !== ctx.user.id && ctx.user.role !== "admin")) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Must be enrolled" });
+      }
       const replies = await getRepliesByThread(input);
       const withUsers = await Promise.all(
         replies.map(async r => {
@@ -1220,12 +1229,54 @@ export const appRouter = router({
         z.object({
           threadId: z.number(),
           courseId: z.number(),
+          parentReplyId: z.number().nullable().optional(),
           body: z.string().min(1),
         })
       )
       .mutation(async ({ ctx, input }) => {
+        const thread = await getThreadById(input.threadId);
+        const course = await getCourseById(input.courseId);
+        const enrollment = await getEnrollment(ctx.user.id, input.courseId);
+        if (!thread || thread.courseId !== input.courseId || (!enrollment && course?.trainerId !== ctx.user.id && ctx.user.role !== "admin")) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Must be enrolled" });
+        }
+        if (input.parentReplyId) {
+          const parent = (await getRepliesByThread(input.threadId)).find(reply => reply.id === input.parentReplyId);
+          if (!parent) throw new TRPCError({ code: "BAD_REQUEST", message: "Parent reply not found" });
+        }
         const id = await createReply({ ...input, userId: ctx.user.id });
+        const isInstructor = ctx.user.role === "admin" || course?.trainerId === ctx.user.id;
+        if (isInstructor && thread.userId !== ctx.user.id) {
+          const learner = await getUserById(thread.userId);
+          const title = `Instructor response to “${thread.title}”`;
+          await createDiscussionNotification({
+            userId: thread.userId,
+            courseId: input.courseId,
+            threadId: thread.id,
+            replyId: id,
+            title,
+            body: input.body,
+          });
+          await sendDiscussionReplyEmail(
+            learner ?? {},
+            { title: course?.title ?? "your course", slug: course?.slug ?? "" },
+            thread.title,
+            input.body,
+            ctx.req.headers.origin
+          );
+        }
         return { id };
+      }),
+
+    notifications: protectedProcedure
+      .input(z.number())
+      .query(({ ctx, input }) => getDiscussionNotifications(ctx.user.id, input)),
+
+    markNotificationRead: protectedProcedure
+      .input(z.number())
+      .mutation(async ({ ctx, input }) => {
+        await markDiscussionNotificationRead(input, ctx.user.id);
+        return { success: true };
       }),
   }),
 

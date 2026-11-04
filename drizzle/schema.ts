@@ -368,6 +368,7 @@ export const discussionReplies = mysqlTable("discussion_replies", {
   threadId: int("threadId").notNull(),
   courseId: int("courseId").notNull(),
   userId: int("userId").notNull(),
+  parentReplyId: int("parentReplyId"),
   body: text("body").notNull(),
   isAccepted: boolean("isAccepted").default(false),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -376,6 +377,22 @@ export const discussionReplies = mysqlTable("discussion_replies", {
 
 export type DiscussionReply = typeof discussionReplies.$inferSelect;
 export type InsertDiscussionReply = typeof discussionReplies.$inferInsert;
+
+// ─── Discussion Notifications ────────────────────────────────────────────────
+export const discussionNotifications = mysqlTable("discussion_notifications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  courseId: int("courseId").notNull(),
+  threadId: int("threadId").notNull(),
+  replyId: int("replyId").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  body: text("body").notNull(),
+  isRead: boolean("isRead").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type DiscussionNotification = typeof discussionNotifications.$inferSelect;
+export type InsertDiscussionNotification = typeof discussionNotifications.$inferInsert;
 
 // ─── Chat Messages ────────────────────────────────────────────────────────────
 
