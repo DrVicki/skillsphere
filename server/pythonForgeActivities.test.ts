@@ -20,6 +20,12 @@ describe("Python Forge activity routing", () => {
     expect(
       getPythonForgeActivityForModule(
         "python-forge-learn-by-building",
+        "Module 1 - Lesson 1: From a Plan to Python Expressions"
+      )
+    ).toMatchObject({ id: "m01-l01" });
+    expect(
+      getPythonForgeActivityForModule(
+        "python-forge-learn-by-building",
         "Portfolio Project 12 · Portfolio-Ready Python Product"
       )
     ).toMatchObject({

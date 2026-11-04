@@ -1780,5 +1780,8 @@ export function getPythonForgeActivityForModule(
   moduleTitle?: string | null
 ): PythonForgeActivity | null {
   if (courseSlug !== PYTHON_FORGE_COURSE_SLUG || !moduleTitle) return null;
-  return activitiesByTitle.get(moduleTitle) ?? null;
+  const normalizedTitle = moduleTitle
+    .replace(/^Module\s+\d+\s*[-–—·]?\s*Lesson\s+\d+\s*:\s*/i, "")
+    .trim();
+  return activitiesByTitle.get(moduleTitle) ?? activitiesByTitle.get(normalizedTitle) ?? null;
 }
