@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import GameDesignDiaryReviewPanel from "@/components/GameDesignDiaryReviewPanel";
 import CAIOAssessmentAnalyticsPanel from "@/components/CAIOAssessmentAnalyticsPanel";
+import PythonForgeSubmissionsPanel from "@/components/PythonForgeSubmissionsPanel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -54,6 +55,7 @@ export default function AdminDashboard() {
   const promotionData = promotionRedemptionsData ?? [];
   const enrollmentData: any[] = [];
   const gameDesignCourseId = allCourses?.find(course => course.slug === "professional-certificate-game-design")?.id ?? 0;
+  const pythonForgeCourseId = allCourses?.find(course => course.slug === "python-forge-learn-by-building")?.id ?? 0;
   const caioAssessmentModuleId = caioModules?.find(module => module.title.toLowerCase().includes("choose your path"))?.id ?? 0;
 
   return (
@@ -164,6 +166,7 @@ export default function AdminDashboard() {
 
           {gameDesignCourseId > 0 && <GameDesignDiaryReviewPanel courseId={gameDesignCourseId} />}
           {caioCourseId > 0 && caioAssessmentModuleId > 0 && <CAIOAssessmentAnalyticsPanel courseId={caioCourseId} moduleId={caioAssessmentModuleId} />}
+          {pythonForgeCourseId > 0 && <PythonForgeSubmissionsPanel courseId={pythonForgeCourseId} />}
 
           {/* Top Courses */}
           {analytics?.topCourses && analytics.topCourses.length > 0 && (

@@ -31,4 +31,27 @@ describe("Python Forge learner lab persistence", () => {
     expect(lab).toContain("trpc.pythonForgeLab.save.useMutation");
     expect(lab).toContain("Saving to your learner progress");
   });
+
+  it("exposes learner progress and instructor-only submission dashboards", () => {
+    const router = read("server/routers.ts");
+    const db = read("server/db.ts");
+    const learnerDashboard = read("client/src/components/PythonForgeProgressDashboard.tsx");
+    const instructorDashboard = read("client/src/components/PythonForgeSubmissionsPanel.tsx");
+    const dashboard = read("client/src/pages/Dashboard.tsx");
+    const trainer = read("client/src/pages/TrainerDashboard.tsx");
+    const admin = read("client/src/pages/AdminDashboard.tsx");
+
+    expect(router).toContain("progress: protectedProcedure");
+    expect(router).toContain("submissions: trainerProcedure");
+    expect(router).toContain("Only the course instructor can view lab submissions.");
+    expect(db).toContain("getPythonForgeLabProgress");
+    expect(db).toContain("getPythonForgeLabSubmissions");
+    expect(learnerDashboard).toContain("Python Forge lab progress");
+    expect(learnerDashboard).toContain("trpc.pythonForgeLab.progress.useQuery");
+    expect(instructorDashboard).toContain("Learner lab submissions");
+    expect(instructorDashboard).toContain("trpc.pythonForgeLab.submissions.useQuery");
+    expect(dashboard).toContain("PythonForgeProgressDashboard");
+    expect(trainer).toContain("PythonForgeSubmissionsPanel");
+    expect(admin).toContain("PythonForgeSubmissionsPanel");
+  });
 });

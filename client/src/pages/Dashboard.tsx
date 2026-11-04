@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CourseCertificate from "@/components/CourseCertificate";
 import FirstTimeStudentGuide from "@/components/FirstTimeStudentGuide";
+import PythonForgeProgressDashboard from "@/components/PythonForgeProgressDashboard";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -133,6 +134,9 @@ export default function Dashboard() {
     enrollments?.filter(e => e.progressPercent === 100) ?? [];
   const inProgressCourses =
     enrollments?.filter(e => (e.progressPercent ?? 0) < 100) ?? [];
+  const pythonForgeEnrollment = enrollments?.find(
+    enrollment => enrollment.course?.slug === "python-forge-learn-by-building"
+  );
 
   function openCert(enrollment: (typeof completedCourses)[0]) {
     const courseId = enrollment.course?.id ?? enrollment.courseId;
@@ -362,6 +366,9 @@ export default function Dashboard() {
                     courseTitle={enrollments?.length === 1 ? enrollments[0]?.course?.title ?? undefined : undefined}
                   />
                 </div>
+              )}
+              {pythonForgeEnrollment && (
+                <PythonForgeProgressDashboard courseId={pythonForgeEnrollment.course?.id ?? pythonForgeEnrollment.courseId} />
               )}
               {/* In Progress */}
               {inProgressCourses.length > 0 && (

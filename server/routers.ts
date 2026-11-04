@@ -75,6 +75,8 @@ import {
   updateGameDesignDiaryEntry,
   getPythonForgeLabCode,
   upsertPythonForgeLabCode,
+  getPythonForgeLabProgress,
+  getPythonForgeLabSubmissions,
   getBlogPosts,
   getBlogPostBySlug,
   getBlogPostById,
@@ -133,14 +135,19 @@ async function requireCaioCourse(courseId: number) {
 }
 
 async function requirePythonForgeModule(courseId: number, moduleId: number) {
+  const course = await requirePythonForgeCourse(courseId);
+  const module = await getModuleById(moduleId);
+  if (!module || module.courseId !== courseId) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid Python Forge lesson." });
+  }
+  return course;
+}
+
+async function requirePythonForgeCourse(courseId: number) {
   const course = await getCourseById(courseId);
   if (!course) throw new TRPCError({ code: "NOT_FOUND", message: "Course not found" });
   if (course.slug !== PYTHON_FORGE_COURSE_SLUG) {
     throw new TRPCError({ code: "FORBIDDEN", message: "Python lab code is available only for Python Forge." });
-  }
-  const module = await getModuleById(moduleId);
-  if (!module || module.courseId !== courseId) {
-    throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid Python Forge lesson." });
   }
   return course;
 }
@@ -853,6 +860,30 @@ export const appRouter = router({
 
   // ─── Python Forge Lab Code ─────────────────────────────────────────────────
   pythonForgeLab: router({
+    progress: protectedProcedure
+      .input(z.number())
+      .query(async ({ ctx, input }) => {
+        const course = await getCourseById(input);
+        if (!course || course.slug !== PYTHON_FORGE_COURSE_SLUG) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Python lab progress is available only for Python Forge." });
+        }
+        const enrollment = await getEnrollment(ctx.user.id, input);
+        if (!enrollment && course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in Python Forge to view lab progress." });
+        }
+        return getPythonForgeLabProgress(ctx.user.id, input);
+      }),
+
+    submissions: trainerProcedure
+      .input(z.number())
+      .query(async ({ ctx, input }) => {
+        const course = await requirePythonForgeCourse(input);
+        if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Only the course instructor can view lab submissions." });
+        }
+        return getPythonForgeLabSubmissions(input);
+      }),
+
     latest: protectedProcedure
       .input(z.object({ courseId: z.number(), moduleId: z.number() }))
       .query(async ({ ctx, input }) => {

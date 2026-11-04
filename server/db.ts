@@ -1277,6 +1277,60 @@ export async function upsertPythonForgeLabCode(data: {
   return getPythonForgeLabCode(data.userId, data.courseId, data.moduleId);
 }
 
+export async function getPythonForgeLabProgress(userId: number, courseId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select({
+      moduleId: modules.id,
+      title: modules.title,
+      sortOrder: modules.sortOrder,
+      activityId: pythonForgeLabCode.activityId,
+      codeUpdatedAt: pythonForgeLabCode.updatedAt,
+      codeLength: sql<number>`char_length(${pythonForgeLabCode.code})`,
+    })
+    .from(modules)
+    .leftJoin(
+      pythonForgeLabCode,
+      and(
+        eq(pythonForgeLabCode.moduleId, modules.id),
+        eq(pythonForgeLabCode.courseId, courseId),
+        eq(pythonForgeLabCode.userId, userId)
+      )
+    )
+    .where(eq(modules.courseId, courseId))
+    .orderBy(modules.sortOrder);
+}
+
+export async function getPythonForgeLabSubmissions(courseId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select({
+      id: pythonForgeLabCode.id,
+      userId: pythonForgeLabCode.userId,
+      learnerName: users.name,
+      learnerEmail: users.email,
+      moduleId: modules.id,
+      moduleTitle: modules.title,
+      sortOrder: modules.sortOrder,
+      activityId: pythonForgeLabCode.activityId,
+      code: pythonForgeLabCode.code,
+      updatedAt: pythonForgeLabCode.updatedAt,
+    })
+    .from(pythonForgeLabCode)
+    .innerJoin(users, eq(users.id, pythonForgeLabCode.userId))
+    .innerJoin(modules, eq(modules.id, pythonForgeLabCode.moduleId))
+    .where(
+      and(
+        eq(pythonForgeLabCode.courseId, courseId),
+        eq(modules.courseId, courseId)
+      )
+    )
+    .orderBy(desc(pythonForgeLabCode.updatedAt))
+    .limit(500);
+}
+
 export async function upsertModuleProgress(data: {
   userId: number;
   moduleId: number;

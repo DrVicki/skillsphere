@@ -4,6 +4,7 @@ import { trpc } from "@/lib/trpc";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CAIOAssessmentAnalyticsPanel from "@/components/CAIOAssessmentAnalyticsPanel";
+import PythonForgeSubmissionsPanel from "@/components/PythonForgeSubmissionsPanel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,7 @@ export default function TrainerDashboard() {
   const caioCourseId = myCourses?.find(course => course.slug === "chief-ai-officer-caio-4-week-bootcamp")?.id ?? 0;
   const { data: caioModules } = trpc.modules.byCourse.useQuery(caioCourseId, { enabled: caioCourseId > 0 });
   const caioAssessmentModuleId = caioModules?.find(module => module.title.toLowerCase().includes("choose your path"))?.id ?? 0;
+  const pythonForgeCourseId = myCourses?.find(course => course.slug === "python-forge-learn-by-building")?.id ?? 0;
 
   const createCourse = trpc.courses.create.useMutation({
     onSuccess: () => { toast.success("Course created!"); setCourseDialogOpen(false); refetchCourses(); resetCourseForm(); },
@@ -300,6 +302,7 @@ export default function TrainerDashboard() {
           </div>
 
           {caioCourseId > 0 && caioAssessmentModuleId > 0 && <CAIOAssessmentAnalyticsPanel courseId={caioCourseId} moduleId={caioAssessmentModuleId} />}
+          {pythonForgeCourseId > 0 && <PythonForgeSubmissionsPanel courseId={pythonForgeCourseId} />}
 
           {/* Module Manager */}
           {activeCourseId && (
