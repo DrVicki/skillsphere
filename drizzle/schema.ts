@@ -506,3 +506,28 @@ export const gameDesignDiaryEntries = mysqlTable("game_design_diary_entries", {
 export type GameDesignDiaryEntry = typeof gameDesignDiaryEntries.$inferSelect;
 export type InsertGameDesignDiaryEntry =
   typeof gameDesignDiaryEntries.$inferInsert;
+
+// Learner-authored Python code is scoped to the course lesson and user so it
+// can follow a learner across devices without exposing code between accounts.
+export const pythonForgeLabCode = mysqlTable(
+  "python_forge_lab_code",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: int("userId").notNull(),
+    courseId: int("courseId").notNull(),
+    moduleId: int("moduleId").notNull(),
+    activityId: varchar("activityId", { length: 64 }).notNull(),
+    code: text("code").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [
+    uniqueIndex("python_forge_lab_code_user_module_unique").on(
+      table.userId,
+      table.moduleId
+    ),
+    index("python_forge_lab_code_course_idx").on(table.courseId),
+  ]
+);
+export type PythonForgeLabCode = typeof pythonForgeLabCode.$inferSelect;
+export type InsertPythonForgeLabCode = typeof pythonForgeLabCode.$inferInsert;

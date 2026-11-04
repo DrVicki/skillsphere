@@ -23,6 +23,7 @@ import {
   newsletterSubscribers,
   gameDesignDiaryEntries,
   caioAssessmentResults,
+  pythonForgeLabCode,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -1231,6 +1232,49 @@ export async function getModuleProgress(userId: number, courseId: number) {
         eq(moduleProgress.courseId, courseId)
       )
     );
+}
+
+export async function getPythonForgeLabCode(
+  userId: number,
+  courseId: number,
+  moduleId: number
+) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db
+    .select()
+    .from(pythonForgeLabCode)
+    .where(
+      and(
+        eq(pythonForgeLabCode.userId, userId),
+        eq(pythonForgeLabCode.courseId, courseId),
+        eq(pythonForgeLabCode.moduleId, moduleId)
+      )
+    )
+    .limit(1);
+  return result[0];
+}
+
+export async function upsertPythonForgeLabCode(data: {
+  userId: number;
+  courseId: number;
+  moduleId: number;
+  activityId: string;
+  code: string;
+}) {
+  const db = await getDb();
+  if (!db) return undefined;
+  await db
+    .insert(pythonForgeLabCode)
+    .values(data)
+    .onDuplicateKeyUpdate({
+      set: {
+        activityId: data.activityId,
+        code: data.code,
+        updatedAt: new Date(),
+      },
+    });
+  return getPythonForgeLabCode(data.userId, data.courseId, data.moduleId);
 }
 
 export async function upsertModuleProgress(data: {

@@ -8,11 +8,15 @@ import {
   RotateCcw,
   Sparkles,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { PythonForgeActivity } from "@/lib/pythonForgeActivities";
+import { trpc } from "@/lib/trpc";
 
 interface Props {
   activity: PythonForgeActivity;
+  courseId?: number;
+  moduleId?: number;
+  canPersist?: boolean;
 }
 
 type PyodideInstance = {
@@ -59,7 +63,12 @@ async function getPythonRuntime(
   return runtime;
 }
 
-export default function PythonForgeLab({ activity }: Props) {
+export default function PythonForgeLab({
+  activity,
+  courseId,
+  moduleId,
+  canPersist = false,
+}: Props) {
   const storageKey = `skillsphere-python-forge:${activity.id}`;
   const [code, setCode] = useState(activity.starterCode);
   const [output, setOutput] = useState(
@@ -68,24 +77,50 @@ export default function PythonForgeLab({ activity }: Props) {
   const [running, setRunning] = useState(false);
   const [hintsOpen, setHintsOpen] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [hydrated, setHydrated] = useState(!canPersist);
   const latestCode = useRef(code);
+  const labInput = useMemo(
+    () => ({ courseId: courseId ?? 0, moduleId: moduleId ?? 0 }),
+    [courseId, moduleId]
+  );
+  const { data: persistedCode, isLoading: persistedCodeLoading } =
+    trpc.pythonForgeLab.latest.useQuery(labInput, {
+      enabled: canPersist && !!courseId && !!moduleId,
+    });
+  const { mutate: persistCode, isPending: isSaving } =
+    trpc.pythonForgeLab.save.useMutation();
 
   useEffect(() => {
+    setHydrated(!canPersist);
     const savedCode = window.localStorage.getItem(storageKey);
     setCode(savedCode ?? activity.starterCode);
     setOutput("Ready. Press Run or use Ctrl/Cmd + Enter.");
     setHintsOpen(false);
     setSelectedAnswer(null);
-  }, [activity.id, activity.starterCode, storageKey]);
+  }, [activity.id, activity.starterCode, canPersist, storageKey]);
+
+  useEffect(() => {
+    if (!canPersist || persistedCodeLoading) return;
+    const savedCode = persistedCode?.code ?? window.localStorage.getItem(storageKey);
+    setCode(savedCode ?? activity.starterCode);
+    setHydrated(true);
+  }, [activity.starterCode, canPersist, persistedCode, persistedCodeLoading, storageKey]);
 
   useEffect(() => {
     latestCode.current = code;
-    const timer = window.setTimeout(
-      () => window.localStorage.setItem(storageKey, code),
-      350
-    );
+    const timer = window.setTimeout(() => {
+      window.localStorage.setItem(storageKey, code);
+      if (canPersist && hydrated && courseId && moduleId) {
+        persistCode({
+          courseId,
+          moduleId,
+          activityId: activity.id,
+          code,
+        });
+      }
+    }, 500);
     return () => window.clearTimeout(timer);
-  }, [code, storageKey]);
+  }, [activity.id, canPersist, code, courseId, hydrated, moduleId, persistCode, storageKey]);
 
   const runCode = async () => {
     if (running) return;
@@ -148,7 +183,7 @@ export default function PythonForgeLab({ activity }: Props) {
       <div className="grid gap-5 p-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(250px,.75fr)]">
         <div>
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <p className="font-mono text-xs font-semibold text-slate-200">
+              <p className="font-mono text-xs font-semibold text-slate-200">
               {activity.title
                 .replace(/^Portfolio Project \d+ · /, "")
                 .replace(/\s+/g, "-")
@@ -202,6 +237,13 @@ export default function PythonForgeLab({ activity }: Props) {
             <div className="mb-2 flex items-center justify-between gap-3">
               <p className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">
                 Output
+              </p>
+              <p className="text-[11px] text-slate-400" role="status">
+                {canPersist && !persistedCodeLoading
+                  ? isSaving
+                    ? "Saving to your learner progress…"
+                    : "Saved to your learner progress"
+                  : "Saved in this browser"}
               </p>
               <p className="text-xs text-slate-500">Ctrl/⌘ Enter to run</p>
             </div>

@@ -417,6 +417,12 @@ export default function LearnCourse({ params }: Props) {
                         <h2 className="text-xl font-bold text-foreground">
                           {activeModule.title}
                         </h2>
+                        {pythonForgeActivity && (
+                          <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-emerald-600/25 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
+                            <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" />
+                            Interactive Python Lab below
+                          </div>
+                        )}
                       </div>
                       {!isModuleCompleted(activeModule.id) &&
                         hasCourseAccess && (
@@ -506,7 +512,12 @@ export default function LearnCourse({ params }: Props) {
 
                     {/* Python Forge keeps each source-authored hands-on activity in a browser-run Python lab. */}
                     {pythonForgeActivity && (
-                      <PythonForgeLab activity={pythonForgeActivity} />
+                      <PythonForgeLab
+                        activity={pythonForgeActivity}
+                        courseId={course.id}
+                        moduleId={activeModule.id}
+                        canPersist={hasCourseAccess && isAuthenticated}
+                      />
                     )}
 
                     {/* Weekly CAIO action workbooks turn each week's reflection into a saved evidence artifact. */}

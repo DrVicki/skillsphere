@@ -73,6 +73,8 @@ import {
   reviewGameDesignDiaryEntry,
   submitGameDesignDiaryEntry,
   updateGameDesignDiaryEntry,
+  getPythonForgeLabCode,
+  upsertPythonForgeLabCode,
   getBlogPosts,
   getBlogPostBySlug,
   getBlogPostById,
@@ -107,6 +109,7 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
 
 const GAME_DESIGN_COURSE_SLUG = "professional-certificate-game-design";
 const CAIO_COURSE_SLUG = "chief-ai-officer-caio-4-week-bootcamp";
+const PYTHON_FORGE_COURSE_SLUG = "python-forge-learn-by-building";
 
 async function requireGameDesignCourse(courseId: number) {
   const course = await getCourseById(courseId);
@@ -125,6 +128,19 @@ async function requireCaioCourse(courseId: number) {
   if (!course) throw new TRPCError({ code: "NOT_FOUND", message: "Course not found" });
   if (course.slug !== CAIO_COURSE_SLUG) {
     throw new TRPCError({ code: "FORBIDDEN", message: "The CAIO assessment is available only for the CAIO BootCamp." });
+  }
+  return course;
+}
+
+async function requirePythonForgeModule(courseId: number, moduleId: number) {
+  const course = await getCourseById(courseId);
+  if (!course) throw new TRPCError({ code: "NOT_FOUND", message: "Course not found" });
+  if (course.slug !== PYTHON_FORGE_COURSE_SLUG) {
+    throw new TRPCError({ code: "FORBIDDEN", message: "Python lab code is available only for Python Forge." });
+  }
+  const module = await getModuleById(moduleId);
+  if (!module || module.courseId !== courseId) {
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid Python Forge lesson." });
   }
   return course;
 }
@@ -833,6 +849,38 @@ export const appRouter = router({
         await upsertModuleProgress({ ...input, userId: ctx.user.id });
         return { success: true };
     }),
+  }),
+
+  // ─── Python Forge Lab Code ─────────────────────────────────────────────────
+  pythonForgeLab: router({
+    latest: protectedProcedure
+      .input(z.object({ courseId: z.number(), moduleId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const course = await requirePythonForgeModule(input.courseId, input.moduleId);
+        const enrollment = await getEnrollment(ctx.user.id, course.id);
+        if (!enrollment && course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in Python Forge before syncing lab code." });
+        }
+        return getPythonForgeLabCode(ctx.user.id, input.courseId, input.moduleId);
+      }),
+
+    save: protectedProcedure
+      .input(
+        z.object({
+          courseId: z.number(),
+          moduleId: z.number(),
+          activityId: z.string().trim().min(1).max(64),
+          code: z.string().max(100000),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const course = await requirePythonForgeModule(input.courseId, input.moduleId);
+        const enrollment = await getEnrollment(ctx.user.id, course.id);
+        if (!enrollment && course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in Python Forge before syncing lab code." });
+        }
+        return upsertPythonForgeLabCode({ ...input, userId: ctx.user.id });
+      }),
   }),
 
   // ─── CAIO Path Assessment ─────────────────────────────────────────────────

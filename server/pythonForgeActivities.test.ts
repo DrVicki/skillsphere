@@ -32,6 +32,14 @@ describe("Python Forge activity routing", () => {
       id: "project-12",
       activity: expect.objectContaining({ title: "Portfolio build brief" }),
     });
+    for (const [index, activity] of pythonForgeActivities.entries()) {
+      expect(
+        getPythonForgeActivityForModule(
+          "python-forge-learn-by-building",
+          `Module ${Math.floor(index / 3) + 1} - Lesson ${index + 1}: ${activity.title}`
+        )
+      ).toMatchObject({ id: activity.id });
+    }
   });
 
   it("does not attach a Python Forge lab to other courses", () => {
