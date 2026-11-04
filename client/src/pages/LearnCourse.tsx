@@ -8,6 +8,13 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import {
   Play,
@@ -61,6 +68,7 @@ export default function LearnCourse({ params }: Props) {
   const [threadBody, setThreadBody] = useState("");
   const [replyBody, setReplyBody] = useState<Record<number, string>>({});
   const [activeThreadId, setActiveThreadId] = useState<number | null>(null);
+  const [readThreadId, setReadThreadId] = useState<number | null>(null);
   const [chatMsg, setChatMsg] = useState("");
   const chatEndRef = useRef<HTMLDivElement>(null);
   const [reviewRating, setReviewRating] = useState(5);
@@ -107,6 +115,7 @@ export default function LearnCourse({ params }: Props) {
 
   const activeModule =
     modules?.find(m => m.id === activeModuleId) ?? modules?.[0];
+  const readThread = threads?.find(thread => thread.id === readThreadId);
   const canAccessModule = (module: NonNullable<typeof activeModule>) =>
     hasCourseAccess || Boolean(module.isPreview);
   const guidedMoveLabs = parseGuidedMoveLabs(activeModule?.content);
@@ -787,6 +796,19 @@ export default function LearnCourse({ params }: Props) {
                             <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                               {thread.body}
                             </p>
+                            <Button
+                              type="button"
+                              variant="link"
+                              size="sm"
+                              className="mt-1 h-auto px-0 text-primary"
+                              onClick={event => {
+                                event.stopPropagation();
+                                setReadThreadId(thread.id);
+                              }}
+                              aria-label={`Read the full post: ${thread.title}`}
+                            >
+                              Read full post
+                            </Button>
                           </div>
                           <Badge variant="outline" className="shrink-0 text-xs">
                             {thread.replyCount} replies
@@ -854,6 +876,31 @@ export default function LearnCourse({ params }: Props) {
                       )}
                     </div>
                   ))}
+
+                  <Dialog
+                    open={readThreadId !== null}
+                    onOpenChange={open => {
+                      if (!open) setReadThreadId(null);
+                    }}
+                  >
+                    <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
+                      {readThread && (
+                        <DialogHeader>
+                          <DialogTitle className="pr-8 text-left">
+                            {readThread.title}
+                          </DialogTitle>
+                          <DialogDescription className="text-left">
+                            Posted by {readThread.userName} ·{" "}
+                            {new Date(readThread.createdAt).toLocaleDateString()} ·{" "}
+                            {readThread.replyCount} replies
+                          </DialogDescription>
+                          <div className="mt-4 whitespace-pre-wrap break-words rounded-lg border border-border bg-muted/30 p-4 text-left text-sm leading-7 text-foreground">
+                            {readThread.body}
+                          </div>
+                        </DialogHeader>
+                      )}
+                    </DialogContent>
+                  </Dialog>
 
                   {(!threads || threads.length === 0) && (
                     <div className="text-center py-12 text-muted-foreground">
