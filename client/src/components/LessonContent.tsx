@@ -10,9 +10,10 @@ interface LessonContentProps {
   title?: string;
 }
 
-// Detect if content is HTML (from Tiptap) or Markdown
-function isHTML(str: string): boolean {
-  return /<[a-z][\s\S]*>/i.test(str.trim());
+// Tiptap content is serialized as a block-level HTML fragment. A broad
+// `<tag>` check misclassifies Python comparisons and inline code as HTML.
+export function isHTML(str: string): boolean {
+  return /^\s*<(?:p|h[1-6]|ul|ol|li|blockquote|pre|div|table|img|iframe|hr|strong|em|a|br)\b/i.test(str);
 }
 
 // Counter for ordered list items (Markdown path)

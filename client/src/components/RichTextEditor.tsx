@@ -2,11 +2,17 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import { Node, mergeAttributes } from "@tiptap/core";
 import { marked } from "marked";
 
+// HTML lessons saved by Tiptap begin with a block-level HTML element. Do not
+// classify Markdown/code comparisons such as `if score < limit:` as HTML.
+export function isRichHTML(content: string): boolean {
+  return /^\s*<(?:p|h[1-6]|ul|ol|li|blockquote|pre|div|table|img|iframe|hr|strong|em|a|br)\b/i.test(content);
+}
+
 // Convert Markdown to HTML if the content is not already HTML
 function normalizeToHTML(content: string): string {
   if (!content || !content.trim()) return "";
-  // If it already looks like HTML, return as-is
-  if (/<[a-z][\s\S]*>/i.test(content.trim())) return content;
+  // If it already looks like Tiptap HTML, return as-is
+  if (isRichHTML(content)) return content;
   // Otherwise parse as Markdown
   return marked.parse(content, { async: false }) as string;
 }
