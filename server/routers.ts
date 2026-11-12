@@ -61,6 +61,12 @@ import {
   createCaioAssessmentResult,
   getLatestCaioAssessmentResult,
   getCaioAssessmentAnalytics,
+  getCaioEvidenceSubmissions,
+  upsertCaioEvidenceSubmission,
+  submitCaioEvidenceSubmission,
+  getCaioEvidenceForReview,
+  reviewCaioEvidenceSubmission,
+  getCaioClassroomKnowledgeChecks,
   createContactMessage,
   getContactMessages,
   subscribeToNewsletter,
@@ -1086,6 +1092,52 @@ export const appRouter = router({
       }),
   }),
 
+  caioEvidence: router({
+    list: protectedProcedure.input(z.number()).query(async ({ ctx, input }) => {
+      const course = await requireCaioCourse(input);
+      const enrollment = await getEnrollment(ctx.user.id, course.id);
+      if (!enrollment && course.trainerId !== ctx.user.id && ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in the CAIO BootCamp before submitting evidence." });
+      return getCaioEvidenceSubmissions(ctx.user.id, input);
+    }),
+    save: protectedProcedure.input(z.object({ courseId: z.number(), moduleId: z.number(), submissionType: z.enum(["action", "reflection"]), content: z.string().trim().min(1).max(50000) })).mutation(async ({ ctx, input }) => {
+      const course = await requireCaioCourse(input.courseId);
+      if (!await getEnrollment(ctx.user.id, course.id)) throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in the CAIO BootCamp before saving evidence." });
+      const module = await getModuleById(input.moduleId);
+      if (!module || module.courseId !== course.id) throw new TRPCError({ code: "BAD_REQUEST", message: "This lesson does not belong to the CAIO BootCamp." });
+      return upsertCaioEvidenceSubmission({ ...input, userId: ctx.user.id });
+    }),
+    submit: protectedProcedure.input(z.object({ id: z.number(), courseId: z.number() })).mutation(async ({ ctx, input }) => {
+      await requireCaioCourse(input.courseId);
+      await submitCaioEvidenceSubmission(input.id, ctx.user.id, input.courseId);
+      return { success: true };
+    }),
+    reviewQueue: trainerProcedure.input(z.object({ courseId: z.number(), classroomId: z.number().optional(), status: z.enum(["draft", "submitted", "needs_revision", "approved"]).optional() })).query(async ({ ctx, input }) => {
+      const course = await requireCaioCourse(input.courseId);
+      if (input.classroomId !== undefined) {
+        await requireClassroomManager(ctx.user, input.classroomId);
+        const assigned = await getClassroomCourses(input.classroomId);
+        if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN", message: "CAIO is not assigned to this classroom or you are not its instructor." });
+      } else if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "You do not review this course." });
+      return getCaioEvidenceForReview(input.courseId, input.classroomId, input.status);
+    }),
+    review: trainerProcedure.input(z.object({ id: z.number(), courseId: z.number(), classroomId: z.number().optional(), reviewStatus: z.enum(["needs_revision", "approved"]), instructorFeedback: z.string().trim().max(5000).default("") })).mutation(async ({ ctx, input }) => {
+      const course = await requireCaioCourse(input.courseId);
+      if (input.classroomId !== undefined) {
+        await requireClassroomManager(ctx.user, input.classroomId);
+        const assigned = await getClassroomCourses(input.classroomId);
+        if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN", message: "CAIO is not assigned to this classroom or you are not its instructor." });
+      } else if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "You do not review this course." });
+      await reviewCaioEvidenceSubmission(input.id, input.courseId, ctx.user.id, input.reviewStatus, input.instructorFeedback, input.classroomId);
+      return { success: true };
+    }),
+    classroomKnowledge: trainerProcedure.input(z.object({ courseId: z.number(), classroomId: z.number() })).query(async ({ ctx, input }) => {
+      const course = await requireCaioCourse(input.courseId);
+      await requireClassroomManager(ctx.user, input.classroomId);
+      const assigned = await getClassroomCourses(input.classroomId);
+      if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN", message: "Only the classroom CAIO instructor can view knowledge checks." });
+      return getCaioClassroomKnowledgeChecks(input.courseId, input.classroomId);
+    }),
+  }),
   // ─── Game Design Diary ─────────────────────────────────────────────────────
   gameDesignDiary: router({
     list: protectedProcedure.input(z.number()).query(async ({ ctx, input }) => {

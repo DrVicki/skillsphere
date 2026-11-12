@@ -26,6 +26,7 @@ import {
   pythonForgeLabCode,
   pythonForgeLabNotifications,
   gameDesignKnowledgeCheckResults,
+  caioEvidenceSubmissions,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -1651,6 +1652,125 @@ export async function getCaioAssessmentAnalytics(courseId: number, moduleId: num
   };
 }
 
+export async function getCaioEvidenceSubmissions(userId: number, courseId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(caioEvidenceSubmissions).where(and(
+    eq(caioEvidenceSubmissions.userId, userId),
+    eq(caioEvidenceSubmissions.courseId, courseId),
+  )).orderBy(desc(caioEvidenceSubmissions.updatedAt));
+}
+
+export async function upsertCaioEvidenceSubmission(data: {
+  userId: number;
+  courseId: number;
+  moduleId: number;
+  submissionType: "action" | "reflection";
+  content: string;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  await db.insert(caioEvidenceSubmissions).values({ ...data, content: data.content.trim() }).onDuplicateKeyUpdate({
+    set: {
+      content: data.content.trim(),
+      reviewStatus: "draft",
+      reviewedBy: null,
+      reviewedAt: null,
+      submittedAt: null,
+    },
+  });
+  const rows = await db.select().from(caioEvidenceSubmissions).where(and(
+    eq(caioEvidenceSubmissions.userId, data.userId),
+    eq(caioEvidenceSubmissions.courseId, data.courseId),
+    eq(caioEvidenceSubmissions.moduleId, data.moduleId),
+    eq(caioEvidenceSubmissions.submissionType, data.submissionType),
+  )).limit(1);
+  return rows[0] ?? null;
+}
+
+export async function submitCaioEvidenceSubmission(id: number, userId: number, courseId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(caioEvidenceSubmissions).set({
+    reviewStatus: "submitted",
+    submittedAt: new Date(),
+    reviewedBy: null,
+    reviewedAt: null,
+  }).where(and(
+    eq(caioEvidenceSubmissions.id, id),
+    eq(caioEvidenceSubmissions.userId, userId),
+    eq(caioEvidenceSubmissions.courseId, courseId),
+  ));
+}
+
+export async function getCaioEvidenceForReview(courseId: number, classroomId?: number, status?: "draft" | "submitted" | "needs_revision" | "approved") {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select({
+    id: caioEvidenceSubmissions.id,
+    userId: caioEvidenceSubmissions.userId,
+    courseId: caioEvidenceSubmissions.courseId,
+    moduleId: caioEvidenceSubmissions.moduleId,
+    moduleTitle: modules.title,
+    submissionType: caioEvidenceSubmissions.submissionType,
+    content: caioEvidenceSubmissions.content,
+    reviewStatus: caioEvidenceSubmissions.reviewStatus,
+    instructorFeedback: caioEvidenceSubmissions.instructorFeedback,
+    submittedAt: caioEvidenceSubmissions.submittedAt,
+    reviewedAt: caioEvidenceSubmissions.reviewedAt,
+    learnerName: users.name,
+    learnerEmail: users.email,
+  }).from(caioEvidenceSubmissions)
+    .leftJoin(users, eq(users.id, caioEvidenceSubmissions.userId))
+    .leftJoin(modules, eq(modules.id, caioEvidenceSubmissions.moduleId))
+    .where(and(
+      eq(caioEvidenceSubmissions.courseId, courseId),
+      ...(status ? [eq(caioEvidenceSubmissions.reviewStatus, status)] : []),
+      ...(classroomId ? [sql`EXISTS (SELECT 1 FROM classroom_members cm WHERE cm.classroomId = ${classroomId} AND cm.userId = ${caioEvidenceSubmissions.userId} AND cm.status = 'active')`] : []),
+    )).orderBy(desc(caioEvidenceSubmissions.submittedAt));
+}
+
+export async function reviewCaioEvidenceSubmission(id: number, courseId: number, reviewedBy: number, reviewStatus: "needs_revision" | "approved", instructorFeedback: string, classroomId?: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(caioEvidenceSubmissions).set({
+    reviewStatus,
+    instructorFeedback: instructorFeedback.trim() || null,
+    reviewedBy,
+    reviewedAt: new Date(),
+  }).where(and(
+    eq(caioEvidenceSubmissions.id, id),
+    eq(caioEvidenceSubmissions.courseId, courseId),
+    ...(classroomId ? [sql`EXISTS (SELECT 1 FROM classroom_members cm WHERE cm.classroomId = ${classroomId} AND cm.userId = ${caioEvidenceSubmissions.userId} AND cm.status = 'active')`] : []),
+  ));
+}
+
+export async function getCaioClassroomKnowledgeChecks(courseId: number, classroomId: number) {
+  const db = await getDb();
+  if (!db) return { totalAttempts: 0, uniqueLearners: 0, averagePercent: 0, recent: [] };
+  const scope = sql`EXISTS (SELECT 1 FROM classroom_members cm WHERE cm.classroomId = ${classroomId} AND cm.userId = ${moduleProgress.userId} AND cm.status = 'active')`;
+  const rows = await db.select({
+    userId: moduleProgress.userId,
+    learnerName: users.name,
+    learnerEmail: users.email,
+    moduleId: moduleProgress.moduleId,
+    moduleTitle: modules.title,
+    score: moduleProgress.assessmentScore,
+    passed: moduleProgress.assessmentPassed,
+    completedAt: moduleProgress.completedAt,
+  }).from(moduleProgress)
+    .leftJoin(users, eq(users.id, moduleProgress.userId))
+    .leftJoin(modules, eq(modules.id, moduleProgress.moduleId))
+    .where(and(eq(moduleProgress.courseId, courseId), eq(moduleProgress.isCompleted, true), ne(moduleProgress.assessmentScore, 0), scope))
+    .orderBy(desc(moduleProgress.completedAt)).limit(200);
+  const scored = rows.filter(row => row.score !== null && row.score !== undefined);
+  return {
+    totalAttempts: scored.length,
+    uniqueLearners: new Set(scored.map(row => row.userId)).size,
+    averagePercent: scored.length ? Math.round(scored.reduce((sum, row) => sum + Number(row.score ?? 0), 0) / scored.length) : 0,
+    recent: scored,
+  };
+}
 // ─── Payments ─────────────────────────────────────────────────────────────────
 
 export async function createPayment(data: {

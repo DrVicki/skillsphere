@@ -249,6 +249,31 @@ export const caioAssessmentResults = mysqlTable(
 export type CaioAssessmentResult = typeof caioAssessmentResults.$inferSelect;
 export type InsertCaioAssessmentResult = typeof caioAssessmentResults.$inferInsert;
 
+export const caioEvidenceSubmissions = mysqlTable(
+  "caio_evidence_submissions",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: int("userId").notNull(),
+    courseId: int("courseId").notNull(),
+    moduleId: int("moduleId").notNull(),
+    submissionType: mysqlEnum("submissionType", ["action", "reflection"]).notNull(),
+    content: text("content").notNull(),
+    reviewStatus: mysqlEnum("reviewStatus", ["draft", "submitted", "needs_revision", "approved"]).default("draft").notNull(),
+    instructorFeedback: text("instructorFeedback"),
+    reviewedBy: int("reviewedBy"),
+    reviewedAt: timestamp("reviewedAt"),
+    submittedAt: timestamp("submittedAt"),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [
+    uniqueIndex("caio_evidence_user_module_type_unique").on(table.userId, table.moduleId, table.submissionType),
+    index("caio_evidence_course_status_idx").on(table.courseId, table.reviewStatus),
+  ]
+);
+
+export type CaioEvidenceSubmission = typeof caioEvidenceSubmissions.$inferSelect;
+
 // ─── Payments ────────────────────────────────────────────────────────────────
 
 export const payments = mysqlTable("payments", {

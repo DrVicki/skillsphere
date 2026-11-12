@@ -41,6 +41,7 @@ import AIDataAnalyticsVisualizations from "@/components/AIDataAnalyticsVisualiza
 import PythonForgeLab from "@/components/PythonForgeLab";
 import CAIOActivityTemplateDownload from "@/components/CAIOActivityTemplateDownload";
 import CAIOPathAssessment from "@/components/CAIOPathAssessment";
+import CAIOEvidencePanel from "@/components/CAIOEvidencePanel";
 import GameDesignDiaryPanel from "@/components/GameDesignDiaryPanel";
 import FirstTimeStudentGuide from "@/components/FirstTimeStudentGuide";
 import {
@@ -149,6 +150,7 @@ export default function LearnCourse({ params }: Props) {
   const isCAIOPathAssessmentLesson =
     course?.slug === "chief-ai-officer-caio-4-week-bootcamp" &&
     activeModule?.title?.toLowerCase().includes("choose your path");
+  const isCAIOCourse = course?.slug === "chief-ai-officer-caio-4-week-bootcamp";
   const gameDesignInteraction = getGameDesignInteractionForModule(
     course?.slug,
     activeModule?.title
@@ -524,6 +526,16 @@ export default function LearnCourse({ params }: Props) {
                     {caioActivityTemplate && (
                       <CAIOActivityTemplateDownload
                         template={caioActivityTemplate}
+                      />
+                    )}
+
+                    {isCAIOCourse && activeModule && (
+                      <CAIOEvidencePanel
+                        courseId={course.id}
+                        moduleId={activeModule.id}
+                        moduleTitle={activeModule.title}
+                        actionPrompt={caioActivityTemplate?.actionAssignment}
+                        canPersist={hasCourseAccess && isAuthenticated}
                       />
                     )}
 
