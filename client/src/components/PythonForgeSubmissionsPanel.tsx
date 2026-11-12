@@ -10,10 +10,13 @@ import { toast } from "sonner";
 
 interface Props {
   courseId: number;
+  classroomId?: number;
+  classroomName?: string;
 }
 
-export default function PythonForgeSubmissionsPanel({ courseId }: Props) {
-  const { data: submissions, isLoading, isError } = trpc.pythonForgeLab.submissions.useQuery(courseId, {
+export default function PythonForgeSubmissionsPanel({ courseId, classroomId, classroomName }: Props) {
+  const queryInput = { courseId, ...(classroomId !== undefined ? { classroomId } : {}) };
+  const { data: submissions, isLoading, isError } = trpc.pythonForgeLab.submissions.useQuery(queryInput, {
     enabled: courseId > 0,
   });
   const [query, setQuery] = useState("");
@@ -22,7 +25,7 @@ export default function PythonForgeSubmissionsPanel({ courseId }: Props) {
   const utils = trpc.useUtils();
   const saveFeedback = trpc.pythonForgeLab.feedback.useMutation({
     onSuccess: () => {
-      void utils.pythonForgeLab.submissions.invalidate(courseId);
+      void utils.pythonForgeLab.submissions.invalidate(queryInput);
       toast.success("Feedback saved for the learner.");
     },
     onError: error => toast.error(error.message || "Feedback could not be saved."),
@@ -49,6 +52,7 @@ export default function PythonForgeSubmissionsPanel({ courseId }: Props) {
     saveFeedback.mutate({
       id: selected.id,
       courseId,
+      ...(classroomId !== undefined ? { classroomId } : {}),
       feedback: feedback.trim() || null,
     });
   };
@@ -61,8 +65,14 @@ export default function PythonForgeSubmissionsPanel({ courseId }: Props) {
             <Code2 className="h-5 w-5" aria-hidden="true" />
             <p className="text-xs font-bold uppercase tracking-[0.15em]">Python Forge instructor view</p>
           </div>
-          <h2 id="python-forge-submissions-title" className="mt-1 text-xl font-bold text-slate-900">Learner lab submissions</h2>
-          <p className="mt-1 text-sm text-slate-600">Review the latest saved code for each learner and lesson, then leave optional feedback they can read in the lab.</p>
+          <h2 id="python-forge-submissions-title" className="mt-1 text-xl font-bold text-slate-900">
+            {classroomName ? `${classroomName} lab submissions` : "Learner lab submissions"}
+          </h2>
+          <p className="mt-1 text-sm text-slate-600">
+            {classroomName
+              ? "Review saved code from active students in this classroom, then leave optional feedback they can read in the lab."
+              : "Review the latest saved code for each learner and lesson, then leave optional feedback they can read in the lab."}
+          </p>
         </div>
         <div className="flex items-center gap-2 rounded-xl bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-800">
           <Users className="h-4 w-4" aria-hidden="true" /> {learnerCount} learners · {submissions?.length ?? 0} saves

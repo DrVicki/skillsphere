@@ -876,13 +876,19 @@ export const appRouter = router({
       }),
 
     submissions: trainerProcedure
-      .input(z.number())
+      .input(z.object({ courseId: z.number(), classroomId: z.number().optional() }))
       .query(async ({ ctx, input }) => {
-        const course = await requirePythonForgeCourse(input);
-        if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+        const course = await requirePythonForgeCourse(input.courseId);
+        if (input.classroomId !== undefined) {
+          await requireClassroomManager(ctx.user, input.classroomId);
+          const classroomCourses = await getClassroomCourses(input.classroomId);
+          if (!classroomCourses.some(item => item.courseId === input.courseId)) {
+            throw new TRPCError({ code: "FORBIDDEN", message: "Python Forge is not assigned to this classroom." });
+          }
+        } else if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
           throw new TRPCError({ code: "FORBIDDEN", message: "Only the course instructor can view lab submissions." });
         }
-        return getPythonForgeLabSubmissions(input);
+        return getPythonForgeLabSubmissions(input.courseId, input.classroomId);
       }),
 
     feedback: trainerProcedure
@@ -890,17 +896,25 @@ export const appRouter = router({
         z.object({
           id: z.number(),
           courseId: z.number(),
+          classroomId: z.number().optional(),
           feedback: z.string().trim().max(5000).nullable(),
         })
       )
       .mutation(async ({ ctx, input }) => {
         const course = await requirePythonForgeCourse(input.courseId);
-        if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+        if (input.classroomId !== undefined) {
+          await requireClassroomManager(ctx.user, input.classroomId);
+          const classroomCourses = await getClassroomCourses(input.classroomId);
+          if (!classroomCourses.some(item => item.courseId === input.courseId)) {
+            throw new TRPCError({ code: "FORBIDDEN", message: "Python Forge is not assigned to this classroom." });
+          }
+        } else if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
           throw new TRPCError({ code: "FORBIDDEN", message: "Only the course instructor can provide lab feedback." });
         }
         return updatePythonForgeLabFeedback({
           id: input.id,
           courseId: input.courseId,
+          classroomId: input.classroomId,
           feedback: input.feedback || null,
           feedbackBy: input.feedback ? ctx.user.id : null,
         });

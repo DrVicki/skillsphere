@@ -1302,9 +1302,20 @@ export async function getPythonForgeLabProgress(userId: number, courseId: number
     .orderBy(modules.sortOrder);
 }
 
-export async function getPythonForgeLabSubmissions(courseId: number) {
+export async function getPythonForgeLabSubmissions(
+  courseId: number,
+  classroomId?: number
+) {
   const db = await getDb();
   if (!db) return [];
+  const classroomMemberFilter = classroomId
+    ? sql`EXISTS (
+        SELECT 1 FROM classroom_members cm
+        WHERE cm.classroomId = ${classroomId}
+          AND cm.userId = ${pythonForgeLabCode.userId}
+          AND cm.status = 'active'
+      )`
+    : undefined;
   return db
     .select({
       id: pythonForgeLabCode.id,
@@ -1327,7 +1338,8 @@ export async function getPythonForgeLabSubmissions(courseId: number) {
     .where(
       and(
         eq(pythonForgeLabCode.courseId, courseId),
-        eq(modules.courseId, courseId)
+        eq(modules.courseId, courseId),
+        classroomMemberFilter
       )
     )
     .orderBy(desc(pythonForgeLabCode.updatedAt))
@@ -1337,11 +1349,20 @@ export async function getPythonForgeLabSubmissions(courseId: number) {
 export async function updatePythonForgeLabFeedback(data: {
   id: number;
   courseId: number;
+  classroomId?: number;
   feedback: string | null;
   feedbackBy: number | null;
 }) {
   const db = await getDb();
   if (!db) return undefined;
+  const classroomMemberFilter = data.classroomId
+    ? sql`EXISTS (
+        SELECT 1 FROM classroom_members cm
+        WHERE cm.classroomId = ${data.classroomId}
+          AND cm.userId = ${pythonForgeLabCode.userId}
+          AND cm.status = 'active'
+      )`
+    : undefined;
   await db
     .update(pythonForgeLabCode)
     .set({
@@ -1352,7 +1373,8 @@ export async function updatePythonForgeLabFeedback(data: {
     .where(
       and(
         eq(pythonForgeLabCode.id, data.id),
-        eq(pythonForgeLabCode.courseId, data.courseId)
+        eq(pythonForgeLabCode.courseId, data.courseId),
+        classroomMemberFilter
       )
     );
   const result = await db
@@ -1361,7 +1383,8 @@ export async function updatePythonForgeLabFeedback(data: {
     .where(
       and(
         eq(pythonForgeLabCode.id, data.id),
-        eq(pythonForgeLabCode.courseId, data.courseId)
+        eq(pythonForgeLabCode.courseId, data.courseId),
+        classroomMemberFilter
       )
     )
     .limit(1);

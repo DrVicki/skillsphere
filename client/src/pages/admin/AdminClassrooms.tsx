@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import PythonForgeSubmissionsPanel from "@/components/PythonForgeSubmissionsPanel";
 import {
   Archive,
   BookOpen,
@@ -497,6 +498,18 @@ export default function AdminClassrooms() {
                             </Button>
                           </div>
                         </div>
+
+                        {classroomCoursesQuery.data?.some(
+                          course => course.slug === "python-forge-learn-by-building"
+                        ) && (
+                          <PythonForgeSubmissionsPanel
+                            courseId={classroomCoursesQuery.data.find(
+                              course => course.slug === "python-forge-learn-by-building"
+                            )!.courseId}
+                            classroomId={expanded.id}
+                            classroomName={expanded.name}
+                          />
+                        )}
                       </section>
 
                       <section className="overflow-hidden rounded-xl border border-gray-200 bg-white">

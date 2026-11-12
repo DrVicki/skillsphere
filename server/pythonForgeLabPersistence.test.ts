@@ -61,4 +61,21 @@ describe("Python Forge learner lab persistence", () => {
     expect(trainer).toContain("PythonForgeSubmissionsPanel");
     expect(admin).toContain("PythonForgeSubmissionsPanel");
   });
+
+  it("supports classroom-scoped submission review and feedback", () => {
+    const router = read("server/routers.ts");
+    const db = read("server/db.ts");
+    const panel = read("client/src/components/PythonForgeSubmissionsPanel.tsx");
+    const classrooms = read("client/src/pages/admin/AdminClassrooms.tsx");
+
+    expect(router).toContain("classroomId: z.number().optional()");
+    expect(router).toContain("Python Forge is not assigned to this classroom.");
+    expect(router).toContain("requireClassroomManager(ctx.user, input.classroomId)");
+    expect(db).toContain("getPythonForgeLabSubmissions(\n  courseId: number,\n  classroomId?: number");
+    expect(db).toContain("FROM classroom_members cm");
+    expect(panel).toContain("classroomName?: string");
+    expect(panel).toContain("active students in this classroom");
+    expect(classrooms).toContain("PythonForgeSubmissionsPanel");
+    expect(classrooms).toContain("classroomId={expanded.id}");
+  });
 });
