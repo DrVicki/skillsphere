@@ -51,6 +51,10 @@ describe("CAIO classroom evidence workflow", () => {
     expect(review).toContain("Filter the chart by learner or week");
     expect(review).toContain("Filter CAIO progress by learner");
     expect(review).toContain("Filter CAIO progress by week");
+    expect(review).toContain("downloadFilteredCsv");
+    expect(review).toContain("Filtered CSV");
+    expect(review).toContain("Filtered PDF");
+    expect(review).toContain("Filters: ${learnerFilterLabel} · ${weekFilterLabel}");
     expect(email).toContain("sendCaioEvidenceReviewEmail");
     expect(email).toContain("Revision requested");
     expect(review).toContain("CSV");
