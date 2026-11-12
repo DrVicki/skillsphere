@@ -70,6 +70,9 @@ import {
   getGameDesignDiaryEntriesForReview,
   getGameDesignPortfolio,
   getGameDesignDiaryEntries,
+  saveGameDesignKnowledgeCheck,
+  getLatestGameDesignKnowledgeCheck,
+  getGameDesignClassroomKnowledgeChecks,
   reviewGameDesignDiaryEntry,
   submitGameDesignDiaryEntry,
   updateGameDesignDiaryEntry,
@@ -1157,25 +1160,39 @@ export const appRouter = router({
       .input(z.object({
         courseId: z.number(),
         status: z.enum(["draft", "submitted", "needs_revision", "approved"]).optional(),
+        classroomId: z.number().optional(),
       }))
       .query(async ({ ctx, input }) => {
         const course = await requireGameDesignCourse(input.courseId);
-        if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+        if (input.classroomId !== undefined) {
+          await requireClassroomManager(ctx.user, input.classroomId);
+          const classroomCourses = await getClassroomCourses(input.classroomId);
+          if (!classroomCourses.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) {
+            throw new TRPCError({ code: "FORBIDDEN", message: "Game Design is not assigned to this classroom." });
+          }
+        } else if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
           throw new TRPCError({ code: "FORBIDDEN", message: "You do not review this course." });
         }
-        return getGameDesignDiaryEntriesForReview(input.courseId, input.status);
+        return getGameDesignDiaryEntriesForReview(input.courseId, input.status, input.classroomId);
       }),
 
     review: trainerProcedure
       .input(z.object({
         id: z.number(),
         courseId: z.number(),
+        classroomId: z.number().optional(),
         reviewStatus: z.enum(["needs_revision", "approved"]),
         instructorFeedback: z.string().trim().max(5000).default(""),
       }))
       .mutation(async ({ ctx, input }) => {
         const course = await requireGameDesignCourse(input.courseId);
-        if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+        if (input.classroomId !== undefined) {
+          await requireClassroomManager(ctx.user, input.classroomId);
+          const classroomCourses = await getClassroomCourses(input.classroomId);
+          if (!classroomCourses.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) {
+            throw new TRPCError({ code: "FORBIDDEN", message: "Game Design is not assigned to this classroom." });
+          }
+        } else if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
           throw new TRPCError({ code: "FORBIDDEN", message: "You do not review this course." });
         }
         await reviewGameDesignDiaryEntry(
@@ -1183,9 +1200,45 @@ export const appRouter = router({
           input.courseId,
           ctx.user.id,
           input.reviewStatus,
-          input.instructorFeedback
+          input.instructorFeedback,
+          input.classroomId
         );
         return { success: true };
+      }),
+
+    knowledgeLatest: protectedProcedure
+      .input(z.object({ courseId: z.number(), moduleId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const course = await requireGameDesignCourse(input.courseId);
+        const enrollment = await getEnrollment(ctx.user.id, course.id);
+        if (!enrollment && course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in Game Design before saving knowledge checks." });
+        }
+        return getLatestGameDesignKnowledgeCheck(ctx.user.id, input.courseId, input.moduleId);
+      }),
+
+    knowledgeSave: protectedProcedure
+      .input(z.object({ courseId: z.number(), moduleId: z.number(), answers: z.array(z.number().int().min(0)), score: z.number().int().min(0), total: z.number().int().positive() }))
+      .mutation(async ({ ctx, input }) => {
+        const course = await requireGameDesignCourse(input.courseId);
+        const enrollment = await getEnrollment(ctx.user.id, course.id);
+        if (!enrollment) throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in Game Design before saving knowledge checks." });
+        if (input.score > input.total || input.answers.length > input.total) throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid knowledge-check result." });
+        const module = await getModuleById(input.moduleId);
+        if (!module || module.courseId !== course.id) throw new TRPCError({ code: "BAD_REQUEST", message: "Knowledge check module does not belong to this course." });
+        return saveGameDesignKnowledgeCheck({ ...input, userId: ctx.user.id });
+      }),
+
+    classroomKnowledge: trainerProcedure
+      .input(z.object({ courseId: z.number(), classroomId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const course = await requireGameDesignCourse(input.courseId);
+        await requireClassroomManager(ctx.user, input.classroomId);
+        const classroomCourses = await getClassroomCourses(input.classroomId);
+        if (!classroomCourses.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Only the classroom course instructor can view knowledge checks." });
+        }
+        return getGameDesignClassroomKnowledgeChecks(input.courseId, input.classroomId);
       }),
 
     delete: protectedProcedure

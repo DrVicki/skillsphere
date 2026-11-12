@@ -55,4 +55,18 @@ describe("Game Design Diary workflow", () => {
     expect(dashboard).toContain("certificateName(user)");
     expect(learnCourse).toContain('user?.name?.trim() || user?.email?.split("@")[0]?.trim() || "Learner"');
   });
+
+  it("supports classroom-scoped Diary review and persisted knowledge checks", () => {
+    expect(schema).toContain("game_design_knowledge_check_results");
+    expect(db).toContain("getGameDesignClassroomKnowledgeChecks");
+    expect(db).toContain("EXISTS (SELECT 1 FROM classroom_members cm");
+    expect(router).toContain("classroomId: z.number().optional()");
+    expect(router).toContain("classroomKnowledge: trainerProcedure");
+    expect(router).toContain("knowledgeLatest: protectedProcedure");
+    expect(router).toContain("knowledgeSave: protectedProcedure");
+    expect(reviewPanel).toContain("classroomName");
+    expect(reviewPanel).toContain("Recent knowledge checks");
+    expect(reviewPanel).toContain("Request revision");
+    expect(learnCourse).toContain("canPersist={hasCourseAccess && isAuthenticated}");
+  });
 });

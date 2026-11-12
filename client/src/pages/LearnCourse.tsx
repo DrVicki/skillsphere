@@ -551,6 +551,9 @@ export default function LearnCourse({ params }: Props) {
                         />
                         <GameDesignKnowledgeCheck
                           questions={gameDesignInteraction.knowledgeCheck}
+                          courseId={course.id}
+                          moduleId={activeModule.id}
+                          canPersist={hasCourseAccess && isAuthenticated}
                         />
                         <div className="mt-6 rounded-xl border border-[#58a6ff]/25 bg-[#EEF4FF]/50 p-5">
                           <div className="flex items-center gap-2 text-sm font-semibold text-[#1e3a6e]">

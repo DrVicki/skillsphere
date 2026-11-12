@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckCircle2, ClipboardCheck, MessageSquare, RotateCcw } from "lucide-react";
+import { BarChart3, CheckCircle2, ClipboardCheck, MessageSquare, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { Badge } from "@/components/ui/badge";
@@ -12,13 +12,17 @@ const GAME_DESIGN_COURSE_SLUG = "professional-certificate-game-design";
 
 type ReviewStatus = "draft" | "submitted" | "needs_revision" | "approved";
 
-export default function GameDesignDiaryReviewPanel({ courseId }: { courseId: number }) {
+export default function GameDesignDiaryReviewPanel({ courseId, classroomId, classroomName }: { courseId: number; classroomId?: number; classroomName?: string }) {
   const utils = trpc.useUtils();
   const [status, setStatus] = useState<ReviewStatus>("submitted");
   const [feedback, setFeedback] = useState<Record<number, string>>({});
   const { data: entries, isLoading } = trpc.gameDesignDiary.reviewQueue.useQuery(
-    { courseId, status },
+    { courseId, status, ...(classroomId !== undefined ? { classroomId } : {}) },
     { enabled: courseId > 0 }
+  );
+  const { data: checks } = trpc.gameDesignDiary.classroomKnowledge.useQuery(
+    { courseId, classroomId: classroomId ?? 0 },
+    { enabled: classroomId !== undefined && courseId > 0 }
   );
   const review = trpc.gameDesignDiary.review.useMutation({
     onSuccess: async () => {
@@ -32,8 +36,8 @@ export default function GameDesignDiaryReviewPanel({ courseId }: { courseId: num
     <Card className="border-[#2A63BF]/15 shadow-sm">
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div>
-          <CardTitle className="flex items-center gap-2 text-lg"><ClipboardCheck className="h-5 w-5 text-[#2A63BF]" /> Game Diary reviews</CardTitle>
-          <p className="mt-1 text-sm text-muted-foreground">Review learner reflections, return revision requests, or approve evidence for the portfolio.</p>
+          <CardTitle className="flex items-center gap-2 text-lg"><ClipboardCheck className="h-5 w-5 text-[#2A63BF]" /> {classroomName ? `${classroomName} · Game Design reviews` : "Game Diary reviews"}</CardTitle>
+          <p className="mt-1 text-sm text-muted-foreground">Review learner reflections, return revision requests, approve evidence, and inspect knowledge-check performance.</p>
         </div>
         <Select value={status} onValueChange={value => setStatus(value as ReviewStatus)}>
           <SelectTrigger className="w-40" aria-label="Diary review status"><SelectValue /></SelectTrigger>
@@ -45,6 +49,9 @@ export default function GameDesignDiaryReviewPanel({ courseId }: { courseId: num
           </SelectContent>
         </Select>
       </CardHeader>
+      {classroomId !== undefined && checks && <div className="grid grid-cols-3 gap-3 border-b border-border bg-slate-50 p-4">
+        {[["Attempts", checks.totalAttempts], ["Learners", checks.uniqueLearners], ["Average", `${checks.averagePercent}%`]].map(([label, value]) => <div key={String(label)} className="rounded-lg border border-border bg-white p-3"><BarChart3 className="mb-1 h-4 w-4 text-[#2A63BF]" /><p className="font-bold text-foreground">{value}</p><p className="text-xs text-muted-foreground">{label}</p></div>)}
+      </div>}
       <CardContent>
         {isLoading ? <p className="py-6 text-center text-sm text-muted-foreground">Loading Diary submissions…</p> : entries?.length ? (
           <div className="space-y-4">
@@ -65,8 +72,8 @@ export default function GameDesignDiaryReviewPanel({ courseId }: { courseId: num
                       <Textarea aria-label={`Feedback for ${entry.title}`} value={currentFeedback} onChange={event => setFeedback(current => ({ ...current, [entry.id]: event.target.value }))} placeholder="Name the evidence that is strong and the next revision to try." className="mt-1 min-h-24" />
                     </label>
                     <div className="flex flex-wrap gap-2">
-                      <Button type="button" variant="outline" onClick={() => review.mutate({ id: entry.id, courseId, reviewStatus: "needs_revision", instructorFeedback: currentFeedback })} disabled={review.isPending}><RotateCcw className="mr-1.5 h-4 w-4" /> Request revision</Button>
-                      <Button type="button" className="bg-[#207a35] text-white hover:bg-[#176326]" onClick={() => review.mutate({ id: entry.id, courseId, reviewStatus: "approved", instructorFeedback: currentFeedback })} disabled={review.isPending}><CheckCircle2 className="mr-1.5 h-4 w-4" /> Approve</Button>
+                      <Button type="button" variant="outline" onClick={() => review.mutate({ id: entry.id, courseId, ...(classroomId !== undefined ? { classroomId } : {}), reviewStatus: "needs_revision", instructorFeedback: currentFeedback })} disabled={review.isPending}><RotateCcw className="mr-1.5 h-4 w-4" /> Request revision</Button>
+                      <Button type="button" className="bg-[#207a35] text-white hover:bg-[#176326]" onClick={() => review.mutate({ id: entry.id, courseId, ...(classroomId !== undefined ? { classroomId } : {}), reviewStatus: "approved", instructorFeedback: currentFeedback })} disabled={review.isPending}><CheckCircle2 className="mr-1.5 h-4 w-4" /> Approve</Button>
                     </div>
                   </div>
                 </article>
@@ -74,6 +81,7 @@ export default function GameDesignDiaryReviewPanel({ courseId }: { courseId: num
             })}
           </div>
         ) : <div className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground"><MessageSquare className="mx-auto mb-2 h-6 w-6" />No {status.replace("_", " ")} Diary entries.</div>}
+        {classroomId !== undefined && checks?.recent?.length ? <div className="mt-8 border-t border-border pt-6"><h3 className="mb-3 flex items-center gap-2 font-semibold text-foreground"><BarChart3 className="h-4 w-4 text-[#2A63BF]" /> Recent knowledge checks</h3><div className="overflow-x-auto"><table className="w-full text-left text-sm"><thead><tr className="border-b text-xs uppercase text-muted-foreground"><th className="px-2 py-2">Learner</th><th className="px-2 py-2">Lesson</th><th className="px-2 py-2">Score</th><th className="px-2 py-2">Completed</th></tr></thead><tbody>{checks.recent.map(check => <tr key={check.id} className="border-b last:border-0"><td className="px-2 py-2">{check.learnerName ?? check.learnerEmail ?? "Learner"}</td><td className="px-2 py-2">{check.moduleTitle ?? "Game Design"}</td><td className="px-2 py-2 font-semibold">{check.score}/{check.total}</td><td className="px-2 py-2 text-xs text-muted-foreground">{new Date(check.completedAt).toLocaleString()}</td></tr>)}</tbody></table></div></div> : null}
       </CardContent>
     </Card>
   );

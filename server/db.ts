@@ -25,6 +25,7 @@ import {
   caioAssessmentResults,
   pythonForgeLabCode,
   pythonForgeLabNotifications,
+  gameDesignKnowledgeCheckResults,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -709,7 +710,8 @@ export async function deleteGameDesignDiaryEntry(
 
 export async function getGameDesignDiaryEntriesForReview(
   courseId: number,
-  status?: "draft" | "submitted" | "needs_revision" | "approved"
+  status?: "draft" | "submitted" | "needs_revision" | "approved",
+  classroomId?: number
 ) {
   const db = await getDb();
   if (!db) return [];
@@ -737,9 +739,11 @@ export async function getGameDesignDiaryEntriesForReview(
     .leftJoin(users, eq(gameDesignDiaryEntries.userId, users.id))
     .leftJoin(modules, eq(gameDesignDiaryEntries.moduleId, modules.id))
     .where(
-      status
-        ? and(eq(gameDesignDiaryEntries.courseId, courseId), eq(gameDesignDiaryEntries.reviewStatus, status))
-        : eq(gameDesignDiaryEntries.courseId, courseId)
+      and(
+        eq(gameDesignDiaryEntries.courseId, courseId),
+        ...(status ? [eq(gameDesignDiaryEntries.reviewStatus, status)] : []),
+        ...(classroomId ? [sql`EXISTS (SELECT 1 FROM classroom_members cm WHERE cm.classroomId = ${classroomId} AND cm.userId = ${gameDesignDiaryEntries.userId} AND cm.status = 'active')`] : [])
+      )
     )
     .orderBy(desc(gameDesignDiaryEntries.submittedAt), desc(gameDesignDiaryEntries.updatedAt));
 }
@@ -758,14 +762,19 @@ export async function reviewGameDesignDiaryEntry(
   courseId: number,
   reviewedBy: number,
   reviewStatus: "needs_revision" | "approved",
-  instructorFeedback: string
+  instructorFeedback: string,
+  classroomId?: number
 ) {
   const db = await getDb();
   if (!db) return;
   await db
     .update(gameDesignDiaryEntries)
     .set({ reviewStatus, instructorFeedback: instructorFeedback.trim() || null, reviewedBy, reviewedAt: new Date() })
-    .where(and(eq(gameDesignDiaryEntries.id, id), eq(gameDesignDiaryEntries.courseId, courseId)));
+    .where(and(
+      eq(gameDesignDiaryEntries.id, id),
+      eq(gameDesignDiaryEntries.courseId, courseId),
+      ...(classroomId ? [sql`EXISTS (SELECT 1 FROM classroom_members cm WHERE cm.classroomId = ${classroomId} AND cm.userId = ${gameDesignDiaryEntries.userId} AND cm.status = 'active')`] : [])
+    ));
 }
 
 export async function getGameDesignPortfolio(userId: number, courseId: number) {
@@ -785,6 +794,65 @@ export async function getGameDesignPortfolio(userId: number, courseId: number) {
       completed: progress.some(item => item.moduleId === module.id && item.isCompleted),
     }));
   return { course, entries, capstoneModules, progress };
+}
+
+export async function saveGameDesignKnowledgeCheck(data: {
+  userId: number;
+  courseId: number;
+  moduleId: number;
+  answers: number[];
+  score: number;
+  total: number;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.insert(gameDesignKnowledgeCheckResults).values(data);
+  return { id: Number(result[0].insertId) };
+}
+
+export async function getLatestGameDesignKnowledgeCheck(userId: number, courseId: number, moduleId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const rows = await db.select().from(gameDesignKnowledgeCheckResults).where(and(
+    eq(gameDesignKnowledgeCheckResults.userId, userId),
+    eq(gameDesignKnowledgeCheckResults.courseId, courseId),
+    eq(gameDesignKnowledgeCheckResults.moduleId, moduleId),
+  )).orderBy(desc(gameDesignKnowledgeCheckResults.completedAt)).limit(1);
+  return rows[0] ?? null;
+}
+
+export async function getGameDesignClassroomKnowledgeChecks(courseId: number, classroomId: number) {
+  const db = await getDb();
+  if (!db) return { totalAttempts: 0, uniqueLearners: 0, averagePercent: 0, recent: [] };
+  const scope = sql`EXISTS (SELECT 1 FROM classroom_members cm WHERE cm.classroomId = ${classroomId} AND cm.userId = ${gameDesignKnowledgeCheckResults.userId} AND cm.status = 'active')`;
+  const [summary, recent] = await Promise.all([
+    db.select({
+      totalAttempts: sql<number>`COUNT(*)`,
+      uniqueLearners: sql<number>`COUNT(DISTINCT ${gameDesignKnowledgeCheckResults.userId})`,
+      averagePercent: sql<number>`COALESCE(AVG(${gameDesignKnowledgeCheckResults.score} * 100.0 / NULLIF(${gameDesignKnowledgeCheckResults.total}, 0)), 0)`,
+    }).from(gameDesignKnowledgeCheckResults).where(and(eq(gameDesignKnowledgeCheckResults.courseId, courseId), scope)),
+    db.select({
+      id: gameDesignKnowledgeCheckResults.id,
+      userId: gameDesignKnowledgeCheckResults.userId,
+      learnerName: users.name,
+      learnerEmail: users.email,
+      moduleId: gameDesignKnowledgeCheckResults.moduleId,
+      moduleTitle: modules.title,
+      score: gameDesignKnowledgeCheckResults.score,
+      total: gameDesignKnowledgeCheckResults.total,
+      completedAt: gameDesignKnowledgeCheckResults.completedAt,
+    }).from(gameDesignKnowledgeCheckResults)
+      .leftJoin(users, eq(users.id, gameDesignKnowledgeCheckResults.userId))
+      .leftJoin(modules, eq(modules.id, gameDesignKnowledgeCheckResults.moduleId))
+      .where(and(eq(gameDesignKnowledgeCheckResults.courseId, courseId), scope))
+      .orderBy(desc(gameDesignKnowledgeCheckResults.completedAt)).limit(200),
+  ]);
+  return {
+    totalAttempts: Number(summary[0]?.totalAttempts ?? 0),
+    uniqueLearners: Number(summary[0]?.uniqueLearners ?? 0),
+    averagePercent: Math.round(Number(summary[0]?.averagePercent ?? 0)),
+    recent,
+  };
 }
 
 // ─── Classrooms ──────────────────────────────────────────────────────────────

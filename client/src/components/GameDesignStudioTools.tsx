@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
   BarChart3,
@@ -20,6 +20,7 @@ import type {
   GameDesignKnowledgeQuestion,
   GameDesignVisualizationKey,
 } from "@/lib/gameDesignCourse";
+import { trpc } from "@/lib/trpc";
 
 interface GameDesignActivityCardProps {
   activity: GameDesignActivity;
@@ -116,15 +117,46 @@ export function GameDesignActivityCard({
 
 export function GameDesignKnowledgeCheck({
   questions,
+  courseId,
+  moduleId,
+  canPersist = false,
 }: {
   questions: readonly GameDesignKnowledgeQuestion[];
+  courseId?: number;
+  moduleId?: number;
+  canPersist?: boolean;
 }) {
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [checked, setChecked] = useState(false);
+  const latest = trpc.gameDesignDiary.knowledgeLatest.useQuery(
+    { courseId: courseId ?? 0, moduleId: moduleId ?? 0 },
+    { enabled: canPersist && !!courseId && !!moduleId }
+  );
+  const saveResult = trpc.gameDesignDiary.knowledgeSave.useMutation();
   const score = questions.reduce(
     (total, question, index) => total + (answers[index] === question.correctIndex ? 1 : 0),
     0
   );
+
+  useEffect(() => {
+    if (latest.data) {
+      setAnswers(Object.fromEntries((latest.data.answers as number[]).map((answer, index) => [index, answer])));
+      setChecked(true);
+    }
+  }, [latest.data]);
+
+  const checkAnswers = () => {
+    setChecked(true);
+    if (canPersist && courseId && moduleId) {
+      void saveResult.mutateAsync({
+        courseId,
+        moduleId,
+        answers: questions.map((_, index) => answers[index] ?? -1),
+        score,
+        total: questions.length,
+      });
+    }
+  };
 
   const reset = () => {
     setAnswers({});
@@ -175,10 +207,11 @@ export function GameDesignKnowledgeCheck({
           );
         })}
         <div className="flex flex-wrap items-center gap-3">
-          <Button type="button" className="bg-[#207a35] text-white hover:bg-[#176326]" onClick={() => setChecked(true)} disabled={Object.keys(answers).length < questions.length}>
+          <Button type="button" className="bg-[#207a35] text-white hover:bg-[#176326]" onClick={checkAnswers} disabled={Object.keys(answers).length < questions.length || saveResult.isPending}>
             Check answers
           </Button>
           {checked && <span className="text-sm font-semibold text-[#1b5e2a]">Score: {score}/{questions.length}</span>}
+          {checked && canPersist && <span className="text-xs text-muted-foreground">{saveResult.isPending ? "Saving result…" : "Saved for instructor review"}</span>}
           {checked && <Button type="button" variant="ghost" size="sm" onClick={reset}><RotateCcw className="mr-1.5 h-4 w-4" /> Try again</Button>}
         </div>
       </CardContent>

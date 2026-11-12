@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import PythonForgeSubmissionsPanel from "@/components/PythonForgeSubmissionsPanel";
+import GameDesignDiaryReviewPanel from "@/components/GameDesignDiaryReviewPanel";
 import {
   Archive,
   BookOpen,
@@ -505,6 +506,17 @@ export default function AdminClassrooms() {
                           <PythonForgeSubmissionsPanel
                             courseId={classroomCoursesQuery.data.find(
                               course => course.slug === "python-forge-learn-by-building"
+                            )!.courseId}
+                            classroomId={expanded.id}
+                            classroomName={expanded.name}
+                          />
+                        )}
+                        {classroomCoursesQuery.data?.some(
+                          course => course.slug === "professional-certificate-game-design"
+                        ) && (
+                          <GameDesignDiaryReviewPanel
+                            courseId={classroomCoursesQuery.data.find(
+                              course => course.slug === "professional-certificate-game-design"
                             )!.courseId}
                             classroomId={expanded.id}
                             classroomName={expanded.name}
