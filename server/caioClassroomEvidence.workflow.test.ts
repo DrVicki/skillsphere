@@ -48,6 +48,9 @@ describe("CAIO classroom evidence workflow", () => {
     expect(router).toContain("sendCaioEvidenceReviewEmail");
     expect(review).toContain("CSV");
     expect(review).toContain("Four-week learner progress");
+    expect(review).toContain("Filter the chart by learner or week");
+    expect(review).toContain("Filter CAIO progress by learner");
+    expect(review).toContain("Filter CAIO progress by week");
     expect(email).toContain("sendCaioEvidenceReviewEmail");
     expect(email).toContain("Revision requested");
     expect(review).toContain("CSV");

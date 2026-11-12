@@ -90,7 +90,8 @@ describe("source course catalog", () => {
         }),
       ])
     );
-    expect(courses[0]).toMatchObject({
+    const caio = courses.find(course => course.slug === "chief-ai-officer-caio-4-week-bootcamp");
+    expect(caio).toMatchObject({
       slug: "chief-ai-officer-caio-4-week-bootcamp",
       title: "Chief AI Officer (CAIO) 4-Week BootCamp",
       totalModules: 20,
@@ -134,15 +135,15 @@ describe("source course catalog", () => {
 
     expect(pyforgeModules).toHaveLength(42);
     expect(pyforgeModules[0]?.content).toContain(
-      "Programs make a plan explicit"
+      "programs_make_a_plan_explicit"
     );
     expect(pyforgeModules[0]?.content).toContain(
-      "Hands-on activity: Map a pre-launch decision"
+      "The interactive Python lab, hints, definition of done, reflection, and knowledge check appear directly below this lesson."
     );
-    expect(pyforgeModules[0]?.content).toContain("Worked example");
+    expect(pyforgeModules[0]?.content).toContain("predict-run-explain");
     expect(pyforgeModules.at(-1)).toMatchObject({
       title: "Portfolio Project 12 · Portfolio-Ready Python Product",
-      content: expect.stringContaining("Build requirements"),
+      content: expect.stringContaining("build_requirements"),
     });
 
     expect(chatGptModules).toHaveLength(20);
@@ -186,9 +187,7 @@ describe("source course catalog", () => {
     ).toHaveLength(4);
     expect(caioModules.at(-2)).toMatchObject({
       title: expect.stringContaining("Capstone: Your 90-Day CAIO Plan"),
-      content: expect.stringContaining(
-        "Build and present your CAIO engagement brief"
-      ),
+      content: expect.stringContaining("CAIO Engagement Brief"),
     });
   });
 });
