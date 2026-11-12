@@ -136,3 +136,25 @@ export async function sendPythonForgeFeedbackEmail(
     html: `<main style="font-family:Arial,sans-serif;color:#13284b;max-width:600px;margin:0 auto;padding:32px 24px"><p style="margin:0 0 24px;color:#2A63BF;font-weight:700;font-size:18px">SkillSphere</p><h1 style="font-size:26px;line-height:1.2;margin:0 0 16px">Your Python Forge lab was reviewed</h1><p style="font-size:16px;line-height:1.6">Hi ${escapeHtml(learnerName)}, your instructor reviewed <strong>${safeLesson}</strong> in <strong>${escapeHtml(course.title)}</strong>.</p><p style="font-weight:700">Status: ${statusLabel}</p><blockquote style="border-left:4px solid #F5B942;margin:20px 0;padding:12px 16px;background:#f5f8fc;white-space:pre-wrap;line-height:1.6">${safeFeedback}</blockquote><p style="margin:28px 0"><a href="${url}" style="background:#2A63BF;color:#ffffff;text-decoration:none;padding:13px 20px;border-radius:8px;font-weight:700;display:inline-block">Open Python Forge</a></p><p style="font-size:14px;color:#5d6878;line-height:1.5">SkillSphere · Empowering Skills. Building Futures.</p></main>`,
   });
 }
+
+export async function sendCaioEvidenceReviewEmail(
+  recipient: CourseEmailRecipient,
+  course: CourseEmail,
+  lessonTitle: string,
+  submissionType: "action" | "reflection",
+  feedback: string,
+  status: "approved" | "needs_revision",
+  origin?: string
+) {
+  const learnerName = recipient.name?.trim() || "there";
+  const url = courseUrl(course, origin);
+  const statusLabel = status === "approved" ? "Approved" : "Revision requested";
+  const evidenceLabel = submissionType === "action" ? "Action Assignment" : "Reflection";
+  const safeFeedback = escapeHtml(feedback || "No additional feedback was provided.");
+  return sendTransactionalEmail({
+    to: recipient.email,
+    subject: `Your CAIO ${evidenceLabel} was reviewed | SkillSphere`,
+    text: `Hi ${learnerName},\n\nYour ${evidenceLabel} for ${lessonTitle} in ${course.title} was reviewed.\nStatus: ${statusLabel}.\n\nInstructor feedback:\n${feedback || "No additional feedback was provided."}\n\nOpen your CAIO course: ${url}\n\nSkillSphere`,
+    html: `<main style="font-family:Arial,sans-serif;color:#13284b;max-width:600px;margin:0 auto;padding:32px 24px"><p style="margin:0 0 24px;color:#2A63BF;font-weight:700;font-size:18px">SkillSphere</p><h1 style="font-size:26px;line-height:1.2;margin:0 0 16px">Your CAIO work was reviewed</h1><p style="font-size:16px;line-height:1.6">Hi ${escapeHtml(learnerName)}, your <strong>${evidenceLabel}</strong> for <strong>${escapeHtml(lessonTitle)}</strong> was reviewed.</p><p style="font-weight:700">Status: ${statusLabel}</p><blockquote style="border-left:4px solid #F5B942;margin:20px 0;padding:12px 16px;background:#f5f8fc;white-space:pre-wrap;line-height:1.6">${safeFeedback}</blockquote><p style="margin:28px 0"><a href="${url}" style="background:#2A63BF;color:#ffffff;text-decoration:none;padding:13px 20px;border-radius:8px;font-weight:700;display:inline-block">Open CAIO Course</a></p><p style="font-size:14px;color:#5d6878;line-height:1.5">SkillSphere · Empowering Skills. Building Futures.</p></main>`,
+  });
+}

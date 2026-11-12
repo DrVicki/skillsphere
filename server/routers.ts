@@ -67,6 +67,8 @@ import {
   getCaioEvidenceForReview,
   reviewCaioEvidenceSubmission,
   getCaioClassroomKnowledgeChecks,
+  getCaioClassroomProgressSummary,
+  exportCaioClassroomReportCsv,
   createContactMessage,
   getContactMessages,
   subscribeToNewsletter,
@@ -112,7 +114,7 @@ import {
 } from "./db";
 import { storagePut } from "./storage";
 import { invokeLLM } from "./_core/llm";
-import { sendCompletionEmail, sendDiscussionReplyEmail, sendEnrollmentEmail, sendPythonForgeFeedbackEmail } from "./email";
+import { sendCaioEvidenceReviewEmail, sendCompletionEmail, sendDiscussionReplyEmail, sendEnrollmentEmail, sendPythonForgeFeedbackEmail } from "./email";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
@@ -1127,7 +1129,18 @@ export const appRouter = router({
         const assigned = await getClassroomCourses(input.classroomId);
         if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN", message: "CAIO is not assigned to this classroom or you are not its instructor." });
       } else if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "You do not review this course." });
+      const entries = await getCaioEvidenceForReview(input.courseId, input.classroomId);
+      const entry = entries.find(item => item.id === input.id);
+      if (!entry) throw new TRPCError({ code: "NOT_FOUND", message: "CAIO evidence submission was not found in this classroom." });
       await reviewCaioEvidenceSubmission(input.id, input.courseId, ctx.user.id, input.reviewStatus, input.instructorFeedback, input.classroomId);
+      await sendCaioEvidenceReviewEmail(
+        { name: entry.learnerName, email: entry.learnerEmail },
+        { title: course.title, slug: course.slug },
+        entry.moduleTitle ?? "your CAIO lesson",
+        entry.submissionType,
+        input.instructorFeedback,
+        input.reviewStatus,
+      );
       return { success: true };
     }),
     classroomKnowledge: trainerProcedure.input(z.object({ courseId: z.number(), classroomId: z.number() })).query(async ({ ctx, input }) => {
@@ -1136,6 +1149,20 @@ export const appRouter = router({
       const assigned = await getClassroomCourses(input.classroomId);
       if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN", message: "Only the classroom CAIO instructor can view knowledge checks." });
       return getCaioClassroomKnowledgeChecks(input.courseId, input.classroomId);
+    }),
+    classroomProgress: trainerProcedure.input(z.object({ courseId: z.number(), classroomId: z.number() })).query(async ({ ctx, input }) => {
+      const course = await requireCaioCourse(input.courseId);
+      await requireClassroomManager(ctx.user, input.classroomId);
+      const assigned = await getClassroomCourses(input.classroomId);
+      if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN", message: "Only the classroom CAIO instructor can view learner progress." });
+      return getCaioClassroomProgressSummary(input.courseId, input.classroomId);
+    }),
+    exportClassroomReport: trainerProcedure.input(z.object({ courseId: z.number(), classroomId: z.number() })).mutation(async ({ ctx, input }) => {
+      const course = await requireCaioCourse(input.courseId);
+      await requireClassroomManager(ctx.user, input.classroomId);
+      const assigned = await getClassroomCourses(input.classroomId);
+      if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN", message: "Only the classroom CAIO instructor can export this report." });
+      return { filename: `caio-classroom-${input.classroomId}-report.csv`, csv: await exportCaioClassroomReportCsv(input.courseId, input.classroomId) };
     }),
   }),
   // ─── Game Design Diary ─────────────────────────────────────────────────────

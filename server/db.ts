@@ -1771,6 +1771,53 @@ export async function getCaioClassroomKnowledgeChecks(courseId: number, classroo
     recent: scored,
   };
 }
+
+export async function getCaioClassroomProgressSummary(courseId: number, classroomId: number) {
+  const [members, courseModules] = await Promise.all([
+    getClassroomMembers(classroomId),
+    getModulesByCourse(courseId),
+  ]);
+  const learnerIds = members.map(member => member.userId).filter((id): id is number => id !== null);
+  const db = await getDb();
+  const progressRows = db && learnerIds.length
+    ? await db.select({ userId: moduleProgress.userId, moduleId: moduleProgress.moduleId, isCompleted: moduleProgress.isCompleted })
+      .from(moduleProgress)
+      .where(and(eq(moduleProgress.courseId, courseId), inArray(moduleProgress.userId, learnerIds)))
+    : [];
+  const weekFor = (sortOrder: number | null) => Math.min(4, Math.max(1, Math.ceil((sortOrder ?? 1) / 5)));
+  const weeks = [1, 2, 3, 4].map(week => {
+    const weekModules = courseModules.filter(module => weekFor(module.sortOrder) === week);
+    const learners = members.filter(member => member.status === "active" && member.userId !== null).map(member => {
+      const completed = weekModules.filter(module => progressRows.some(row => row.userId === member.userId && row.moduleId === module.id && row.isCompleted)).length;
+      return { userId: member.userId as number, learnerName: member.name, learnerEmail: member.email, completed, total: weekModules.length, percent: weekModules.length ? Math.round((completed / weekModules.length) * 100) : 0 };
+    });
+    return { week, title: `Week ${week}`, totalModules: weekModules.length, learners };
+  });
+  return { weeks };
+}
+
+export async function exportCaioClassroomReportCsv(courseId: number, classroomId: number) {
+  const [evidence, knowledge, progress] = await Promise.all([
+    getCaioEvidenceForReview(courseId, classroomId),
+    getCaioClassroomKnowledgeChecks(courseId, classroomId),
+    getCaioClassroomProgressSummary(courseId, classroomId),
+  ]);
+  const lines = [
+    ["CAIO Classroom Report", "Evidence, knowledge checks, and weekly progress"].map(csvCell).join(","),
+    ["Evidence submissions"].map(csvCell).join(","),
+    ["Learner", "Email", "Lesson", "Type", "Status", "Content", "Instructor feedback", "Submitted", "Reviewed"].map(csvCell).join(","),
+    ...evidence.map(row => [row.learnerName ?? "Learner", row.learnerEmail, row.moduleTitle, row.submissionType, row.reviewStatus, row.content, row.instructorFeedback, row.submittedAt?.toISOString(), row.reviewedAt?.toISOString()].map(csvCell).join(",")),
+    [],
+    ["Knowledge-check results"].map(csvCell).join(","),
+    ["Learner", "Email", "Lesson", "Score", "Passed", "Completed"].map(csvCell).join(","),
+    ...knowledge.recent.map(row => [row.learnerName ?? "Learner", row.learnerEmail, row.moduleTitle, row.score, row.passed ? "Yes" : "No", row.completedAt?.toISOString()].map(csvCell).join(",")),
+    [],
+    ["Weekly learner progress"].map(csvCell).join(","),
+    ["Week", "Learner", "Email", "Completed", "Total", "Percent"].map(csvCell).join(","),
+    ...progress.weeks.flatMap(week => week.learners.map(learner => [week.title, learner.learnerName ?? "Learner", learner.learnerEmail, learner.completed, learner.total, `${learner.percent}%`].map(csvCell).join(","))),
+  ];
+  return lines.join("\n");
+}
 // ─── Payments ─────────────────────────────────────────────────────────────────
 
 export async function createPayment(data: {

@@ -7,6 +7,7 @@ const learner = fs.readFileSync(new URL("../client/src/components/CAIOEvidencePa
 const review = fs.readFileSync(new URL("../client/src/components/CAIOClassroomReviewPanel.tsx", import.meta.url), "utf8");
 const classrooms = fs.readFileSync(new URL("../client/src/pages/admin/AdminClassrooms.tsx", import.meta.url), "utf8");
 const learnCourse = fs.readFileSync(new URL("../client/src/pages/LearnCourse.tsx", import.meta.url), "utf8");
+const email = fs.readFileSync(new URL("./email.ts", import.meta.url), "utf8");
 
 describe("CAIO classroom evidence workflow", () => {
   it("stores separate action and reflection evidence with review state", () => {
@@ -36,5 +37,17 @@ describe("CAIO classroom evidence workflow", () => {
     expect(review).toContain("Request revision");
     expect(review).toContain("Recent knowledge checks");
     expect(classrooms).toContain("CAIOClassroomReviewPanel");
+  });
+  it("provides a combined classroom report, four-week summary, and review emails", () => {
+    expect(db).toContain("getCaioClassroomProgressSummary");
+    expect(db).toContain("exportCaioClassroomReportCsv");
+    expect(db).toContain("Weekly learner progress");
+    expect(router).toContain("classroomProgress: trainerProcedure");
+    expect(router).toContain("exportClassroomReport: trainerProcedure");
+    expect(router).toContain("sendCaioEvidenceReviewEmail");
+    expect(review).toContain("Download report");
+    expect(review).toContain("Four-week learner progress");
+    expect(email).toContain("sendCaioEvidenceReviewEmail");
+    expect(email).toContain("Revision requested");
   });
 });
