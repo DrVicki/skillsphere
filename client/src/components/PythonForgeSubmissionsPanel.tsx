@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Code2, Eye, Search, Users } from "lucide-react";
+import { BarChart3, Code2, Download, Eye, Search, Users } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
 interface Props {
@@ -22,10 +23,17 @@ export default function PythonForgeSubmissionsPanel({ courseId, classroomId, cla
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [feedback, setFeedback] = useState("");
+  const [reviewStatus, setReviewStatus] = useState<"needs_review" | "reviewed" | "resubmit">("needs_review");
   const utils = trpc.useUtils();
+  const { data: metrics } = trpc.pythonForgeLab.classroomMetrics.useQuery(
+    { courseId, classroomId: classroomId ?? 0 },
+    { enabled: classroomId !== undefined && courseId > 0 }
+  );
+  const exportReport = trpc.pythonForgeLab.exportClassroomCsv.useMutation();
   const saveFeedback = trpc.pythonForgeLab.feedback.useMutation({
     onSuccess: () => {
       void utils.pythonForgeLab.submissions.invalidate(queryInput);
+      void utils.pythonForgeLab.classroomMetrics.invalidate({ courseId, classroomId: classroomId ?? 0 });
       toast.success("Feedback saved for the learner.");
     },
     onError: error => toast.error(error.message || "Feedback could not be saved."),
@@ -45,6 +53,7 @@ export default function PythonForgeSubmissionsPanel({ courseId, classroomId, cla
 
   useEffect(() => {
     setFeedback(selected?.instructorFeedback ?? "");
+    setReviewStatus(selected?.reviewStatus ?? "needs_review");
   }, [selected?.id, selected?.instructorFeedback]);
 
   const submitFeedback = () => {
@@ -53,8 +62,20 @@ export default function PythonForgeSubmissionsPanel({ courseId, classroomId, cla
       id: selected.id,
       courseId,
       ...(classroomId !== undefined ? { classroomId } : {}),
+      reviewStatus,
       feedback: feedback.trim() || null,
     });
+  };
+
+  const downloadReport = async () => {
+    if (classroomId === undefined) return;
+    const csv = await exportReport.mutateAsync({ courseId, classroomId });
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${(classroomName || "classroom").replace(/[^a-z0-9]+/gi, "-").toLowerCase()}-python-forge-labs.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -74,10 +95,27 @@ export default function PythonForgeSubmissionsPanel({ courseId, classroomId, cla
               : "Review the latest saved code for each learner and lesson, then leave optional feedback they can read in the lab."}
           </p>
         </div>
-        <div className="flex items-center gap-2 rounded-xl bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-800">
-          <Users className="h-4 w-4" aria-hidden="true" /> {learnerCount} learners · {submissions?.length ?? 0} saves
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2 rounded-xl bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-800">
+            <Users className="h-4 w-4" aria-hidden="true" /> {learnerCount} learners · {submissions?.length ?? 0} saves
+          </div>
+          {classroomId !== undefined && <Button size="sm" variant="outline" onClick={downloadReport} disabled={exportReport.isPending}>
+            <Download className="mr-1.5 h-3.5 w-3.5" /> {exportReport.isPending ? "Preparing…" : "Export CSV"}
+          </Button>}
         </div>
       </div>
+
+      {classroomId !== undefined && metrics && <div className="grid grid-cols-2 gap-3 border-b border-slate-200 bg-slate-50 p-5 sm:grid-cols-4">
+        {[
+          ["Lab completion", `${metrics.completionRate}%`, "bg-blue-100 text-blue-800"],
+          ["Needs review", metrics.needsReviewLabs, "bg-amber-100 text-amber-800"],
+          ["Reviewed", metrics.reviewedLabs, "bg-emerald-100 text-emerald-800"],
+          ["Resubmit", metrics.resubmitLabs, "bg-rose-100 text-rose-800"],
+        ].map(([label, value, tone]) => <div key={String(label)} className="rounded-xl border border-slate-200 bg-white p-3">
+          <div className={`mb-2 flex h-7 w-7 items-center justify-center rounded-lg ${tone}`}><BarChart3 className="h-4 w-4" aria-hidden="true" /></div>
+          <p className="text-lg font-bold text-slate-900">{value}</p><p className="text-xs text-slate-500">{label}</p>
+        </div>)}
+      </div>}
 
       <div className="p-5">
         <div className="relative max-w-md">
@@ -103,6 +141,7 @@ export default function PythonForgeSubmissionsPanel({ courseId, classroomId, cla
                   <th className="px-4 py-3 font-semibold">Learner</th>
                   <th className="px-4 py-3 font-semibold">Lesson</th>
                   <th className="px-4 py-3 font-semibold">Last saved</th>
+                  <th className="px-4 py-3 font-semibold">Status</th>
                   <th className="px-4 py-3 text-right font-semibold">Action</th>
                 </tr>
               </thead>
@@ -118,6 +157,7 @@ export default function PythonForgeSubmissionsPanel({ courseId, classroomId, cla
                       <Badge variant="outline" className="mt-1 text-[10px]">{item.activityId}</Badge>
                     </td>
                     <td className="px-4 py-3 text-xs text-slate-500">{item.updatedAt ? new Date(item.updatedAt).toLocaleString() : "Recently"}</td>
+                    <td className="px-4 py-3"><Badge className={item.reviewStatus === "reviewed" ? "bg-emerald-100 text-emerald-800" : item.reviewStatus === "resubmit" ? "bg-rose-100 text-rose-800" : "bg-amber-100 text-amber-800"}>{item.reviewStatus === "needs_review" ? "Needs review" : item.reviewStatus === "resubmit" ? "Resubmit" : "Reviewed"}</Badge></td>
                     <td className="px-4 py-3 text-right">
                       <Button size="sm" variant="outline" onClick={() => setSelectedId(item.id)}><Eye className="mr-1.5 h-3.5 w-3.5" /> Review code</Button>
                     </td>
@@ -138,6 +178,10 @@ export default function PythonForgeSubmissionsPanel({ courseId, classroomId, cla
           <pre className="max-h-[60vh] overflow-auto rounded-xl bg-slate-950 p-4 text-sm leading-6 text-emerald-100" aria-label="Learner submitted Python code"><code>{selected?.code}</code></pre>
           <div className="space-y-2">
             <label htmlFor="python-forge-feedback" className="text-sm font-semibold text-slate-900">Optional instructor feedback</label>
+            <Select value={reviewStatus} onValueChange={value => setReviewStatus(value as typeof reviewStatus)}>
+              <SelectTrigger aria-label="Submission status"><SelectValue /></SelectTrigger>
+              <SelectContent><SelectItem value="needs_review">Needs review</SelectItem><SelectItem value="reviewed">Reviewed</SelectItem><SelectItem value="resubmit">Resubmit</SelectItem></SelectContent>
+            </Select>
             <Textarea
               id="python-forge-feedback"
               value={feedback}

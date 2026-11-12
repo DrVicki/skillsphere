@@ -78,4 +78,30 @@ describe("Python Forge learner lab persistence", () => {
     expect(classrooms).toContain("PythonForgeSubmissionsPanel");
     expect(classrooms).toContain("classroomId={expanded.id}");
   });
+
+  it("supports classroom review statuses, metrics, export, and learner notifications", () => {
+    const schema = read("drizzle/schema.ts");
+    const db = read("server/db.ts");
+    const router = read("server/routers.ts");
+    const panel = read("client/src/components/PythonForgeSubmissionsPanel.tsx");
+    const lab = read("client/src/components/PythonForgeLab.tsx");
+    const email = read("server/email.ts");
+
+    expect(schema).toContain('mysqlEnum("reviewStatus", ["needs_review", "reviewed", "resubmit"])');
+    expect(schema).toContain('mysqlTable(\n  "python_forge_lab_notifications"');
+    expect(db).toContain("getPythonForgeClassroomMetrics");
+    expect(db).toContain("exportPythonForgeClassroomCsv");
+    expect(db).toContain("createPythonForgeLabNotification");
+    expect(router).toContain("classroomMetrics: trainerProcedure");
+    expect(router).toContain("exportClassroomCsv: trainerProcedure");
+    expect(router).toContain("notifications: protectedProcedure");
+    expect(router).toContain("sendPythonForgeFeedbackEmail");
+    expect(panel).toContain("Needs review");
+    expect(panel).toContain("Resubmit");
+    expect(panel).toContain("Lab completion");
+    expect(panel).toContain("Export CSV");
+    expect(lab).toContain("New instructor notification");
+    expect(lab).toContain("markNotificationRead");
+    expect(email).toContain("sendPythonForgeFeedbackEmail");
+  });
 });

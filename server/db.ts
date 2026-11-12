@@ -24,6 +24,7 @@ import {
   gameDesignDiaryEntries,
   caioAssessmentResults,
   pythonForgeLabCode,
+  pythonForgeLabNotifications,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -1271,6 +1272,7 @@ export async function upsertPythonForgeLabCode(data: {
       set: {
         activityId: data.activityId,
         code: data.code,
+        reviewStatus: "needs_review",
         updatedAt: new Date(),
       },
     });
@@ -1327,6 +1329,7 @@ export async function getPythonForgeLabSubmissions(
       sortOrder: modules.sortOrder,
       activityId: pythonForgeLabCode.activityId,
       code: pythonForgeLabCode.code,
+      reviewStatus: pythonForgeLabCode.reviewStatus,
       instructorFeedback: pythonForgeLabCode.instructorFeedback,
       feedbackBy: pythonForgeLabCode.feedbackBy,
       feedbackAt: pythonForgeLabCode.feedbackAt,
@@ -1350,6 +1353,7 @@ export async function updatePythonForgeLabFeedback(data: {
   id: number;
   courseId: number;
   classroomId?: number;
+  reviewStatus: "needs_review" | "reviewed" | "resubmit";
   feedback: string | null;
   feedbackBy: number | null;
 }) {
@@ -1367,6 +1371,7 @@ export async function updatePythonForgeLabFeedback(data: {
     .update(pythonForgeLabCode)
     .set({
       instructorFeedback: data.feedback,
+      reviewStatus: data.reviewStatus,
       feedbackBy: data.feedback ? data.feedbackBy : null,
       feedbackAt: data.feedback ? new Date() : null,
     })
@@ -1389,6 +1394,54 @@ export async function updatePythonForgeLabFeedback(data: {
     )
     .limit(1);
   return result[0];
+}
+
+export async function getPythonForgeClassroomMetrics(courseId: number, classroomId: number) {
+  const db = await getDb();
+  if (!db) return { totalLearners: 0, totalLabs: 0, expectedSaves: 0, submittedLabs: 0, reviewedLabs: 0, resubmitLabs: 0, needsReviewLabs: 0, completionRate: 0 };
+  const [learners, labs, saves] = await Promise.all([
+    db.select({ count: sql<number>`COUNT(DISTINCT ${classroomMembers.userId})` }).from(classroomMembers).where(and(eq(classroomMembers.classroomId, classroomId), eq(classroomMembers.status, "active"))),
+    db.select({ count: sql<number>`COUNT(*)` }).from(modules).where(eq(modules.courseId, courseId)),
+    db.select({
+      submittedLabs: sql<number>`COUNT(*)`,
+      reviewedLabs: sql<number>`SUM(CASE WHEN ${pythonForgeLabCode.reviewStatus} = 'reviewed' THEN 1 ELSE 0 END)`,
+      resubmitLabs: sql<number>`SUM(CASE WHEN ${pythonForgeLabCode.reviewStatus} = 'resubmit' THEN 1 ELSE 0 END)`,
+      needsReviewLabs: sql<number>`SUM(CASE WHEN ${pythonForgeLabCode.reviewStatus} = 'needs_review' THEN 1 ELSE 0 END)`,
+    }).from(pythonForgeLabCode).where(and(eq(pythonForgeLabCode.courseId, courseId), sql`EXISTS (SELECT 1 FROM classroom_members cm WHERE cm.classroomId = ${classroomId} AND cm.userId = ${pythonForgeLabCode.userId} AND cm.status = 'active')`)),
+  ]);
+  const totalLearners = Number(learners[0]?.count ?? 0);
+  const totalLabs = Number(labs[0]?.count ?? 0);
+  const expectedSaves = totalLearners * totalLabs;
+  const submittedLabs = Number(saves[0]?.submittedLabs ?? 0);
+  return { totalLearners, totalLabs, expectedSaves, submittedLabs, reviewedLabs: Number(saves[0]?.reviewedLabs ?? 0), resubmitLabs: Number(saves[0]?.resubmitLabs ?? 0), needsReviewLabs: Number(saves[0]?.needsReviewLabs ?? 0), completionRate: expectedSaves ? Math.round((submittedLabs / expectedSaves) * 100) : 0 };
+}
+
+export async function exportPythonForgeClassroomCsv(courseId: number, classroomId: number) {
+  const rows = await getPythonForgeLabSubmissions(courseId, classroomId);
+  const escape = (value: unknown) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+  return [
+    ["Learner", "Email", "Lesson", "Activity", "Status", "Last saved", "Feedback"].join(","),
+    ...rows.map(row => [row.learnerName, row.learnerEmail, row.moduleTitle, row.activityId, row.reviewStatus, row.updatedAt?.toISOString?.() ?? row.updatedAt, row.instructorFeedback].map(escape).join(",")),
+  ].join("\n");
+}
+
+export async function createPythonForgeLabNotification(data: { userId: number; courseId: number; moduleId: number; labCodeId: number; title: string; body: string }) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.insert(pythonForgeLabNotifications).values(data);
+  return { id: Number(result[0].insertId) };
+}
+
+export async function getPythonForgeLabNotifications(userId: number, courseId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(pythonForgeLabNotifications).where(and(eq(pythonForgeLabNotifications.userId, userId), eq(pythonForgeLabNotifications.courseId, courseId))).orderBy(desc(pythonForgeLabNotifications.createdAt)).limit(50);
+}
+
+export async function markPythonForgeLabNotificationRead(userId: number, id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(pythonForgeLabNotifications).set({ isRead: true }).where(and(eq(pythonForgeLabNotifications.id, id), eq(pythonForgeLabNotifications.userId, userId)));
 }
 
 export async function upsertModuleProgress(data: {

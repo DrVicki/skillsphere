@@ -2,6 +2,7 @@ import {
   CheckCircle2,
   Code2,
   Download,
+  Bell,
   Lightbulb,
   LoaderCircle,
   Play,
@@ -89,6 +90,14 @@ export default function PythonForgeLab({
     });
   const { mutate: persistCode, isPending: isSaving } =
     trpc.pythonForgeLab.save.useMutation();
+  const utils = trpc.useUtils();
+  const { data: notifications } = trpc.pythonForgeLab.notifications.useQuery(courseId ?? 0, {
+    enabled: canPersist && !!courseId,
+  });
+  const markNotificationRead = trpc.pythonForgeLab.markNotificationRead.useMutation({
+    onSuccess: () => void utils.pythonForgeLab.notifications.invalidate(courseId ?? 0),
+  });
+  const labNotifications = notifications?.filter(notification => notification.moduleId === moduleId && !notification.isRead) ?? [];
 
   useEffect(() => {
     setHydrated(!canPersist);
@@ -255,9 +264,17 @@ export default function PythonForgeLab({
             <div className="mt-3 rounded-xl border border-sky-300/25 bg-sky-300/[0.08] p-4" role="status">
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-sky-200">Instructor feedback</p>
               <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-sky-50">{persistedCode.instructorFeedback}</p>
+              <p className="mt-2 text-xs text-sky-200/80">Status: {persistedCode.reviewStatus === "resubmit" ? "Resubmit requested" : persistedCode.reviewStatus === "reviewed" ? "Reviewed" : "Needs review"}</p>
               {persistedCode.feedbackAt && (
                 <p className="mt-2 text-xs text-sky-200/70">Updated {new Date(persistedCode.feedbackAt).toLocaleString()}</p>
               )}
+            </div>
+          )}
+          {labNotifications.length > 0 && (
+            <div className="mt-3 rounded-xl border border-amber-300/30 bg-amber-300/[0.1] p-4" role="alert">
+              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-amber-100"><Bell className="h-4 w-4" /> New instructor notification</p>
+              <p className="mt-2 text-sm leading-6 text-amber-50">Your instructor left feedback on this lab. Review it above and follow the requested next step.</p>
+              <button type="button" className="mt-3 rounded-md border border-amber-200/30 px-3 py-1.5 text-xs font-semibold text-amber-50 hover:bg-amber-200/10" onClick={() => labNotifications.forEach(notification => markNotificationRead.mutate(notification.id))}>Mark as read</button>
             </div>
           )}
           <p className="mt-3 text-xs leading-5 text-slate-400">

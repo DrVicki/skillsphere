@@ -78,6 +78,11 @@ import {
   getPythonForgeLabProgress,
   getPythonForgeLabSubmissions,
   updatePythonForgeLabFeedback,
+  getPythonForgeClassroomMetrics,
+  exportPythonForgeClassroomCsv,
+  createPythonForgeLabNotification,
+  getPythonForgeLabNotifications,
+  markPythonForgeLabNotificationRead,
   getBlogPosts,
   getBlogPostBySlug,
   getBlogPostById,
@@ -98,7 +103,7 @@ import {
 } from "./db";
 import { storagePut } from "./storage";
 import { invokeLLM } from "./_core/llm";
-import { sendCompletionEmail, sendDiscussionReplyEmail, sendEnrollmentEmail } from "./email";
+import { sendCompletionEmail, sendDiscussionReplyEmail, sendEnrollmentEmail, sendPythonForgeFeedbackEmail } from "./email";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
@@ -891,6 +896,30 @@ export const appRouter = router({
         return getPythonForgeLabSubmissions(input.courseId, input.classroomId);
       }),
 
+    classroomMetrics: trainerProcedure
+      .input(z.object({ courseId: z.number(), classroomId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        const course = await requirePythonForgeCourse(input.courseId);
+        await requireClassroomManager(ctx.user, input.classroomId);
+        const classroomCourses = await getClassroomCourses(input.classroomId);
+        if (!classroomCourses.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Only the classroom course instructor can view lab metrics." });
+        }
+        return getPythonForgeClassroomMetrics(input.courseId, input.classroomId);
+      }),
+
+    exportClassroomCsv: trainerProcedure
+      .input(z.object({ courseId: z.number(), classroomId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        const course = await requirePythonForgeCourse(input.courseId);
+        await requireClassroomManager(ctx.user, input.classroomId);
+        const classroomCourses = await getClassroomCourses(input.classroomId);
+        if (!classroomCourses.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Only the classroom course instructor can export lab reports." });
+        }
+        return exportPythonForgeClassroomCsv(input.courseId, input.classroomId);
+      }),
+
     feedback: trainerProcedure
       .input(
         z.object({
@@ -898,6 +927,7 @@ export const appRouter = router({
           courseId: z.number(),
           classroomId: z.number().optional(),
           feedback: z.string().trim().max(5000).nullable(),
+          reviewStatus: z.enum(["needs_review", "reviewed", "resubmit"]),
         })
       )
       .mutation(async ({ ctx, input }) => {
@@ -911,13 +941,53 @@ export const appRouter = router({
         } else if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
           throw new TRPCError({ code: "FORBIDDEN", message: "Only the course instructor can provide lab feedback." });
         }
-        return updatePythonForgeLabFeedback({
+        const updated = await updatePythonForgeLabFeedback({
           id: input.id,
           courseId: input.courseId,
           classroomId: input.classroomId,
+          reviewStatus: input.reviewStatus,
           feedback: input.feedback || null,
           feedbackBy: input.feedback ? ctx.user.id : null,
         });
+        if (updated && input.feedback) {
+          const [learner, module] = await Promise.all([
+            getUserById(updated.userId),
+            getModuleById(updated.moduleId),
+          ]);
+          await createPythonForgeLabNotification({
+            userId: updated.userId,
+            courseId: updated.courseId,
+            moduleId: updated.moduleId,
+            labCodeId: updated.id,
+            title: input.reviewStatus === "resubmit" ? "Python Forge resubmission requested" : "Python Forge lab reviewed",
+            body: input.feedback,
+          });
+          if (learner && module) {
+            await sendPythonForgeFeedbackEmail(
+              learner,
+              course,
+              module.title,
+              input.feedback,
+              input.reviewStatus,
+              `${ctx.req.protocol}://${ctx.req.headers.host ?? "myskillsphere.com"}`
+            );
+          }
+        }
+        return updated;
+      }),
+
+    notifications: protectedProcedure
+      .input(z.number())
+      .query(async ({ ctx, input }) => {
+        await requirePythonForgeCourse(input);
+        return getPythonForgeLabNotifications(ctx.user.id, input);
+      }),
+
+    markNotificationRead: protectedProcedure
+      .input(z.number())
+      .mutation(async ({ ctx, input }) => {
+        await markPythonForgeLabNotificationRead(ctx.user.id, input);
+        return { success: true };
       }),
 
     latest: protectedProcedure

@@ -518,6 +518,9 @@ export const pythonForgeLabCode = mysqlTable(
     moduleId: int("moduleId").notNull(),
     activityId: varchar("activityId", { length: 64 }).notNull(),
     code: text("code").notNull(),
+    reviewStatus: mysqlEnum("reviewStatus", ["needs_review", "reviewed", "resubmit"])
+      .default("needs_review")
+      .notNull(),
     instructorFeedback: text("instructorFeedback"),
     feedbackBy: int("feedbackBy"),
     feedbackAt: timestamp("feedbackAt"),
@@ -534,3 +537,26 @@ export const pythonForgeLabCode = mysqlTable(
 );
 export type PythonForgeLabCode = typeof pythonForgeLabCode.$inferSelect;
 export type InsertPythonForgeLabCode = typeof pythonForgeLabCode.$inferInsert;
+
+export const pythonForgeLabNotifications = mysqlTable(
+  "python_forge_lab_notifications",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: int("userId").notNull(),
+    courseId: int("courseId").notNull(),
+    moduleId: int("moduleId").notNull(),
+    labCodeId: int("labCodeId").notNull(),
+    title: varchar("title", { length: 255 }).notNull(),
+    body: text("body").notNull(),
+    isRead: boolean("isRead").default(false).notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [
+    index("python_forge_notifications_user_course_idx").on(
+      table.userId,
+      table.courseId,
+      table.isRead
+    ),
+  ]
+);
+export type PythonForgeLabNotification = typeof pythonForgeLabNotifications.$inferSelect;
