@@ -419,6 +419,24 @@ export const discussionNotifications = mysqlTable("discussion_notifications", {
 export type DiscussionNotification = typeof discussionNotifications.$inferSelect;
 export type InsertDiscussionNotification = typeof discussionNotifications.$inferInsert;
 
+// ─── CAIO Evidence Notifications ────────────────────────────────────────────
+export const caioEvidenceNotifications = mysqlTable("caio_evidence_notifications", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  courseId: int("courseId").notNull(),
+  evidenceId: int("evidenceId").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  body: text("body").notNull(),
+  reviewStatus: mysqlEnum("reviewStatus", ["approved", "needs_revision"]).notNull(),
+  isRead: boolean("isRead").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, table => ({
+  userCourseCreatedIdx: index("caio_evidence_notifications_user_course_idx").on(table.userId, table.courseId, table.createdAt),
+}));
+
+export type CaioEvidenceNotification = typeof caioEvidenceNotifications.$inferSelect;
+export type InsertCaioEvidenceNotification = typeof caioEvidenceNotifications.$inferInsert;
+
 // ─── Chat Messages ────────────────────────────────────────────────────────────
 
 export const chatMessages = mysqlTable("chat_messages", {

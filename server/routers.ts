@@ -69,6 +69,10 @@ import {
   getCaioClassroomKnowledgeChecks,
   getCaioClassroomProgressSummary,
   exportCaioClassroomReportCsv,
+  createCaioEvidenceNotification,
+  getCaioEvidenceNotifications,
+  markCaioEvidenceNotificationRead,
+  getCaioLearnerProgressSummary,
   createContactMessage,
   getContactMessages,
   subscribeToNewsletter,
@@ -1133,6 +1137,7 @@ export const appRouter = router({
       const entry = entries.find(item => item.id === input.id);
       if (!entry) throw new TRPCError({ code: "NOT_FOUND", message: "CAIO evidence submission was not found in this classroom." });
       await reviewCaioEvidenceSubmission(input.id, input.courseId, ctx.user.id, input.reviewStatus, input.instructorFeedback, input.classroomId);
+      await createCaioEvidenceNotification({ userId: entry.userId, courseId: input.courseId, evidenceId: input.id, title: `${entry.submissionType === "action" ? "Action Assignment" : "Reflection"} reviewed`, body: input.instructorFeedback.trim() || (input.reviewStatus === "approved" ? "Your instructor approved this submission." : "Your instructor requested a revision."), reviewStatus: input.reviewStatus });
       await sendCaioEvidenceReviewEmail(
         { name: entry.learnerName, email: entry.learnerEmail },
         { title: course.title, slug: course.slug },
@@ -1141,6 +1146,15 @@ export const appRouter = router({
         input.instructorFeedback,
         input.reviewStatus,
       );
+      return { success: true };
+    }),
+    notifications: protectedProcedure.input(z.number()).query(async ({ ctx, input }) => {
+      await requireCaioCourse(input);
+      return getCaioEvidenceNotifications(ctx.user.id, input);
+    }),
+    markNotificationRead: protectedProcedure.input(z.object({ id: z.number(), courseId: z.number() })).mutation(async ({ ctx, input }) => {
+      await requireCaioCourse(input.courseId);
+      await markCaioEvidenceNotificationRead(ctx.user.id, input.id);
       return { success: true };
     }),
     classroomKnowledge: trainerProcedure.input(z.object({ courseId: z.number(), classroomId: z.number() })).query(async ({ ctx, input }) => {
@@ -1156,6 +1170,11 @@ export const appRouter = router({
       const assigned = await getClassroomCourses(input.classroomId);
       if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN", message: "Only the classroom CAIO instructor can view learner progress." });
       return getCaioClassroomProgressSummary(input.courseId, input.classroomId);
+    }),
+    learnerProgress: protectedProcedure.input(z.number()).query(async ({ ctx, input }) => {
+      const course = await requireCaioCourse(input);
+      if (!await getEnrollment(ctx.user.id, course.id)) throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in the CAIO BootCamp to view progress." });
+      return getCaioLearnerProgressSummary(ctx.user.id, input);
     }),
     exportClassroomReport: trainerProcedure.input(z.object({ courseId: z.number(), classroomId: z.number() })).mutation(async ({ ctx, input }) => {
       const course = await requireCaioCourse(input.courseId);

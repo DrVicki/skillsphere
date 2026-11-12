@@ -27,6 +27,7 @@ import {
   pythonForgeLabNotifications,
   gameDesignKnowledgeCheckResults,
   caioEvidenceSubmissions,
+  caioEvidenceNotifications,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -1743,6 +1744,27 @@ export async function reviewCaioEvidenceSubmission(id: number, courseId: number,
     eq(caioEvidenceSubmissions.courseId, courseId),
     ...(classroomId ? [sql`EXISTS (SELECT 1 FROM classroom_members cm WHERE cm.classroomId = ${classroomId} AND cm.userId = ${caioEvidenceSubmissions.userId} AND cm.status = 'active')`] : []),
   ));
+}
+export async function createCaioEvidenceNotification(data: { userId: number; courseId: number; evidenceId: number; title: string; body: string; reviewStatus: "approved" | "needs_revision" }) {
+  const db = await getDb();
+  if (!db) return;
+  const result = await db.insert(caioEvidenceNotifications).values(data);
+  return { id: Number(result[0].insertId) };
+}
+export async function getCaioEvidenceNotifications(userId: number, courseId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(caioEvidenceNotifications).where(and(eq(caioEvidenceNotifications.userId, userId), eq(caioEvidenceNotifications.courseId, courseId))).orderBy(desc(caioEvidenceNotifications.createdAt)).limit(50);
+}
+export async function markCaioEvidenceNotificationRead(userId: number, id: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(caioEvidenceNotifications).set({ isRead: true }).where(and(eq(caioEvidenceNotifications.id, id), eq(caioEvidenceNotifications.userId, userId)));
+}
+export async function getCaioLearnerProgressSummary(userId: number, courseId: number) {
+  const [courseModules, progressRows] = await Promise.all([getModulesByCourse(courseId), getModuleProgress(userId, courseId)]);
+  const weekFor = (sortOrder: number | null) => Math.min(4, Math.max(1, Math.ceil((sortOrder ?? 1) / 5)));
+  return { weeks: [1, 2, 3, 4].map(week => { const weekModules = courseModules.filter(module => weekFor(module.sortOrder) === week); const completed = weekModules.filter(module => progressRows.some(row => row.moduleId === module.id && row.isCompleted)).length; return { week, title: `Week ${week}`, completed, total: weekModules.length, percent: weekModules.length ? Math.round((completed / weekModules.length) * 100) : 0 }; }) };
 }
 
 export async function getCaioClassroomKnowledgeChecks(courseId: number, classroomId: number) {

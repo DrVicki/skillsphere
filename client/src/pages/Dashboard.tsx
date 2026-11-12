@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import CourseCertificate from "@/components/CourseCertificate";
 import FirstTimeStudentGuide from "@/components/FirstTimeStudentGuide";
 import PythonForgeProgressDashboard from "@/components/PythonForgeProgressDashboard";
+import CAIOProgressChart from "@/components/CAIOProgressChart";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -136,6 +137,9 @@ export default function Dashboard() {
     enrollments?.filter(e => (e.progressPercent ?? 0) < 100) ?? [];
   const pythonForgeEnrollment = enrollments?.find(
     enrollment => enrollment.course?.slug === "python-forge-learn-by-building"
+  );
+  const caioEnrollment = enrollments?.find(
+    enrollment => enrollment.course?.slug === "chief-ai-officer-caio-4-week-bootcamp"
   );
 
   function openCert(enrollment: (typeof completedCourses)[0]) {
@@ -369,6 +373,9 @@ export default function Dashboard() {
               )}
               {pythonForgeEnrollment && (
                 <PythonForgeProgressDashboard courseId={pythonForgeEnrollment.course?.id ?? pythonForgeEnrollment.courseId} />
+              )}
+              {caioEnrollment && (
+                <CAIOProgressChart courseId={caioEnrollment.course?.id ?? caioEnrollment.courseId} />
               )}
               {/* In Progress */}
               {inProgressCourses.length > 0 && (

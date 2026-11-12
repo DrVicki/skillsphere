@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, ClipboardPenLine, Loader2, Send } from "lucide-react";
+import { Bell, CheckCircle2, ClipboardPenLine, Loader2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +26,8 @@ export default function CAIOEvidencePanel({ courseId, moduleId, moduleTitle, act
   const { data: submissions, isLoading } = trpc.caioEvidence.list.useQuery(courseId, { enabled: canPersist });
   const save = trpc.caioEvidence.save.useMutation({ onSuccess: () => utils.caioEvidence.list.invalidate(courseId) });
   const submit = trpc.caioEvidence.submit.useMutation({ onSuccess: () => utils.caioEvidence.list.invalidate(courseId) });
+  const { data: notifications } = trpc.caioEvidence.notifications.useQuery(courseId, { enabled: canPersist });
+  const markNotificationRead = trpc.caioEvidence.markNotificationRead.useMutation({ onSuccess: () => utils.caioEvidence.notifications.invalidate(courseId) });
   const current = useMemo(() => submissions?.filter(item => item.moduleId === moduleId) ?? [], [submissions, moduleId]);
   const action = current.find(item => item.submissionType === "action");
   const reflection = current.find(item => item.submissionType === "reflection");
@@ -71,6 +73,7 @@ export default function CAIOEvidencePanel({ courseId, moduleId, moduleTitle, act
   );
   return <section className="mt-6 rounded-2xl border border-[#F5B942]/40 bg-[#FFFDF5] p-5" aria-label={`CAIO evidence submission for ${moduleTitle}`}>
     <div className="flex items-start gap-3"><div className="rounded-lg bg-[#2A63BF] p-2 text-white"><CheckCircle2 className="h-5 w-5" /></div><div><h3 className="font-bold text-foreground">CAIO Action &amp; Reflection Diary</h3><p className="mt-1 text-sm text-muted-foreground">Save a draft while you work, then submit both pieces for instructor review. Your feedback and status stay attached to this lesson.</p></div></div>
+    {notifications?.length ? <div className="mt-5 rounded-xl border border-[#2A63BF]/20 bg-white p-4"><h4 className="flex items-center gap-2 font-semibold text-[#1E3A6E]"><Bell className="h-4 w-4" /> Instructor feedback history</h4><div className="mt-3 space-y-2">{notifications.map(notification => <button type="button" key={notification.id} className={`w-full rounded-lg border p-3 text-left transition hover:border-[#2A63BF]/50 ${notification.isRead ? "bg-slate-50" : "bg-[#EEF4FF]"}`} onClick={() => !notification.isRead && markNotificationRead.mutate({ id: notification.id, courseId })}><div className="flex flex-wrap items-center justify-between gap-2"><span className="font-medium text-slate-900">{notification.title}</span><span className="text-xs text-muted-foreground">{new Date(notification.createdAt).toLocaleString()}</span></div><p className="mt-1 text-sm text-slate-700">{notification.body}</p>{!notification.isRead && <span className="mt-2 inline-block text-xs font-semibold text-[#2A63BF]">New · select to mark read</span>}</button>)}</div></div> : null}
     {isLoading ? <div className="mt-5 flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Loading your saved evidence…</div> : <div className="mt-5 grid gap-4 lg:grid-cols-2">
       {card("action", actionText, setActionText, action, actionPrompt ?? "Complete the action steps in this lesson and describe the artifact, decision, or evidence you created.", "Turn the lesson into an artifact")}
       {card("reflection", reflectionText, setReflectionText, reflection, reflectionPrompt ?? `What did you learn from ${moduleTitle}, and how will it change your next CAIO decision?`, "Capture your leadership reflection")}
