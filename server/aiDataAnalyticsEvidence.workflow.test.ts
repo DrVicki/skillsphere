@@ -31,7 +31,11 @@ describe("AI Data Analytics evidence workflow", () => {
     expect(evidence).toContain("Submit your reflection");
     expect(review).toContain("Analytics evidence review");
     expect(review).toContain("Export CSV");
+    expect(review).toContain("Export PDF");
+    expect(review).toContain("jsPDF");
     expect(page).toContain("AIDataAnalyticsEvidencePanel");
     expect(classroom).toContain("AIDataAnalyticsReviewPanel");
+    expect(read("server/email.ts")).toContain("sendAIDataAnalyticsEvidenceReviewEmail");
+    expect(read("server/routers.ts")).toContain("sendAIDataAnalyticsEvidenceReviewEmail");
   });
 });

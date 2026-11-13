@@ -125,7 +125,7 @@ import {
 } from "./db";
 import { storagePut } from "./storage";
 import { invokeLLM } from "./_core/llm";
-import { sendCaioEvidenceReviewEmail, sendCompletionEmail, sendDiscussionReplyEmail, sendEnrollmentEmail, sendPythonForgeFeedbackEmail } from "./email";
+import { sendAIDataAnalyticsEvidenceReviewEmail, sendCaioEvidenceReviewEmail, sendCompletionEmail, sendDiscussionReplyEmail, sendEnrollmentEmail, sendPythonForgeFeedbackEmail } from "./email";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "");
@@ -1137,7 +1137,18 @@ export const appRouter = router({
       const course = await requireAIDataAnalyticsCourse(input.courseId);
       if (input.classroomId !== undefined) { await requireClassroomManager(ctx.user, input.classroomId); const assigned = await getClassroomCourses(input.classroomId); if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN", message: "Analytics is not assigned to this classroom or you are not its instructor." }); }
       else if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "You do not review this course." });
+      const entries = await getAIDataAnalyticsEvidenceForReview(input.courseId, input.classroomId);
+      const entry = entries.find(item => item.id === input.id);
+      if (!entry) throw new TRPCError({ code: "NOT_FOUND", message: "Analytics evidence submission was not found in this classroom." });
       await reviewAIDataAnalyticsEvidence(input.id, input.courseId, ctx.user.id, input.reviewStatus, input.instructorFeedback, input.classroomId);
+      await sendAIDataAnalyticsEvidenceReviewEmail(
+        { name: entry.learnerName, email: entry.learnerEmail },
+        { title: course.title, slug: course.slug },
+        entry.moduleTitle ?? "your analytics lesson",
+        entry.evidenceType,
+        input.instructorFeedback,
+        input.reviewStatus,
+      );
       return { success: true };
     }),
     classroomMetrics: trainerProcedure.input(z.object({ courseId: z.number(), classroomId: z.number() })).query(async ({ ctx, input }) => { const course = await requireAIDataAnalyticsCourse(input.courseId); await requireClassroomManager(ctx.user, input.classroomId); const assigned = await getClassroomCourses(input.classroomId); if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN" }); return getAIDataAnalyticsClassroomMetrics(input.courseId, input.classroomId); }),

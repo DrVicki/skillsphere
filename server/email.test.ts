@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { sendCompletionEmail, sendEnrollmentEmail } from "./email";
+import { sendAIDataAnalyticsEvidenceReviewEmail, sendCompletionEmail, sendEnrollmentEmail } from "./email";
 
 describe("transactional course emails", () => {
   beforeEach(() => {
@@ -42,5 +42,23 @@ describe("transactional course emails", () => {
     const email = JSON.parse(String(request?.[1]?.body)) as { html: string };
     expect(email.html).toContain("https://myskillsphere.com/learn/ai-for-business");
     expect(email.html).not.toContain("untrusted.example.com");
+  });
+
+  it("sends analytics evidence approval and revision notifications", async () => {
+    await sendAIDataAnalyticsEvidenceReviewEmail(
+      { name: "Avery Learner", email: "avery@example.com" },
+      { title: "Using AI in Data Analytics", slug: "ai-in-data-analytics" },
+      "Customer Analytics Dashboard",
+      "capstone",
+      "Please add one paragraph explaining your data-quality decision.",
+      "needs_revision",
+      "https://myskillsphere.com",
+    );
+    const request = vi.mocked(fetch).mock.calls[0];
+    const email = JSON.parse(String(request?.[1]?.body)) as { subject: string; text: string; html: string };
+    expect(email.subject).toContain("analytics evidence was reviewed");
+    expect(email.text).toContain("Revision requested");
+    expect(email.html).toContain("Customer Analytics Dashboard");
+    expect(email.html).not.toContain("<script");
   });
 });
