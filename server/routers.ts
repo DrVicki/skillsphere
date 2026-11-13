@@ -98,6 +98,13 @@ import {
   createPythonForgeLabNotification,
   getPythonForgeLabNotifications,
   markPythonForgeLabNotificationRead,
+  getAIDataAnalyticsEvidence,
+  upsertAIDataAnalyticsEvidence,
+  submitAIDataAnalyticsEvidence,
+  getAIDataAnalyticsEvidenceForReview,
+  reviewAIDataAnalyticsEvidence,
+  getAIDataAnalyticsClassroomMetrics,
+  exportAIDataAnalyticsClassroomCsv,
   getBlogPosts,
   getBlogPostBySlug,
   getBlogPostById,
@@ -133,6 +140,7 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
 const GAME_DESIGN_COURSE_SLUG = "professional-certificate-game-design";
 const CAIO_COURSE_SLUG = "chief-ai-officer-caio-4-week-bootcamp";
 const PYTHON_FORGE_COURSE_SLUG = "python-forge-learn-by-building";
+const AI_DATA_ANALYTICS_COURSE_SLUG = "ai-in-data-analytics";
 
 async function requireGameDesignCourse(courseId: number) {
   const course = await getCourseById(courseId);
@@ -170,6 +178,13 @@ async function requirePythonForgeCourse(courseId: number) {
   if (course.slug !== PYTHON_FORGE_COURSE_SLUG) {
     throw new TRPCError({ code: "FORBIDDEN", message: "Python lab code is available only for Python Forge." });
   }
+  return course;
+}
+
+async function requireAIDataAnalyticsCourse(courseId: number) {
+  const course = await getCourseById(courseId);
+  if (!course) throw new TRPCError({ code: "NOT_FOUND", message: "Course not found" });
+  if (course.slug !== AI_DATA_ANALYTICS_COURSE_SLUG) throw new TRPCError({ code: "FORBIDDEN", message: "Analytics evidence is available only for Using AI in Data Analytics." });
   return course;
 }
 
@@ -1098,6 +1113,36 @@ export const appRouter = router({
       }),
   }),
 
+  aiDataAnalyticsEvidence: router({
+    list: protectedProcedure.input(z.number()).query(async ({ ctx, input }) => {
+      const course = await requireAIDataAnalyticsCourse(input);
+      if (!await getEnrollment(ctx.user.id, course.id)) throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in Using AI in Data Analytics before submitting evidence." });
+      return getAIDataAnalyticsEvidence(ctx.user.id, input);
+    }),
+    save: protectedProcedure.input(z.object({ courseId: z.number(), moduleId: z.number(), evidenceType: z.enum(["practice_code", "knowledge_check", "capstone", "reflection"]), content: z.string().trim().min(1).max(100000), score: z.number().int().min(0).optional(), total: z.number().int().min(1).optional(), passed: z.boolean().optional(), executed: z.boolean().optional() })).mutation(async ({ ctx, input }) => {
+      const course = await requireAIDataAnalyticsCourse(input.courseId);
+      if (!await getEnrollment(ctx.user.id, course.id)) throw new TRPCError({ code: "FORBIDDEN", message: "Enroll before saving analytics evidence." });
+      const module = await getModuleById(input.moduleId);
+      if (!module || module.courseId !== course.id) throw new TRPCError({ code: "BAD_REQUEST", message: "This lesson does not belong to the analytics course." });
+      return upsertAIDataAnalyticsEvidence({ ...input, userId: ctx.user.id });
+    }),
+    submit: protectedProcedure.input(z.object({ id: z.number(), courseId: z.number() })).mutation(async ({ ctx, input }) => { await requireAIDataAnalyticsCourse(input.courseId); await submitAIDataAnalyticsEvidence(input.id, ctx.user.id, input.courseId); return { success: true }; }),
+    reviewQueue: trainerProcedure.input(z.object({ courseId: z.number(), classroomId: z.number().optional(), status: z.enum(["draft", "submitted", "needs_revision", "approved"]).optional() })).query(async ({ ctx, input }) => {
+      const course = await requireAIDataAnalyticsCourse(input.courseId);
+      if (input.classroomId !== undefined) { await requireClassroomManager(ctx.user, input.classroomId); const assigned = await getClassroomCourses(input.classroomId); if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN", message: "Analytics is not assigned to this classroom or you are not its instructor." }); }
+      else if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "You do not review this course." });
+      return getAIDataAnalyticsEvidenceForReview(input.courseId, input.classroomId, input.status);
+    }),
+    review: trainerProcedure.input(z.object({ id: z.number(), courseId: z.number(), classroomId: z.number().optional(), reviewStatus: z.enum(["needs_revision", "approved"]), instructorFeedback: z.string().trim().max(5000).default("") })).mutation(async ({ ctx, input }) => {
+      const course = await requireAIDataAnalyticsCourse(input.courseId);
+      if (input.classroomId !== undefined) { await requireClassroomManager(ctx.user, input.classroomId); const assigned = await getClassroomCourses(input.classroomId); if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN", message: "Analytics is not assigned to this classroom or you are not its instructor." }); }
+      else if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "You do not review this course." });
+      await reviewAIDataAnalyticsEvidence(input.id, input.courseId, ctx.user.id, input.reviewStatus, input.instructorFeedback, input.classroomId);
+      return { success: true };
+    }),
+    classroomMetrics: trainerProcedure.input(z.object({ courseId: z.number(), classroomId: z.number() })).query(async ({ ctx, input }) => { const course = await requireAIDataAnalyticsCourse(input.courseId); await requireClassroomManager(ctx.user, input.classroomId); const assigned = await getClassroomCourses(input.classroomId); if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN" }); return getAIDataAnalyticsClassroomMetrics(input.courseId, input.classroomId); }),
+    exportClassroomCsv: trainerProcedure.input(z.object({ courseId: z.number(), classroomId: z.number() })).mutation(async ({ ctx, input }) => { const course = await requireAIDataAnalyticsCourse(input.courseId); await requireClassroomManager(ctx.user, input.classroomId); const assigned = await getClassroomCourses(input.classroomId); if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN" }); return { filename: `ai-data-analytics-${input.classroomId}-evidence.csv`, csv: await exportAIDataAnalyticsClassroomCsv(input.courseId, input.classroomId) }; }),
+  }),
   caioEvidence: router({
     list: protectedProcedure.input(z.number()).query(async ({ ctx, input }) => {
       const course = await requireCaioCourse(input);

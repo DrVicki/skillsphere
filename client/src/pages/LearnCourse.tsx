@@ -39,6 +39,7 @@ import CubeMoveLabs from "@/components/CubeMoveLabs";
 import QuantumVisualizations from "@/components/QuantumVisualizations";
 import AIDataAnalyticsVisualizations from "@/components/AIDataAnalyticsVisualizations";
 import AIDataAnalyticsCodeLab from "@/components/AIDataAnalyticsCodeLab";
+import AIDataAnalyticsEvidencePanel from "@/components/AIDataAnalyticsEvidencePanel";
 import PythonForgeLab from "@/components/PythonForgeLab";
 import CAIOActivityTemplateDownload from "@/components/CAIOActivityTemplateDownload";
 import CAIOPathAssessment from "@/components/CAIOPathAssessment";
@@ -188,6 +189,7 @@ export default function LearnCourse({ params }: Props) {
       refetchProgress();
     },
   });
+  const saveAnalyticsEvidence = trpc.aiDataAnalyticsEvidence.save.useMutation();
 
   const createThread = trpc.discussions.createThread.useMutation({
     onSuccess: () => {
@@ -528,7 +530,19 @@ export default function LearnCourse({ params }: Props) {
                     {aiDataAnalyticsLab && (
                       <AIDataAnalyticsCodeLab
                         lab={aiDataAnalyticsLab}
+                        courseId={course.id}
                         moduleId={activeModule.id}
+                        canPersist={hasCourseAccess && isAuthenticated}
+                        onLabCompleted={() => markComplete.mutate({ moduleId: activeModule.id, courseId: course.id })}
+                      />
+                    )}
+                    {course.slug === "ai-in-data-analytics" && activeModule && (
+                      <AIDataAnalyticsEvidencePanel
+                        courseId={course.id}
+                        moduleId={activeModule.id}
+                        moduleTitle={activeModule.title}
+                        isCapstone={aiDataAnalyticsLab?.id === "capstone"}
+                        canPersist={hasCourseAccess && isAuthenticated}
                       />
                     )}
 
@@ -619,6 +633,17 @@ export default function LearnCourse({ params }: Props) {
                           assessmentData={activeModule.assessmentData as any}
                           isCompleted={!!isModuleCompleted(activeModule.id)}
                           onComplete={(score, passed) => {
+                            if (course.slug === "ai-in-data-analytics" && hasCourseAccess) {
+                              void saveAnalyticsEvidence.mutateAsync({
+                                courseId: course.id,
+                                moduleId: activeModule.id,
+                                evidenceType: "knowledge_check",
+                                content: `Knowledge check completed for ${activeModule.title}.`,
+                                score,
+                                total: 100,
+                                passed,
+                              });
+                            }
                             if (!passed) {
                               toast.error(
                                 "Reach the passing score to complete this assessment."

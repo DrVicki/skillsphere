@@ -600,7 +600,35 @@ export const pythonForgeLabCode = mysqlTable(
 );
 export type PythonForgeLabCode = typeof pythonForgeLabCode.$inferSelect;
 export type InsertPythonForgeLabCode = typeof pythonForgeLabCode.$inferInsert;
-
+// Learner evidence for the AI in Data Analytics course.
+export const aiDataAnalyticsEvidence = mysqlTable(
+  "ai_data_analytics_evidence",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: int("userId").notNull(),
+    courseId: int("courseId").notNull(),
+    moduleId: int("moduleId").notNull(),
+    evidenceType: mysqlEnum("evidenceType", ["practice_code", "knowledge_check", "capstone", "reflection"]).notNull(),
+    content: text("content").notNull(),
+    score: int("score"),
+    total: int("total"),
+    passed: boolean("passed"),
+    executed: boolean("executed").default(false).notNull(),
+    reviewStatus: mysqlEnum("reviewStatus", ["draft", "submitted", "needs_revision", "approved"]).default("draft").notNull(),
+    instructorFeedback: text("instructorFeedback"),
+    reviewedBy: int("reviewedBy"),
+    reviewedAt: timestamp("reviewedAt"),
+    submittedAt: timestamp("submittedAt"),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  table => [
+    uniqueIndex("ai_data_evidence_user_module_type_unique").on(table.userId, table.moduleId, table.evidenceType),
+    index("ai_data_evidence_course_status_idx").on(table.courseId, table.reviewStatus),
+  ]
+);
+export type AIDataAnalyticsEvidence = typeof aiDataAnalyticsEvidence.$inferSelect;
+export type InsertAIDataAnalyticsEvidence = typeof aiDataAnalyticsEvidence.$inferInsert;
 export const pythonForgeLabNotifications = mysqlTable(
   "python_forge_lab_notifications",
   {

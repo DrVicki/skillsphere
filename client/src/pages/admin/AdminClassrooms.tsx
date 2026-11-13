@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import PythonForgeSubmissionsPanel from "@/components/PythonForgeSubmissionsPanel";
 import GameDesignDiaryReviewPanel from "@/components/GameDesignDiaryReviewPanel";
 import CAIOClassroomReviewPanel from "@/components/CAIOClassroomReviewPanel";
+import AIDataAnalyticsReviewPanel from "@/components/AIDataAnalyticsReviewPanel";
 import {
   Archive,
   BookOpen,
@@ -529,6 +530,17 @@ export default function AdminClassrooms() {
                           <CAIOClassroomReviewPanel
                             courseId={classroomCoursesQuery.data.find(
                               course => course.slug === "chief-ai-officer-caio-4-week-bootcamp"
+                            )!.courseId}
+                            classroomId={expanded.id}
+                            classroomName={expanded.name}
+                          />
+                        )}
+                        {classroomCoursesQuery.data?.some(
+                          course => course.slug === "ai-in-data-analytics"
+                        ) && (
+                          <AIDataAnalyticsReviewPanel
+                            courseId={classroomCoursesQuery.data.find(
+                              course => course.slug === "ai-in-data-analytics"
                             )!.courseId}
                             classroomId={expanded.id}
                             classroomName={expanded.name}

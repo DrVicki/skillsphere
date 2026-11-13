@@ -120,6 +120,13 @@
       "when": 1794519689396,
       "tag": "0016_yellow_mojo",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "5",
+      "when": 1794605135534,
+      "tag": "0017_chief_impossible_man",
+      "breakpoints": true
     }
   ]
 }

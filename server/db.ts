@@ -28,6 +28,7 @@ import {
   gameDesignKnowledgeCheckResults,
   caioEvidenceSubmissions,
   caioEvidenceNotifications,
+  aiDataAnalyticsEvidence,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -1604,6 +1605,60 @@ export async function getLatestCaioAssessmentResult(userId: number, courseId: nu
     eq(caioAssessmentResults.moduleId, moduleId),
   )).orderBy(desc(caioAssessmentResults.createdAt)).limit(1);
   return rows[0] ?? null;
+}
+
+export async function getAIDataAnalyticsEvidence(userId: number, courseId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(aiDataAnalyticsEvidence).where(and(eq(aiDataAnalyticsEvidence.userId, userId), eq(aiDataAnalyticsEvidence.courseId, courseId))).orderBy(desc(aiDataAnalyticsEvidence.updatedAt));
+}
+
+export async function upsertAIDataAnalyticsEvidence(data: {
+  userId: number; courseId: number; moduleId: number;
+  evidenceType: "practice_code" | "knowledge_check" | "capstone" | "reflection";
+  content: string; score?: number; total?: number; passed?: boolean; executed?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  await db.insert(aiDataAnalyticsEvidence).values({ ...data, content: data.content.trim() }).onDuplicateKeyUpdate({
+    set: { content: data.content.trim(), score: data.score ?? null, total: data.total ?? null, passed: data.passed ?? null, executed: data.executed ?? false, reviewStatus: "draft", reviewedBy: null, reviewedAt: null, submittedAt: null },
+  });
+  const rows = await db.select().from(aiDataAnalyticsEvidence).where(and(eq(aiDataAnalyticsEvidence.userId, data.userId), eq(aiDataAnalyticsEvidence.courseId, data.courseId), eq(aiDataAnalyticsEvidence.moduleId, data.moduleId), eq(aiDataAnalyticsEvidence.evidenceType, data.evidenceType))).limit(1);
+  return rows[0] ?? null;
+}
+
+export async function submitAIDataAnalyticsEvidence(id: number, userId: number, courseId: number) {
+  const db = await getDb(); if (!db) return;
+  await db.update(aiDataAnalyticsEvidence).set({ reviewStatus: "submitted", submittedAt: new Date(), reviewedBy: null, reviewedAt: null }).where(and(eq(aiDataAnalyticsEvidence.id, id), eq(aiDataAnalyticsEvidence.userId, userId), eq(aiDataAnalyticsEvidence.courseId, courseId)));
+}
+
+export async function getAIDataAnalyticsEvidenceForReview(courseId: number, classroomId?: number, status?: "draft" | "submitted" | "needs_revision" | "approved") {
+  const db = await getDb(); if (!db) return [];
+  return db.select({ id: aiDataAnalyticsEvidence.id, userId: aiDataAnalyticsEvidence.userId, courseId: aiDataAnalyticsEvidence.courseId, moduleId: aiDataAnalyticsEvidence.moduleId, moduleTitle: modules.title, evidenceType: aiDataAnalyticsEvidence.evidenceType, content: aiDataAnalyticsEvidence.content, score: aiDataAnalyticsEvidence.score, total: aiDataAnalyticsEvidence.total, passed: aiDataAnalyticsEvidence.passed, executed: aiDataAnalyticsEvidence.executed, reviewStatus: aiDataAnalyticsEvidence.reviewStatus, instructorFeedback: aiDataAnalyticsEvidence.instructorFeedback, submittedAt: aiDataAnalyticsEvidence.submittedAt, reviewedAt: aiDataAnalyticsEvidence.reviewedAt, learnerName: users.name, learnerEmail: users.email }).from(aiDataAnalyticsEvidence).leftJoin(users, eq(users.id, aiDataAnalyticsEvidence.userId)).leftJoin(modules, eq(modules.id, aiDataAnalyticsEvidence.moduleId)).where(and(eq(aiDataAnalyticsEvidence.courseId, courseId), ...(status ? [eq(aiDataAnalyticsEvidence.reviewStatus, status)] : []), ...(classroomId ? [sql`EXISTS (SELECT 1 FROM classroom_members cm WHERE cm.classroomId = ${classroomId} AND cm.userId = ${aiDataAnalyticsEvidence.userId} AND cm.status = 'active')`] : []))).orderBy(desc(aiDataAnalyticsEvidence.submittedAt), desc(aiDataAnalyticsEvidence.updatedAt));
+}
+
+export async function reviewAIDataAnalyticsEvidence(id: number, courseId: number, reviewedBy: number, reviewStatus: "needs_revision" | "approved", instructorFeedback: string, classroomId?: number) {
+  const db = await getDb(); if (!db) return;
+  await db.update(aiDataAnalyticsEvidence).set({ reviewStatus, instructorFeedback: instructorFeedback.trim() || null, reviewedBy, reviewedAt: new Date() }).where(and(eq(aiDataAnalyticsEvidence.id, id), eq(aiDataAnalyticsEvidence.courseId, courseId), ...(classroomId ? [sql`EXISTS (SELECT 1 FROM classroom_members cm WHERE cm.classroomId = ${classroomId} AND cm.userId = ${aiDataAnalyticsEvidence.userId} AND cm.status = 'active')`] : [])));
+}
+
+export async function getAIDataAnalyticsClassroomMetrics(courseId: number, classroomId: number) {
+  const db = await getDb(); if (!db) return { learners: 0, submitted: 0, approved: 0, needsRevision: 0, executedLabs: 0, passedChecks: 0, totalChecks: 0 };
+  const [learners, rows] = await Promise.all([
+    db.select({ count: sql<number>`COUNT(DISTINCT ${classroomMembers.userId})` }).from(classroomMembers).where(and(eq(classroomMembers.classroomId, classroomId), eq(classroomMembers.status, "active"))),
+    db.select({ reviewStatus: aiDataAnalyticsEvidence.reviewStatus, evidenceType: aiDataAnalyticsEvidence.evidenceType, executed: aiDataAnalyticsEvidence.executed, passed: aiDataAnalyticsEvidence.passed }).from(aiDataAnalyticsEvidence).where(and(eq(aiDataAnalyticsEvidence.courseId, courseId), sql`EXISTS (SELECT 1 FROM classroom_members cm WHERE cm.classroomId = ${classroomId} AND cm.userId = ${aiDataAnalyticsEvidence.userId} AND cm.status = 'active')`)),
+  ]);
+  return { learners: Number(learners[0]?.count ?? 0), submitted: rows.filter(row => row.reviewStatus === "submitted").length, approved: rows.filter(row => row.reviewStatus === "approved").length, needsRevision: rows.filter(row => row.reviewStatus === "needs_revision").length, executedLabs: rows.filter(row => row.evidenceType === "practice_code" && row.executed).length, passedChecks: rows.filter(row => row.evidenceType === "knowledge_check" && row.passed).length, totalChecks: rows.filter(row => row.evidenceType === "knowledge_check").length };
+}
+
+export async function exportAIDataAnalyticsClassroomCsv(courseId: number, classroomId: number) {
+  const rows = await getAIDataAnalyticsEvidenceForReview(courseId, classroomId);
+  const cell = (value: unknown) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+  return [
+    ["AI in Data Analytics classroom evidence"].map(cell).join(","),
+    ["Learner", "Email", "Lesson", "Evidence type", "Score", "Total", "Passed", "Executed", "Review status", "Feedback", "Submitted"].map(cell).join(","),
+    ...rows.map(row => [row.learnerName ?? "Learner", row.learnerEmail, row.moduleTitle, row.evidenceType, row.score, row.total, row.passed, row.executed, row.reviewStatus, row.instructorFeedback, row.submittedAt?.toISOString()].map(cell).join(",")),
+  ].join("\n");
 }
 
 export async function getCaioAssessmentAnalytics(courseId: number, moduleId: number) {
