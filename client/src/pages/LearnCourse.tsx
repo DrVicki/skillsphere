@@ -38,6 +38,7 @@ import LessonContent from "@/components/LessonContent";
 import CubeMoveLabs from "@/components/CubeMoveLabs";
 import QuantumVisualizations from "@/components/QuantumVisualizations";
 import AIDataAnalyticsVisualizations from "@/components/AIDataAnalyticsVisualizations";
+import AIDataAnalyticsCodeLab from "@/components/AIDataAnalyticsCodeLab";
 import PythonForgeLab from "@/components/PythonForgeLab";
 import CAIOActivityTemplateDownload from "@/components/CAIOActivityTemplateDownload";
 import CAIOPathAssessment from "@/components/CAIOPathAssessment";
@@ -52,6 +53,7 @@ import {
 import { parseGuidedMoveLabs, stripGuidedMoveLabs } from "@/lib/cubeMoveLabs";
 import { getQuantumVisualizationForModule } from "@/lib/quantumVisualizations";
 import { getAIDataAnalyticsVisualizationForModule } from "@/lib/aiDataAnalyticsVisualizations";
+import { getAIDataAnalyticsLabForModule } from "@/lib/aiDataAnalyticsLabs";
 import { getPythonForgeActivityForModule } from "@/lib/pythonForgeActivities";
 import { getCAIOActivityTemplateForModule } from "@/lib/caioActivityTemplates";
 import { getGameDesignInteractionForModule } from "@/lib/gameDesignCourse";
@@ -136,6 +138,10 @@ export default function LearnCourse({ params }: Props) {
     activeModule?.title
   );
   const aiDataAnalyticsVisualization = getAIDataAnalyticsVisualizationForModule(
+    course?.slug,
+    activeModule?.title
+  );
+  const aiDataAnalyticsLab = getAIDataAnalyticsLabForModule(
     course?.slug,
     activeModule?.title
   );
@@ -425,6 +431,12 @@ export default function LearnCourse({ params }: Props) {
                             Interactive Python Lab below
                           </div>
                         )}
+                        {aiDataAnalyticsLab && (
+                          <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-cyan-600/25 bg-cyan-50 px-3 py-1 text-xs font-semibold text-cyan-800">
+                            <span className="h-2 w-2 rounded-full bg-cyan-500" aria-hidden="true" />
+                            Embedded Python Analytics Lab below
+                          </div>
+                        )}
                       </div>
                       {!isModuleCompleted(activeModule.id) &&
                         hasCourseAccess && (
@@ -509,6 +521,14 @@ export default function LearnCourse({ params }: Props) {
                     {aiDataAnalyticsVisualization && (
                       <AIDataAnalyticsVisualizations
                         visualization={aiDataAnalyticsVisualization}
+                      />
+                    )}
+
+                    {/* Every AI Data Analytics lesson includes a browser-run Python exercise. */}
+                    {aiDataAnalyticsLab && (
+                      <AIDataAnalyticsCodeLab
+                        lab={aiDataAnalyticsLab}
+                        moduleId={activeModule.id}
                       />
                     )}
 
