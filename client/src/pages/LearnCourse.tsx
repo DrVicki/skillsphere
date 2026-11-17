@@ -39,6 +39,7 @@ import CubeMoveLabs from "@/components/CubeMoveLabs";
 import QuantumVisualizations from "@/components/QuantumVisualizations";
 import AIDataAnalyticsVisualizations from "@/components/AIDataAnalyticsVisualizations";
 import AIDataAnalyticsCodeLab from "@/components/AIDataAnalyticsCodeLab";
+import AntigravityWebLab from "@/components/AntigravityWebLab";
 import AIDataAnalyticsEvidencePanel from "@/components/AIDataAnalyticsEvidencePanel";
 import PythonForgeLab from "@/components/PythonForgeLab";
 import CAIOActivityTemplateDownload from "@/components/CAIOActivityTemplateDownload";
@@ -55,6 +56,7 @@ import { parseGuidedMoveLabs, stripGuidedMoveLabs } from "@/lib/cubeMoveLabs";
 import { getQuantumVisualizationForModule } from "@/lib/quantumVisualizations";
 import { getAIDataAnalyticsVisualizationForModule } from "@/lib/aiDataAnalyticsVisualizations";
 import { getAIDataAnalyticsLabForModule } from "@/lib/aiDataAnalyticsLabs";
+import { getAntigravityLabForModule } from "@/lib/antigravityLabs";
 import { getPythonForgeActivityForModule } from "@/lib/pythonForgeActivities";
 import { getCAIOActivityTemplateForModule } from "@/lib/caioActivityTemplates";
 import { getGameDesignInteractionForModule } from "@/lib/gameDesignCourse";
@@ -143,6 +145,10 @@ export default function LearnCourse({ params }: Props) {
     activeModule?.title
   );
   const aiDataAnalyticsLab = getAIDataAnalyticsLabForModule(
+    course?.slug,
+    activeModule?.title
+  );
+  const antigravityLab = getAntigravityLabForModule(
     course?.slug,
     activeModule?.title
   );
@@ -439,6 +445,12 @@ export default function LearnCourse({ params }: Props) {
                             Embedded Python Analytics Lab below
                           </div>
                         )}
+                        {antigravityLab && (
+                          <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-violet-600/25 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-800">
+                            <span className="h-2 w-2 rounded-full bg-violet-500" aria-hidden="true" />
+                            Embedded Antigravity coding lab below
+                          </div>
+                        )}
                       </div>
                       {!isModuleCompleted(activeModule.id) &&
                         hasCourseAccess && (
@@ -534,6 +546,17 @@ export default function LearnCourse({ params }: Props) {
                         moduleId={activeModule.id}
                         canPersist={hasCourseAccess && isAuthenticated}
                         onLabCompleted={() => markComplete.mutate({ moduleId: activeModule.id, courseId: course.id })}
+                      />
+                    )}
+                    {antigravityLab && (
+                      <AntigravityWebLab
+                        lab={antigravityLab}
+                        canPersist={hasCourseAccess && isAuthenticated}
+                        onLabCompleted={() => {
+                          if (hasCourseAccess) {
+                            markComplete.mutate({ moduleId: activeModule.id, courseId: course.id });
+                          }
+                        }}
                       />
                     )}
                     {course.slug === "ai-in-data-analytics" && activeModule && (
