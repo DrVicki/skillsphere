@@ -7,7 +7,7 @@ const course = {
   slug: "web-development-with-antigravity-ai-agent",
   description: "A beginner-friendly, hands-on web development course that uses Google Antigravity to generate, review, and refine HTML, CSS, JavaScript, and REST API code. Learners build a theme-switching task list, connect it to live API data, handle errors, and practice POST requests through source-authored activities and embedded coding labs.",
   shortDescription: "Build a real web app with HTML, CSS, JavaScript, REST APIs, and the Antigravity Agent.",
-  thumbnailUrl: "/manus-storage/antigravity-color_34e18907.svg",
+  thumbnailUrl: "/manus-storage/antigravity-course-thumbnail_0b191b49.png",
   category: "Web Development",
   level: "beginner",
   tags: ["Antigravity", "HTML", "CSS", "JavaScript", "REST API", "Web Development"],

@@ -21,6 +21,10 @@ describe("Antigravity course integration", () => {
     expect(curriculum.modules.every((module: { units: unknown[] }) => module.units)).toBe(true);
   });
 
+  it("uses the optimized 16:9 Courses-page thumbnail", () => {
+    expect(importer).toContain("antigravity-course-thumbnail_0b191b49.png");
+  });
+
   it("imports source action assignments and both assessments", () => {
     const units = curriculum.modules.flatMap((module: { units: any[] }) => module.units);
     expect(units.filter((unit: any) => unit.actionAssignment).length).toBeGreaterThanOrEqual(10);
