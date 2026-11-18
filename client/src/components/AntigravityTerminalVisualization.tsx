@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Check, CheckCircle2, Clipboard, Command, Monitor, Terminal, Apple } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AntigravityTerminalCommandPractice from "@/components/AntigravityTerminalCommandPractice";
 
 type OperatingSystem = "macOS" | "Linux" | "Windows";
 
@@ -105,6 +106,9 @@ export default function AntigravityTerminalVisualization() {
         {verified && <p className="mt-3 flex items-center gap-2 font-sans text-sm font-semibold text-emerald-400" role="status"><Check className="h-4 w-4" /> Great — your {os} project folder is ready for Antigravity.</p>}
       </div>
       <p className="bg-indigo-50 px-5 py-4 text-sm text-slate-700 sm:px-7"><span className="mr-1">💡</span><strong className="text-indigo-700">Tip:</strong> {guide.tip}</p>
+      <div className="px-5 pb-5 sm:px-7 sm:pb-7">
+        <AntigravityTerminalCommandPractice os={os} />
+      </div>
     </section>
   );
 }
