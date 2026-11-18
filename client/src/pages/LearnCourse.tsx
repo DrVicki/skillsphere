@@ -40,6 +40,7 @@ import QuantumVisualizations from "@/components/QuantumVisualizations";
 import AIDataAnalyticsVisualizations from "@/components/AIDataAnalyticsVisualizations";
 import AIDataAnalyticsCodeLab from "@/components/AIDataAnalyticsCodeLab";
 import AntigravityWebLab from "@/components/AntigravityWebLab";
+import AntigravityTerminalVisualization from "@/components/AntigravityTerminalVisualization";
 import AIDataAnalyticsEvidencePanel from "@/components/AIDataAnalyticsEvidencePanel";
 import PythonForgeLab from "@/components/PythonForgeLab";
 import CAIOActivityTemplateDownload from "@/components/CAIOActivityTemplateDownload";
@@ -547,6 +548,11 @@ export default function LearnCourse({ params }: Props) {
                         canPersist={hasCourseAccess && isAuthenticated}
                         onLabCompleted={() => markComplete.mutate({ moduleId: activeModule.id, courseId: course.id })}
                       />
+                    )}
+                    {antigravityLab && (
+                      antigravityLab.kind === "setup" ? (
+                        <AntigravityTerminalVisualization />
+                      ) : null
                     )}
                     {antigravityLab && (
                       <AntigravityWebLab

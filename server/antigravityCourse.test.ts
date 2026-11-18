@@ -34,5 +34,7 @@ describe("Antigravity course integration", () => {
   it("renders the lab integration and visible lesson label", () => {
     expect(learnCourse).toContain("<AntigravityWebLab");
     expect(learnCourse).toContain("Embedded Antigravity coding lab below");
+    expect(learnCourse).toContain("<AntigravityTerminalVisualization />");
+    expect(learnCourse).toContain('antigravityLab.kind === "setup"');
   });
 });
