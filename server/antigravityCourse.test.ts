@@ -7,6 +7,7 @@ const learnCourse = fs.readFileSync(new URL("../client/src/pages/LearnCourse.tsx
 const importer = fs.readFileSync(new URL("../import-antigravity-course.mjs", import.meta.url), "utf8");
 const terminalVisualization = fs.readFileSync(new URL("../client/src/components/AntigravityTerminalVisualization.tsx", import.meta.url), "utf8");
 const commandPractice = fs.readFileSync(new URL("../client/src/components/AntigravityTerminalCommandPractice.tsx", import.meta.url), "utf8");
+const createFileVisualization = fs.readFileSync(new URL("../client/src/components/AntigravityCreateFileVisualization.tsx", import.meta.url), "utf8");
 const reviewPanel = fs.readFileSync(new URL("../client/src/components/AntigravityPracticeReviewPanel.tsx", import.meta.url), "utf8");
 const schema = fs.readFileSync(new URL("../drizzle/schema.ts", import.meta.url), "utf8");
 const db = fs.readFileSync(new URL("./db.ts", import.meta.url), "utf8");
@@ -42,6 +43,18 @@ describe("Antigravity course integration", () => {
     expect(learnCourse).toContain("Embedded Antigravity coding lab below");
     expect(learnCourse).toContain("<AntigravityTerminalVisualization");
     expect(learnCourse).toContain('antigravityLab.kind === "setup"');
+    expect(learnCourse).toContain("<AntigravityCreateFileVisualization");
+    expect(learnCourse).toContain('antigravityLab?.kind === "html"');
+  });
+
+  it("provides a safe, interactive index.html creation visualization", () => {
+    expect(createFileVisualization).toContain("Create your first file: index.html");
+    expect(createFileVisualization).toContain("Nothing is written to your computer");
+    expect(createFileVisualization).toContain("sandbox=\"\"");
+    expect(createFileVisualization).toContain("srcDoc");
+    expect(createFileVisualization).toContain("Create file");
+    expect(createFileVisualization).toContain("Preview");
+    expect(createFileVisualization).toContain("index.html");
   });
 
   it("includes safe OS-specific command practice with immediate feedback", () => {

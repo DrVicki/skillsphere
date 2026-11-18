@@ -41,6 +41,7 @@ import AIDataAnalyticsVisualizations from "@/components/AIDataAnalyticsVisualiza
 import AIDataAnalyticsCodeLab from "@/components/AIDataAnalyticsCodeLab";
 import AntigravityWebLab from "@/components/AntigravityWebLab";
 import AntigravityTerminalVisualization from "@/components/AntigravityTerminalVisualization";
+import AntigravityCreateFileVisualization from "@/components/AntigravityCreateFileVisualization";
 import AIDataAnalyticsEvidencePanel from "@/components/AIDataAnalyticsEvidencePanel";
 import PythonForgeLab from "@/components/PythonForgeLab";
 import CAIOActivityTemplateDownload from "@/components/CAIOActivityTemplateDownload";
@@ -557,6 +558,9 @@ export default function LearnCourse({ params }: Props) {
                           canPersist={hasCourseAccess && isAuthenticated}
                         />
                       ) : null
+                    )}
+                    {antigravityLab?.kind === "html" && (
+                      <AntigravityCreateFileVisualization />
                     )}
                     {antigravityLab && (
                       <AntigravityWebLab
