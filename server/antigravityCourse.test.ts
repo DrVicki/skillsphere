@@ -7,6 +7,10 @@ const learnCourse = fs.readFileSync(new URL("../client/src/pages/LearnCourse.tsx
 const importer = fs.readFileSync(new URL("../import-antigravity-course.mjs", import.meta.url), "utf8");
 const terminalVisualization = fs.readFileSync(new URL("../client/src/components/AntigravityTerminalVisualization.tsx", import.meta.url), "utf8");
 const commandPractice = fs.readFileSync(new URL("../client/src/components/AntigravityTerminalCommandPractice.tsx", import.meta.url), "utf8");
+const reviewPanel = fs.readFileSync(new URL("../client/src/components/AntigravityPracticeReviewPanel.tsx", import.meta.url), "utf8");
+const schema = fs.readFileSync(new URL("../drizzle/schema.ts", import.meta.url), "utf8");
+const db = fs.readFileSync(new URL("./db.ts", import.meta.url), "utf8");
+const routers = fs.readFileSync(new URL("./routers.ts", import.meta.url), "utf8");
 
 describe("Antigravity course integration", () => {
   it("preserves the source's two modules and fourteen units", () => {
@@ -36,12 +40,12 @@ describe("Antigravity course integration", () => {
   it("renders the lab integration and visible lesson label", () => {
     expect(learnCourse).toContain("<AntigravityWebLab");
     expect(learnCourse).toContain("Embedded Antigravity coding lab below");
-    expect(learnCourse).toContain("<AntigravityTerminalVisualization />");
+    expect(learnCourse).toContain("<AntigravityTerminalVisualization");
     expect(learnCourse).toContain('antigravityLab.kind === "setup"');
   });
 
   it("includes safe OS-specific command practice with immediate feedback", () => {
-    expect(terminalVisualization).toContain("<AntigravityTerminalCommandPractice os={os} />");
+    expect(terminalVisualization).toContain("<AntigravityTerminalCommandPractice os={os}");
     expect(commandPractice).toContain("Nothing is executed on your computer");
     expect(commandPractice).toContain("Check command");
     expect(commandPractice).toContain("Correct. Nice work");
@@ -49,5 +53,18 @@ describe("Antigravity course integration", () => {
     expect(commandPractice).toContain("Windows");
     expect(commandPractice).toContain("macOS");
     expect(commandPractice).toContain("Linux");
+  });
+
+  it("persists every practice check and exposes classroom review metrics and export", () => {
+    expect(schema).toContain("antigravityTerminalPracticeAttempts");
+    expect(db).toContain("recordAntigravityPracticeAttempt");
+    expect(db).toContain("getAntigravityClassroomMetrics");
+    expect(db).toContain("retryAttempts");
+    expect(routers).toContain("antigravityPractice:");
+    expect(routers).toContain("exportClassroomCsv");
+    expect(commandPractice).toContain("recordAttempt.mutate");
+    expect(reviewPanel).toContain("retryAttempts");
+    expect(reviewPanel).toContain("Export CSV");
+    expect(reviewPanel).toContain("View command");
   });
 });

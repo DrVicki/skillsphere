@@ -526,6 +526,28 @@ export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
 export type InsertNewsletterSubscriber =
   typeof newsletterSubscribers.$inferInsert;
 
+// Append-only learner practice attempts for the Antigravity terminal activity.
+export const antigravityTerminalPracticeAttempts = mysqlTable(
+  "antigravity_terminal_practice_attempts",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: int("userId").notNull(),
+    courseId: int("courseId").notNull(),
+    moduleId: int("moduleId").notNull(),
+    operatingSystem: mysqlEnum("operatingSystem", ["macOS", "Linux", "Windows"]).notNull(),
+    stepIndex: int("stepIndex").notNull(),
+    command: text("command").notNull(),
+    isCorrect: boolean("isCorrect").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [
+    index("antigravity_practice_user_module_idx").on(table.userId, table.moduleId),
+    index("antigravity_practice_course_idx").on(table.courseId),
+  ]
+);
+export type AntigravityTerminalPracticeAttempt = typeof antigravityTerminalPracticeAttempts.$inferSelect;
+export type InsertAntigravityTerminalPracticeAttempt = typeof antigravityTerminalPracticeAttempts.$inferInsert;
+
 // ─── Game Design Diary Entries ───────────────────────────────────────────────
 // These records are intentionally scoped to the Game Design course so the
 // learner's reflections become a persistent, searchable portfolio trail.

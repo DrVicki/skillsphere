@@ -51,7 +51,7 @@ const osIcon = (os: OperatingSystem) => {
   return <Monitor className="h-5 w-5" aria-hidden="true" />;
 };
 
-export default function AntigravityTerminalVisualization() {
+export default function AntigravityTerminalVisualization({ courseId, moduleId, canPersist }: { courseId?: number; moduleId?: number; canPersist?: boolean }) {
   const [os, setOs] = useState<OperatingSystem>("Windows");
   const [copied, setCopied] = useState<string | null>(null);
   const [verified, setVerified] = useState(false);
@@ -107,7 +107,7 @@ export default function AntigravityTerminalVisualization() {
       </div>
       <p className="bg-indigo-50 px-5 py-4 text-sm text-slate-700 sm:px-7"><span className="mr-1">💡</span><strong className="text-indigo-700">Tip:</strong> {guide.tip}</p>
       <div className="px-5 pb-5 sm:px-7 sm:pb-7">
-        <AntigravityTerminalCommandPractice os={os} />
+        <AntigravityTerminalCommandPractice os={os} courseId={courseId} moduleId={moduleId} canPersist={canPersist} />
       </div>
     </section>
   );

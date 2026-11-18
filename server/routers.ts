@@ -98,6 +98,10 @@ import {
   createPythonForgeLabNotification,
   getPythonForgeLabNotifications,
   markPythonForgeLabNotificationRead,
+  recordAntigravityPracticeAttempt,
+  getAntigravityPracticeAttempts,
+  getAntigravityClassroomMetrics,
+  exportAntigravityPracticeCsv,
   getAIDataAnalyticsEvidence,
   upsertAIDataAnalyticsEvidence,
   submitAIDataAnalyticsEvidence,
@@ -1048,6 +1052,37 @@ export const appRouter = router({
         }
         return upsertPythonForgeLabCode({ ...input, userId: ctx.user.id });
       }),
+  }),
+
+  antigravityPractice: router({
+    record: protectedProcedure.input(z.object({
+      courseId: z.number(), moduleId: z.number(), operatingSystem: z.enum(["macOS", "Linux", "Windows"]), stepIndex: z.number().int().min(0).max(2), command: z.string().max(1000), isCorrect: z.boolean(),
+    })).mutation(async ({ ctx, input }) => {
+      const course = await getCourseById(input.courseId);
+      const module = await getModuleById(input.moduleId);
+      if (!course || course.slug !== "web-development-with-antigravity-ai-agent" || !module || module.courseId !== course.id) throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid Antigravity practice lesson." });
+      const enrollment = await getEnrollment(ctx.user.id, course.id);
+      if (!enrollment && course.trainerId !== ctx.user.id && ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in Antigravity before saving practice." });
+      await recordAntigravityPracticeAttempt({ ...input, userId: ctx.user.id });
+      return { success: true };
+    }),
+    submissions: trainerProcedure.input(z.object({ courseId: z.number(), classroomId: z.number().optional() })).query(async ({ ctx, input }) => {
+      const course = await getCourseById(input.courseId);
+      if (!course || course.slug !== "web-development-with-antigravity-ai-agent") throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid Antigravity course." });
+      if (input.classroomId !== undefined) { await requireClassroomManager(ctx.user, input.classroomId); const assigned = await getClassroomCourses(input.classroomId); if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN", message: "Antigravity is not assigned to this classroom or you are not its instructor." }); }
+      else if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN", message: "Only the course instructor can view practice." });
+      return getAntigravityPracticeAttempts(input.courseId, input.classroomId);
+    }),
+    classroomMetrics: trainerProcedure.input(z.object({ courseId: z.number(), classroomId: z.number() })).query(async ({ ctx, input }) => {
+      const course = await getCourseById(input.courseId); if (!course || course.slug !== "web-development-with-antigravity-ai-agent") throw new TRPCError({ code: "BAD_REQUEST" });
+      await requireClassroomManager(ctx.user, input.classroomId); const assigned = await getClassroomCourses(input.classroomId); if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN" });
+      return getAntigravityClassroomMetrics(input.courseId, input.classroomId);
+    }),
+    exportClassroomCsv: trainerProcedure.input(z.object({ courseId: z.number(), classroomId: z.number() })).mutation(async ({ ctx, input }) => {
+      const course = await getCourseById(input.courseId); if (!course || course.slug !== "web-development-with-antigravity-ai-agent") throw new TRPCError({ code: "BAD_REQUEST" });
+      await requireClassroomManager(ctx.user, input.classroomId); const assigned = await getClassroomCourses(input.classroomId); if (!assigned.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) throw new TRPCError({ code: "FORBIDDEN" });
+      return exportAntigravityPracticeCsv(input.courseId, input.classroomId);
+    }),
   }),
 
   // ─── CAIO Path Assessment ─────────────────────────────────────────────────

@@ -26,6 +26,7 @@ import PythonForgeSubmissionsPanel from "@/components/PythonForgeSubmissionsPane
 import GameDesignDiaryReviewPanel from "@/components/GameDesignDiaryReviewPanel";
 import CAIOClassroomReviewPanel from "@/components/CAIOClassroomReviewPanel";
 import AIDataAnalyticsReviewPanel from "@/components/AIDataAnalyticsReviewPanel";
+import AntigravityPracticeReviewPanel from "@/components/AntigravityPracticeReviewPanel";
 import {
   Archive,
   BookOpen,
@@ -541,6 +542,17 @@ export default function AdminClassrooms() {
                           <AIDataAnalyticsReviewPanel
                             courseId={classroomCoursesQuery.data.find(
                               course => course.slug === "ai-in-data-analytics"
+                            )!.courseId}
+                            classroomId={expanded.id}
+                            classroomName={expanded.name}
+                          />
+                        )}
+                        {classroomCoursesQuery.data?.some(
+                          course => course.slug === "web-development-with-antigravity-ai-agent"
+                        ) && (
+                          <AntigravityPracticeReviewPanel
+                            courseId={classroomCoursesQuery.data.find(
+                              course => course.slug === "web-development-with-antigravity-ai-agent"
                             )!.courseId}
                             classroomId={expanded.id}
                             classroomName={expanded.name}

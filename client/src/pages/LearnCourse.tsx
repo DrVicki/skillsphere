@@ -551,7 +551,11 @@ export default function LearnCourse({ params }: Props) {
                     )}
                     {antigravityLab && (
                       antigravityLab.kind === "setup" ? (
-                        <AntigravityTerminalVisualization />
+                        <AntigravityTerminalVisualization
+                          courseId={course.id}
+                          moduleId={activeModule.id}
+                          canPersist={hasCourseAccess && isAuthenticated}
+                        />
                       ) : null
                     )}
                     {antigravityLab && (

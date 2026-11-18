@@ -2,6 +2,7 @@ import { FormEvent, useMemo, useState } from "react";
 import { CheckCircle2, Keyboard, RotateCcw, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { trpc } from "@/lib/trpc";
 
 type OperatingSystem = "macOS" | "Linux" | "Windows";
 
@@ -35,18 +36,22 @@ function normalize(value: string) {
   return value.trim().replace(/\s+/g, " ").replace(/[“”]/g, '"').replace(/[‘’]/g, "'").toLowerCase();
 }
 
-export default function AntigravityTerminalCommandPractice({ os }: { os: OperatingSystem }) {
+export default function AntigravityTerminalCommandPractice({ os, courseId, moduleId, canPersist }: { os: OperatingSystem; courseId?: number; moduleId?: number; canPersist?: boolean }) {
   const practiceSteps = useMemo(() => steps[os], [os]);
   const [stepIndex, setStepIndex] = useState(0);
   const [answer, setAnswer] = useState("");
   const [feedback, setFeedback] = useState<"idle" | "correct" | "try-again">("idle");
   const [completed, setCompleted] = useState<number[]>([]);
+  const recordAttempt = trpc.antigravityPractice.record.useMutation();
   const current = practiceSteps[stepIndex];
   const progress = Math.round((completed.length / practiceSteps.length) * 100);
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const correct = current.accepted.some(value => normalize(value) === normalize(answer));
+    if (canPersist && courseId && moduleId) {
+      recordAttempt.mutate({ courseId, moduleId, operatingSystem: os, stepIndex, command: answer, isCorrect: correct });
+    }
     if (!correct) {
       setFeedback("try-again");
       return;
@@ -92,6 +97,7 @@ export default function AntigravityTerminalCommandPractice({ os }: { os: Operati
         <div className="mt-3 min-h-10" aria-live="polite">
           {feedback === "correct" && <p className="flex items-center gap-2 text-sm font-semibold text-emerald-700"><CheckCircle2 className="h-5 w-5" /> Correct. Nice work — this command is safe to use for this step.</p>}
           {feedback === "try-again" && <div className="flex items-start gap-2 text-sm text-rose-700"><XCircle className="mt-0.5 h-5 w-5 shrink-0" /><p><strong>Not quite.</strong> {current.hint}</p></div>}
+          {canPersist && recordAttempt.isError && <p className="mt-2 text-xs text-amber-700">Your local practice still works, but this attempt could not be synced.</p>}
         </div>
         <div className="mt-2 flex flex-wrap gap-2">
           {feedback === "correct" && stepIndex < practiceSteps.length - 1 && <Button type="button" variant="outline" onClick={next}>Next command</Button>}

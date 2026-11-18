@@ -29,6 +29,7 @@ import {
   caioEvidenceSubmissions,
   caioEvidenceNotifications,
   aiDataAnalyticsEvidence,
+  antigravityTerminalPracticeAttempts,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -1304,6 +1305,62 @@ export async function getModuleProgress(userId: number, courseId: number) {
         eq(moduleProgress.courseId, courseId)
       )
     );
+}
+
+export async function recordAntigravityPracticeAttempt(data: {
+  userId: number;
+  courseId: number;
+  moduleId: number;
+  operatingSystem: "macOS" | "Linux" | "Windows";
+  stepIndex: number;
+  command: string;
+  isCorrect: boolean;
+}) {
+  const db = await getDb();
+  if (!db) return undefined;
+  return db.insert(antigravityTerminalPracticeAttempts).values(data);
+}
+
+export async function getAntigravityPracticeAttempts(courseId: number, classroomId?: number) {
+  const db = await getDb();
+  if (!db) return [];
+  const memberFilter = classroomId
+    ? sql`EXISTS (SELECT 1 FROM classroom_members cm WHERE cm.classroomId = ${classroomId} AND cm.userId = ${antigravityTerminalPracticeAttempts.userId} AND cm.status = 'active')`
+    : undefined;
+  return db
+    .select({
+      id: antigravityTerminalPracticeAttempts.id,
+      userId: antigravityTerminalPracticeAttempts.userId,
+      learnerName: users.name,
+      learnerEmail: users.email,
+      moduleId: modules.id,
+      moduleTitle: modules.title,
+      operatingSystem: antigravityTerminalPracticeAttempts.operatingSystem,
+      stepIndex: antigravityTerminalPracticeAttempts.stepIndex,
+      command: antigravityTerminalPracticeAttempts.command,
+      isCorrect: antigravityTerminalPracticeAttempts.isCorrect,
+      createdAt: antigravityTerminalPracticeAttempts.createdAt,
+    })
+    .from(antigravityTerminalPracticeAttempts)
+    .innerJoin(users, eq(users.id, antigravityTerminalPracticeAttempts.userId))
+    .innerJoin(modules, eq(modules.id, antigravityTerminalPracticeAttempts.moduleId))
+    .where(and(eq(antigravityTerminalPracticeAttempts.courseId, courseId), eq(modules.courseId, courseId), memberFilter))
+    .orderBy(desc(antigravityTerminalPracticeAttempts.createdAt))
+    .limit(1000);
+}
+
+export async function getAntigravityClassroomMetrics(courseId: number, classroomId: number) {
+  const attempts = await getAntigravityPracticeAttempts(courseId, classroomId);
+  const learnerIds = new Set(attempts.map(item => item.userId));
+  const completedKeys = new Set(attempts.filter(item => item.isCorrect).map(item => `${item.userId}:${item.stepIndex}`));
+  const successfulAttempts = attempts.filter(item => item.isCorrect).length;
+  return { learnersPracticing: learnerIds.size, attempts: attempts.length, successfulAttempts, retryAttempts: attempts.filter(item => !item.isCorrect).length, completedSteps: completedKeys.size, successRate: attempts.length ? Math.round((successfulAttempts / attempts.length) * 100) : 0 };
+}
+
+export async function exportAntigravityPracticeCsv(courseId: number, classroomId: number) {
+  const rows = await getAntigravityPracticeAttempts(courseId, classroomId);
+  const escape = (value: unknown) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+  return [["Learner", "Email", "Lesson", "Operating system", "Step", "Command", "Result", "Attempted at"].join(","), ...rows.map(row => [row.learnerName, row.learnerEmail, row.moduleTitle, row.operatingSystem, row.stepIndex + 1, row.command, row.isCorrect ? "Correct" : "Retry", row.createdAt?.toISOString?.() ?? row.createdAt].map(escape).join(","))].join("\n");
 }
 
 export async function getPythonForgeLabCode(
