@@ -1,0 +1,40 @@
+SUBJECT: Your Python Forge classroom invitation
+
+Hello [Student First Name],
+
+You are invited to join our SkillSphere classroom for Python Forge — Learn by Building. This course is designed for college students who want to build practical Python skills through examples, activities, and embedded coding labs.
+
+IMPORTANT: Please create or use your SkillSphere account with this exact email address: [Student Email Address]. SkillSphere uses that email to connect you to our classroom automatically.
+
+How to get started:
+
+1. Open the Python Forge course page:
+   https://myskillsphere.com/courses/python-forge-learn-by-building
+
+2. Select Sign Up if you are new, or Sign In if you already have a SkillSphere account.
+
+3. After signing in, open your Student Dashboard:
+   https://myskillsphere.com/dashboard
+
+4. Look under My Classrooms or My Courses, select Python Forge, and choose Start Learning.
+
+Inside the course, work through the lessons in order. Use each embedded Code Lab to write, run, save, and download Python code. Plan for approximately 3–5 focused hours each week.
+
+No additional payment is required for this classroom assignment. Classroom access is provided through the instructor invitation.
+
+If SkillSphere does not show the course after you sign in:
+- Confirm that you used the invited email address.
+- Sign out and sign back in.
+- Refresh your Dashboard.
+- Contact me so I can verify the roster assignment and email spelling.
+
+I have attached the one-page Python Forge Student Flyer for your reference. Please keep it handy as you begin.
+
+If you have questions, reply to this email.
+
+Best,
+[Professor Name]
+[Course / Department]
+[Institution]
+
+Attachment: python-forge-student-flyer.pdf
