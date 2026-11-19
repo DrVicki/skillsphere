@@ -2,6 +2,7 @@ import fs from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const guide = fs.readFileSync(new URL("../client/src/components/FirstTimeStudentGuide.tsx", import.meta.url), "utf8");
+const pythonForgePath = fs.readFileSync(new URL("../client/src/components/PythonForgeStudentPath.tsx", import.meta.url), "utf8");
 const dashboard = fs.readFileSync(new URL("../client/src/pages/Dashboard.tsx", import.meta.url), "utf8");
 const learnCourse = fs.readFileSync(new URL("../client/src/pages/LearnCourse.tsx", import.meta.url), "utf8");
 const courseDetail = fs.readFileSync(new URL("../client/src/pages/CourseDetail.tsx", import.meta.url), "utf8");
@@ -33,6 +34,19 @@ describe("first-time student course guide", () => {
     expect(guide).toContain("skillsphere.first-student-guide.");
     expect(guide).toContain("How to complete this course");
     expect(guide).toContain("Your progress saves as you complete lessons");
+  });
+
+  it("provides a visual Python Forge path from invitation to saved Code Labs", () => {
+    expect(guide).toContain('match: "python forge"');
+    expect(guide).toContain("PythonForgeStudentPath");
+    expect(pythonForgePath).toContain("Find Python Forge");
+    expect(pythonForgePath).toContain("Sign up or log in");
+    expect(pythonForgePath).toContain("Join automatically");
+    expect(pythonForgePath).toContain("My Classrooms or My Courses");
+    expect(pythonForgePath).toContain("embedded Code Lab");
+    expect(pythonForgePath).toContain("saved version of your code");
+    expect(pythonForgePath).toContain("/courses/python-forge-learn-by-building");
+    expect(pythonForgePath).toContain("/dashboard");
   });
 
   it("appears for enrolled learners on both the dashboard and course player", () => {

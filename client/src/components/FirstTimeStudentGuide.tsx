@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import PythonForgeStudentPath from "@/components/PythonForgeStudentPath";
 
 interface FirstTimeStudentGuideProps {
   courseTitle?: string;
@@ -50,6 +51,16 @@ const coursePlans = [
       "Week 2 · Making: move through ideation, prototyping, playtesting, usability, and accessibility.",
       "Week 3 · Practice: develop game feel, scope the project, and communicate the design clearly.",
       "Week 4 · Portfolio: complete the two-part game project, save Diary evidence, and prepare your portfolio.",
+    ],
+  },
+  {
+    match: "python forge",
+    label: "Python Forge — Learn by Building",
+    weeks: [
+      "Week 1 · Foundations: move from a plan to Python expressions, variables, and reusable code.",
+      "Week 2 · Control and data: practice decisions, loops, collections, and file-based workflows.",
+      "Week 3 · Functional composition: build with functions, decorators, errors, and focused modules.",
+      "Week 4 · Portfolio build: complete the applied projects, save your labs, and submit your strongest work.",
     ],
   },
 ];
@@ -111,6 +122,7 @@ export default function FirstTimeStudentGuide({
   const [open, setOpen] = useState(true);
   const [hasSeen, setHasSeen] = useState(false);
   const coursePlan = getCoursePlan(courseTitle);
+  const isPythonForge = (courseTitle?.toLowerCase() ?? "").includes("python forge");
 
   useEffect(() => {
     const seen = window.localStorage.getItem(storageKey) === "1";
@@ -199,6 +211,7 @@ export default function FirstTimeStudentGuide({
             </ol>
           </div>
         )}
+        {isPythonForge && <PythonForgeStudentPath />}
         <div className="mb-5 rounded-xl border border-[#2A63BF]/20 bg-[#F8FBFF] p-4">
           <div className="flex items-start gap-2">
             <TicketPercent className="mt-0.5 h-4 w-4 shrink-0 text-[#2A63BF]" aria-hidden="true" />
