@@ -60,6 +60,7 @@ import { getAIDataAnalyticsVisualizationForModule } from "@/lib/aiDataAnalyticsV
 import { getAIDataAnalyticsLabForModule } from "@/lib/aiDataAnalyticsLabs";
 import { getAntigravityLabForModule } from "@/lib/antigravityLabs";
 import { getPythonForgeActivityForModule } from "@/lib/pythonForgeActivities";
+import { getPy30ActivityForModule } from "@/lib/py30Activities";
 import { getCAIOActivityTemplateForModule } from "@/lib/caioActivityTemplates";
 import { getGameDesignInteractionForModule } from "@/lib/gameDesignCourse";
 import { getVideoPlayback } from "@/lib/embedContent";
@@ -155,6 +156,10 @@ export default function LearnCourse({ params }: Props) {
     activeModule?.title
   );
   const pythonForgeActivity = getPythonForgeActivityForModule(
+    course?.slug,
+    activeModule?.title
+  );
+  const py30Activity = getPy30ActivityForModule(
     course?.slug,
     activeModule?.title
   );
@@ -584,9 +589,9 @@ export default function LearnCourse({ params }: Props) {
                     )}
 
                     {/* Python Forge keeps each source-authored hands-on activity in a browser-run Python lab. */}
-                    {pythonForgeActivity && (
+                    {(pythonForgeActivity || py30Activity) && (
                       <PythonForgeLab
-                        activity={pythonForgeActivity}
+                        activity={pythonForgeActivity ?? py30Activity!}
                         courseId={course.id}
                         moduleId={activeModule.id}
                         canPersist={hasCourseAccess && isAuthenticated}
