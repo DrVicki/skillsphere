@@ -135,8 +135,8 @@ export default function Dashboard() {
     enrollments?.filter(e => e.progressPercent === 100) ?? [];
   const inProgressCourses =
     enrollments?.filter(e => (e.progressPercent ?? 0) < 100) ?? [];
-  const pythonForgeEnrollment = enrollments?.find(
-    enrollment => enrollment.course?.slug === "python-forge-learn-by-building"
+  const pythonLabEnrollment = enrollments?.find(
+    enrollment => ["python-forge-learn-by-building", "30-days-to-learn-python"].includes(enrollment.course?.slug ?? "")
   );
   const caioEnrollment = enrollments?.find(
     enrollment => enrollment.course?.slug === "chief-ai-officer-caio-4-week-bootcamp"
@@ -371,8 +371,8 @@ export default function Dashboard() {
                   />
                 </div>
               )}
-              {pythonForgeEnrollment && (
-                <PythonForgeProgressDashboard courseId={pythonForgeEnrollment.course?.id ?? pythonForgeEnrollment.courseId} />
+              {pythonLabEnrollment && (
+                <PythonForgeProgressDashboard courseId={pythonLabEnrollment.course?.id ?? pythonLabEnrollment.courseId} />
               )}
               {caioEnrollment && (
                 <CAIOProgressChart courseId={caioEnrollment.course?.id ?? caioEnrollment.courseId} />

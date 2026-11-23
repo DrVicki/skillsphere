@@ -144,6 +144,7 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
 const GAME_DESIGN_COURSE_SLUG = "professional-certificate-game-design";
 const CAIO_COURSE_SLUG = "chief-ai-officer-caio-4-week-bootcamp";
 const PYTHON_FORGE_COURSE_SLUG = "python-forge-learn-by-building";
+const PY30_COURSE_SLUG = "30-days-to-learn-python";
 const AI_DATA_ANALYTICS_COURSE_SLUG = "ai-in-data-analytics";
 
 async function requireGameDesignCourse(courseId: number) {
@@ -168,19 +169,23 @@ async function requireCaioCourse(courseId: number) {
 }
 
 async function requirePythonForgeModule(courseId: number, moduleId: number) {
-  const course = await requirePythonForgeCourse(courseId);
+  const course = await requirePythonCodingCourse(courseId);
   const module = await getModuleById(moduleId);
   if (!module || module.courseId !== courseId) {
-    throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid Python Forge lesson." });
+    throw new TRPCError({ code: "BAD_REQUEST", message: "Invalid Python coding lab lesson." });
   }
   return course;
 }
 
 async function requirePythonForgeCourse(courseId: number) {
+  return requirePythonCodingCourse(courseId);
+}
+
+async function requirePythonCodingCourse(courseId: number) {
   const course = await getCourseById(courseId);
   if (!course) throw new TRPCError({ code: "NOT_FOUND", message: "Course not found" });
-  if (course.slug !== PYTHON_FORGE_COURSE_SLUG) {
-    throw new TRPCError({ code: "FORBIDDEN", message: "Python lab code is available only for Python Forge." });
+  if (course.slug !== PYTHON_FORGE_COURSE_SLUG && course.slug !== PY30_COURSE_SLUG) {
+    throw new TRPCError({ code: "FORBIDDEN", message: "Python lab code is available only for supported Python coding courses." });
   }
   return course;
 }
@@ -903,13 +908,10 @@ export const appRouter = router({
     progress: protectedProcedure
       .input(z.number())
       .query(async ({ ctx, input }) => {
-        const course = await getCourseById(input);
-        if (!course || course.slug !== PYTHON_FORGE_COURSE_SLUG) {
-          throw new TRPCError({ code: "FORBIDDEN", message: "Python lab progress is available only for Python Forge." });
-        }
+        const course = await requirePythonCodingCourse(input);
         const enrollment = await getEnrollment(ctx.user.id, input);
         if (!enrollment && course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
-          throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in Python Forge to view lab progress." });
+          throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in the Python course to view lab progress." });
         }
         return getPythonForgeLabProgress(ctx.user.id, input);
       }),

@@ -18,6 +18,7 @@ interface Props {
   courseId?: number;
   moduleId?: number;
   canPersist?: boolean;
+  onLabCompleted?: () => void;
 }
 
 type PyodideInstance = {
@@ -69,6 +70,7 @@ export default function PythonForgeLab({
   courseId,
   moduleId,
   canPersist = false,
+  onLabCompleted,
 }: Props) {
   const storageKey = `skillsphere-python-forge:${activity.id}`;
   const [code, setCode] = useState(activity.starterCode);
@@ -144,6 +146,7 @@ export default function PythonForgeLab({
       setOutput(
         lines.join("\n") || "Program finished successfully with no output."
       );
+      onLabCompleted?.();
     } catch (error) {
       setOutput(error instanceof Error ? error.message : String(error));
     } finally {

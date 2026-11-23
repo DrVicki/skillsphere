@@ -440,22 +440,16 @@ export default function LearnCourse({ params }: Props) {
                         <h2 className="text-xl font-bold text-foreground">
                           {activeModule.title}
                         </h2>
-                        {pythonForgeActivity && (
-                          <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-emerald-600/25 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
+                        {(pythonForgeActivity || py30Activity || aiDataAnalyticsLab) && (
+                          <div aria-label="Interactive Python Lab below. Embedded Python Analytics Lab below." className="mt-2 inline-flex items-center gap-2 rounded-full border border-emerald-600/25 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
                             <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" />
                             Interactive Python Lab below
-                          </div>
-                        )}
-                        {aiDataAnalyticsLab && (
-                          <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-cyan-600/25 bg-cyan-50 px-3 py-1 text-xs font-semibold text-cyan-800">
-                            <span className="h-2 w-2 rounded-full bg-cyan-500" aria-hidden="true" />
-                            Embedded Python Analytics Lab below
                           </div>
                         )}
                         {antigravityLab && (
                           <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-violet-600/25 bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-800">
                             <span className="h-2 w-2 rounded-full bg-violet-500" aria-hidden="true" />
-                            Embedded Antigravity coding lab below
+                            Interactive Coding Lab · Embedded Antigravity coding lab below
                           </div>
                         )}
                       </div>
@@ -595,6 +589,11 @@ export default function LearnCourse({ params }: Props) {
                         courseId={course.id}
                         moduleId={activeModule.id}
                         canPersist={hasCourseAccess && isAuthenticated}
+                        onLabCompleted={() => {
+                          if (hasCourseAccess && isAuthenticated) {
+                            markComplete.mutate({ moduleId: activeModule.id, courseId: course.id });
+                          }
+                        }}
                       />
                     )}
 

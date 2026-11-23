@@ -503,17 +503,16 @@ export default function AdminClassrooms() {
                           </div>
                         </div>
 
-                        {classroomCoursesQuery.data?.some(
-                          course => course.slug === "python-forge-learn-by-building"
-                        ) && (
-                          <PythonForgeSubmissionsPanel
-                            courseId={classroomCoursesQuery.data.find(
-                              course => course.slug === "python-forge-learn-by-building"
-                            )!.courseId}
-                            classroomId={expanded.id}
-                            classroomName={expanded.name}
-                          />
-                        )}
+                        {classroomCoursesQuery.data
+                          ?.filter(course => ["python-forge-learn-by-building", "30-days-to-learn-python"].includes(course.slug))
+                          .map(course => (
+                            <PythonForgeSubmissionsPanel
+                              key={course.courseId}
+                              courseId={course.courseId}
+                              classroomId={expanded.id}
+                              classroomName={expanded.name}
+                            />
+                          ))}
                         {classroomCoursesQuery.data?.some(
                           course => course.slug === "professional-certificate-game-design"
                         ) && (
