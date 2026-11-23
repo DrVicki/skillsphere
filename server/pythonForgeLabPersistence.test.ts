@@ -30,6 +30,8 @@ describe("Python Forge learner lab persistence", () => {
     expect(lab).toContain("trpc.pythonForgeLab.latest.useQuery");
     expect(lab).toContain("trpc.pythonForgeLab.save.useMutation");
     expect(lab).toContain("Saving to your learner progress");
+    expect(lab).toContain("Download .ipynb");
+    expect(lab).toContain("application/x-ipynb+json");
   });
 
   it("exposes learner progress and instructor-only submission dashboards", () => {

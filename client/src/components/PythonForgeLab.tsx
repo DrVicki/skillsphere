@@ -50,6 +50,38 @@ function downloadPythonFile(filename: string, code: string) {
   URL.revokeObjectURL(url);
 }
 
+function downloadNotebook(activity: PythonForgeActivity, code: string) {
+  const markdown = [
+    `# ${activity.title}`,
+    "",
+    activity.activity.brief,
+    "",
+    "## Steps",
+    ...activity.activity.steps.map((step, index) => `${index + 1}. ${step}`),
+    ...(activity.expectedOutput ? ["", "## Expected output", activity.expectedOutput] : []),
+    ...(activity.reflectionPrompt ? ["", "## Reflection", activity.reflectionPrompt] : []),
+  ];
+  const notebook = {
+    cells: [
+      { cell_type: "markdown", metadata: {}, source: markdown.map(line => `${line}\n`) },
+      { cell_type: "code", execution_count: null, metadata: {}, outputs: [], source: code.split("\n").map(line => `${line}\n`) },
+    ],
+    metadata: {
+      kernelspec: { display_name: "Python 3", language: "python", name: "python3" },
+      language_info: { name: "python" },
+    },
+    nbformat: 4,
+    nbformat_minor: 5,
+  };
+  const file = new Blob([JSON.stringify(notebook, null, 2)], { type: "application/x-ipynb+json" });
+  const url = URL.createObjectURL(file);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `${activity.id}.ipynb`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
 async function getPythonRuntime(
   setOutput: (output: string) => void
 ): Promise<PyodideInstance> {
@@ -216,6 +248,14 @@ export default function PythonForgeLab({
                 className="inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-2.5 py-1.5 text-xs font-semibold text-slate-200 transition-colors hover:bg-white/10"
               >
                 <Download className="h-3.5 w-3.5" /> Save .py
+              </button>
+              <button
+                type="button"
+                onClick={() => downloadNotebook(activity, code)}
+                className="inline-flex items-center gap-1.5 rounded-md border border-cyan-300/30 bg-cyan-300/10 px-2.5 py-1.5 text-xs font-semibold text-cyan-100 transition-colors hover:bg-cyan-300/20"
+                aria-label="Download this Python lab as a Jupyter notebook"
+              >
+                <Download className="h-3.5 w-3.5" /> Download .ipynb
               </button>
               <button
                 type="button"
