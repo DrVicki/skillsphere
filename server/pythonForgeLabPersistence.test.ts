@@ -31,7 +31,7 @@ describe("Python Forge learner lab persistence", () => {
     expect(lab).toContain("trpc.pythonForgeLab.save.useMutation");
     expect(lab).toContain("Saving to your learner progress");
     expect(lab).toContain("Download .ipynb");
-    expect(lab).toContain("application/x-ipynb+json");
+    expect(lab).toContain("downloadPythonNotebook");
   });
 
   it("exposes learner progress and instructor-only submission dashboards", () => {
@@ -105,5 +105,24 @@ describe("Python Forge learner lab persistence", () => {
     expect(lab).toContain("New instructor notification");
     expect(lab).toContain("markNotificationRead");
     expect(email).toContain("sendPythonForgeFeedbackEmail");
+  });
+
+  it("adds a learner dashboard notebook library for both Python courses", () => {
+    const router = read("server/routers.ts");
+    const db = read("server/db.ts");
+    const dashboard = read("client/src/pages/Dashboard.tsx");
+    const library = read("client/src/components/PythonNotebookLibrary.tsx");
+    const notebook = read("client/src/lib/pythonNotebook.ts");
+
+    expect(router).toContain("notebookData: protectedProcedure");
+    expect(router).toContain("download lab notebooks");
+    expect(db).toContain("getPythonForgeLabNotebookData");
+    expect(dashboard).toContain('value="notebooks"');
+    expect(dashboard).toContain("PythonNotebookLibrary");
+    expect(library).toContain("downloadPythonNotebook");
+    expect(library).toContain("Saved learner code");
+    expect(library).toContain("Starter code");
+    expect(notebook).toContain('type: "application/x-ipynb+json"');
+    expect(notebook).toContain("nbformat: 4");
   });
 });

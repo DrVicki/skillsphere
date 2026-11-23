@@ -1384,6 +1384,31 @@ export async function getPythonForgeLabCode(
   return result[0];
 }
 
+export async function getPythonForgeLabNotebookData(
+  userId: number,
+  courseId: number
+) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select({
+      moduleId: pythonForgeLabCode.moduleId,
+      activityId: pythonForgeLabCode.activityId,
+      code: pythonForgeLabCode.code,
+      updatedAt: pythonForgeLabCode.updatedAt,
+    })
+    .from(pythonForgeLabCode)
+    .innerJoin(
+      modules,
+      and(
+        eq(modules.id, pythonForgeLabCode.moduleId),
+        eq(modules.courseId, courseId)
+      )
+    )
+    .where(eq(pythonForgeLabCode.userId, userId))
+    .orderBy(pythonForgeLabCode.updatedAt);
+}
+
 export async function upsertPythonForgeLabCode(data: {
   userId: number;
   courseId: number;

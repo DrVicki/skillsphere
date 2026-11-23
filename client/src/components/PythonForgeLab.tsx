@@ -12,6 +12,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { PythonForgeActivity } from "@/lib/pythonForgeActivities";
 import { trpc } from "@/lib/trpc";
+import { downloadPythonNotebook } from "@/lib/pythonNotebook";
 
 interface Props {
   activity: PythonForgeActivity;
@@ -46,38 +47,6 @@ function downloadPythonFile(filename: string, code: string) {
   const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download = `${filename.replace(/[^a-z0-9-]+/gi, "-").replace(/^-|-$/g, "") || "python-forge"}.py`;
-  anchor.click();
-  URL.revokeObjectURL(url);
-}
-
-function downloadNotebook(activity: PythonForgeActivity, code: string) {
-  const markdown = [
-    `# ${activity.title}`,
-    "",
-    activity.activity.brief,
-    "",
-    "## Steps",
-    ...activity.activity.steps.map((step, index) => `${index + 1}. ${step}`),
-    ...(activity.expectedOutput ? ["", "## Expected output", activity.expectedOutput] : []),
-    ...(activity.reflectionPrompt ? ["", "## Reflection", activity.reflectionPrompt] : []),
-  ];
-  const notebook = {
-    cells: [
-      { cell_type: "markdown", metadata: {}, source: markdown.map(line => `${line}\n`) },
-      { cell_type: "code", execution_count: null, metadata: {}, outputs: [], source: code.split("\n").map(line => `${line}\n`) },
-    ],
-    metadata: {
-      kernelspec: { display_name: "Python 3", language: "python", name: "python3" },
-      language_info: { name: "python" },
-    },
-    nbformat: 4,
-    nbformat_minor: 5,
-  };
-  const file = new Blob([JSON.stringify(notebook, null, 2)], { type: "application/x-ipynb+json" });
-  const url = URL.createObjectURL(file);
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = `${activity.id}.ipynb`;
   anchor.click();
   URL.revokeObjectURL(url);
 }
@@ -251,7 +220,7 @@ export default function PythonForgeLab({
               </button>
               <button
                 type="button"
-                onClick={() => downloadNotebook(activity, code)}
+                onClick={() => downloadPythonNotebook(activity, code)}
                 className="inline-flex items-center gap-1.5 rounded-md border border-cyan-300/30 bg-cyan-300/10 px-2.5 py-1.5 text-xs font-semibold text-cyan-100 transition-colors hover:bg-cyan-300/20"
                 aria-label="Download this Python lab as a Jupyter notebook"
               >

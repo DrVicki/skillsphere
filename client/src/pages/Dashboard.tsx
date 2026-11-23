@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import CourseCertificate from "@/components/CourseCertificate";
 import FirstTimeStudentGuide from "@/components/FirstTimeStudentGuide";
 import PythonForgeProgressDashboard from "@/components/PythonForgeProgressDashboard";
+import PythonNotebookLibrary from "@/components/PythonNotebookLibrary";
 import CAIOProgressChart from "@/components/CAIOProgressChart";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -34,6 +35,7 @@ import {
   CreditCard,
   CalendarDays,
   Users,
+  FileCode2,
 } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useEffect } from "react";
@@ -135,9 +137,10 @@ export default function Dashboard() {
     enrollments?.filter(e => e.progressPercent === 100) ?? [];
   const inProgressCourses =
     enrollments?.filter(e => (e.progressPercent ?? 0) < 100) ?? [];
-  const pythonLabEnrollment = enrollments?.find(
+  const pythonLabEnrollments = enrollments?.filter(
     enrollment => ["python-forge-learn-by-building", "30-days-to-learn-python"].includes(enrollment.course?.slug ?? "")
-  );
+  ) ?? [];
+  const pythonLabEnrollment = pythonLabEnrollments[0];
   const caioEnrollment = enrollments?.find(
     enrollment => enrollment.course?.slug === "chief-ai-officer-caio-4-week-bootcamp"
   );
@@ -325,7 +328,7 @@ export default function Dashboard() {
 
           {/* Tabs */}
           <Tabs defaultValue="learning">
-            <TabsList className="bg-white border border-border rounded-xl p-1 mb-6 h-auto gap-1">
+            <TabsList className="bg-white border border-border rounded-xl p-1 mb-6 h-auto gap-1 flex-wrap">
               <TabsTrigger
                 value="learning"
                 className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white px-4 py-2 text-sm font-medium"
@@ -340,6 +343,17 @@ export default function Dashboard() {
                 {completedCourses.length > 0 && (
                   <span className="ml-1.5 bg-[#F5B942] text-[#0d1b3e] text-xs font-bold rounded-full px-1.5 py-0.5 leading-none">
                     {completedCourses.length}
+                  </span>
+                )}
+              </TabsTrigger>
+              <TabsTrigger
+                value="notebooks"
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-white px-4 py-2 text-sm font-medium"
+              >
+                <FileCode2 className="h-4 w-4 mr-1.5" /> Lab Notebooks
+                {pythonLabEnrollments.length > 0 && (
+                  <span className="ml-1.5 bg-cyan-100 text-cyan-800 text-xs font-bold rounded-full px-1.5 py-0.5 leading-none">
+                    {pythonLabEnrollments.length}
                   </span>
                 )}
               </TabsTrigger>
@@ -730,6 +744,32 @@ export default function Dashboard() {
                     asChild
                     className="bg-[#2A63BF] hover:bg-[#2A63BF]/90 text-white"
                   >
+                    <Link href="/courses">Browse Courses</Link>
+                  </Button>
+                </div>
+              )}
+            </TabsContent>
+
+            {/* ── Lab Notebooks Tab ── */}
+            <TabsContent value="notebooks">
+              {pythonLabEnrollments.length > 0 ? (
+                <PythonNotebookLibrary
+                  enrollments={pythonLabEnrollments.map(enrollment => ({
+                    courseId: enrollment.course?.id ?? enrollment.courseId,
+                    courseSlug: enrollment.course?.slug ?? "",
+                    courseTitle: enrollment.course?.title ?? "Python course",
+                  }))}
+                />
+              ) : (
+                <div className="text-center py-16 bg-white rounded-xl border border-border">
+                  <FileCode2 className="h-14 w-14 text-muted-foreground/30 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    No notebook-enabled courses yet
+                  </h3>
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    Enroll in Python Forge or 30 Days to Learn Python to download your embedded labs as Jupyter Notebooks.
+                  </p>
+                  <Button asChild>
                     <Link href="/courses">Browse Courses</Link>
                   </Button>
                 </div>
