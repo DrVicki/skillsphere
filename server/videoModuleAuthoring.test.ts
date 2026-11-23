@@ -9,6 +9,10 @@ const playerSource = fs.readFileSync(
   new URL("../client/src/pages/LearnCourse.tsx", import.meta.url),
   "utf8"
 );
+const adminEditorSource = fs.readFileSync(
+  new URL("../client/src/pages/admin/AdminCourses.tsx", import.meta.url),
+  "utf8"
+);
 
 describe("video lesson authoring", () => {
   it("persists a lesson type change and validates that video lessons have a source", () => {
@@ -33,10 +37,18 @@ describe("video lesson authoring", () => {
   });
 
   it("selects the public-video iframe player instead of loading public links in a native video tag", () => {
-    expect(playerSource).toContain(
-      "const videoPlayback = getVideoPlayback(activeModule?.videoUrl)"
-    );
+    expect(playerSource).toContain("const videoPlaybacks = videoSources");
     expect(playerSource).toContain('videoPlayback.mode === "embed"');
     expect(playerSource).toContain("allowFullScreen");
+  });
+
+  it("supports up to three stored video sources while preserving the legacy primary URL", () => {
+    expect(routerSource).toContain("videoUrls: z.array(lessonVideoUrl).max(3).optional()");
+    expect(routerSource).toContain("data.videoUrls = nextVideoUrls.length > 0 ? nextVideoUrls : null");
+    expect(playerSource).toContain("Array.isArray(activeModule.videoUrls)");
+    expect(playerSource).toContain("videoPlaybacks.map");
+    expect(adminEditorSource).toContain("videoUrls: string[]");
+    expect(adminEditorSource).toContain("Add video");
+    expect(adminEditorSource).toContain("moduleForm.videoUrls.length < 3");
   });
 });

@@ -77,6 +77,7 @@ export const modules = mysqlTable("modules", {
   type: mysqlEnum("type", ["video", "text", "assessment"]).notNull(),
   content: text("content"),
   videoUrl: text("videoUrl"),
+  videoUrls: json("videoUrls").$type<string[]>(),
   videoKey: text("videoKey"),
   duration: int("duration").default(0),
   sortOrder: int("sortOrder").default(0),

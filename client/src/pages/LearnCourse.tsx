@@ -175,7 +175,16 @@ export default function LearnCourse({ params }: Props) {
     course?.slug,
     activeModule?.title
   );
-  const videoPlayback = getVideoPlayback(activeModule?.videoUrl);
+  const videoSources = activeModule
+    ? Array.isArray(activeModule.videoUrls) && activeModule.videoUrls.length > 0
+      ? activeModule.videoUrls
+      : activeModule.videoUrl
+        ? [activeModule.videoUrl]
+        : []
+    : [];
+  const videoPlaybacks = videoSources
+    .map(source => getVideoPlayback(source))
+    .filter((playback): playback is NonNullable<ReturnType<typeof getVideoPlayback>> => Boolean(playback));
 
   useEffect(() => {
     if (!modules || modules.length === 0 || activeModuleId) return;
@@ -491,24 +500,24 @@ export default function LearnCourse({ params }: Props) {
                     </div>
 
                     {/* Video Module */}
-                    {activeModule.type === "video" && videoPlayback && (
-                      <div className="mb-6 rounded-xl overflow-hidden bg-black aspect-video">
-                        {videoPlayback.mode === "embed" ? (
-                          <iframe
-                            src={videoPlayback.src}
-                            title={videoPlayback.title}
-                            className="w-full h-full"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowFullScreen
-                            referrerPolicy="strict-origin-when-cross-origin"
-                          />
-                        ) : (
-                          <video
-                            src={videoPlayback.src}
-                            controls
-                            className="w-full h-full"
-                          />
-                        )}
+                    {activeModule.type === "video" && videoPlaybacks.length > 0 && (
+                      <div className="mb-6 space-y-4">
+                        {videoPlaybacks.map((videoPlayback, index) => (
+                          <div key={`${videoPlayback.src}-${index}`} className="overflow-hidden rounded-xl bg-black aspect-video">
+                            {videoPlayback.mode === "embed" ? (
+                              <iframe
+                                src={videoPlayback.src}
+                                title={`${videoPlayback.title} ${index + 1}`}
+                                className="w-full h-full"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                                referrerPolicy="strict-origin-when-cross-origin"
+                              />
+                            ) : (
+                              <video src={videoPlayback.src} controls className="w-full h-full" />
+                            )}
+                          </div>
+                        ))}
                       </div>
                     )}
 

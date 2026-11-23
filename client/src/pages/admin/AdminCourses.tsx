@@ -86,6 +86,7 @@ type ModuleForm = {
   type: "video" | "text" | "assessment";
   content: string;
   videoUrl: string;
+  videoUrls: string[];
   duration: string;
   isPreview: boolean;
   sortOrder: string;
@@ -96,6 +97,7 @@ const defaultModuleForm: ModuleForm = {
   type: "text",
   content: "",
   videoUrl: "",
+  videoUrls: [""],
   duration: "0",
   isPreview: false,
   sortOrder: "0",
@@ -221,6 +223,11 @@ export default function AdminCourses() {
       type: mod.type ?? "text",
       content: mod.content ?? "",
       videoUrl: mod.videoUrl ?? "",
+      videoUrls: Array.isArray(mod.videoUrls) && mod.videoUrls.length > 0
+        ? mod.videoUrls
+        : mod.videoUrl
+          ? [mod.videoUrl]
+          : [""],
       duration: String(mod.duration ?? 0),
       isPreview: mod.isPreview ?? false,
       sortOrder: String(mod.sortOrder ?? 0),
@@ -230,10 +237,10 @@ export default function AdminCourses() {
 
   const saveModule = () => {
     if (!moduleCourseId) return;
-    let videoUrl = moduleForm.videoUrl;
+    let videoUrls = moduleForm.videoUrls.filter(url => url.trim());
     if (moduleForm.type === "video") {
       try {
-        videoUrl = normalizeVideoLessonUrl(moduleForm.videoUrl);
+        videoUrls = videoUrls.map(normalizeVideoLessonUrl);
       } catch (error) {
         toast.error(
           error instanceof Error
@@ -245,7 +252,8 @@ export default function AdminCourses() {
     }
     const data = {
       ...moduleForm,
-      videoUrl,
+      videoUrl: videoUrls[0] ?? "",
+      videoUrls,
       duration: parseInt(moduleForm.duration) || 0,
       sortOrder: parseInt(moduleForm.sortOrder) || 0,
     };
@@ -718,18 +726,50 @@ export default function AdminCourses() {
             </div>
             {moduleForm.type === "video" && (
               <div>
-                <Label>Video URL *</Label>
-                <Input
-                  value={moduleForm.videoUrl}
-                  onChange={e =>
-                    setModuleForm(f => ({ ...f, videoUrl: e.target.value }))
-                  }
-                  placeholder="Paste a YouTube video or playlist URL/iframe, Vimeo URL, or /manus-storage/video.mp4"
-                />
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <Label>YouTube videos (up to 3) *</Label>
+                  {moduleForm.videoUrls.length < 3 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setModuleForm(f => ({ ...f, videoUrls: [...f.videoUrls, ""] }))}
+                    >
+                      <Plus className="mr-1 h-3.5 w-3.5" /> Add video
+                    </Button>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  {moduleForm.videoUrls.map((videoUrl, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <span className="w-16 shrink-0 text-xs font-medium text-gray-500">Video {index + 1}</span>
+                      <Input
+                        value={videoUrl}
+                        onChange={e => setModuleForm(f => ({
+                          ...f,
+                          videoUrls: f.videoUrls.map((url, i) => i === index ? e.target.value : url),
+                        }))}
+                        placeholder="https://www.youtube.com/watch?v=..."
+                      />
+                      {moduleForm.videoUrls.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          aria-label={`Remove video ${index + 1}`}
+                          onClick={() => setModuleForm(f => ({
+                            ...f,
+                            videoUrls: f.videoUrls.filter((_, i) => i !== index),
+                          }))}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
                 <p className="mt-1.5 text-xs text-gray-500">
-                  Paste a public YouTube video or playlist link, Vimeo link, or its iframe code for an
-                  embedded player, or use a direct HTTPS or Manus-storage media
-                  URL.
+                  Add up to three public YouTube videos or playlists. Existing single-video lessons continue to work.
                 </p>
               </div>
             )}

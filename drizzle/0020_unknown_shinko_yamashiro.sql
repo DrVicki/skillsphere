@@ -1,0 +1,1 @@
+ALTER TABLE `modules` ADD `videoUrls` json;

@@ -590,6 +590,7 @@ export const appRouter = router({
           type: z.enum(["video", "text", "assessment"]),
           content: z.string().optional(),
           videoUrl: lessonVideoUrl.optional(),
+          videoUrls: z.array(lessonVideoUrl).max(3).optional(),
           videoKey: z.string().optional(),
           duration: z.number().optional(),
           sortOrder: z.number().optional(),
@@ -602,14 +603,20 @@ export const appRouter = router({
         if (!course) throw new TRPCError({ code: "NOT_FOUND" });
         if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")
           throw new TRPCError({ code: "FORBIDDEN" });
-        if (input.type === "video" && !input.videoUrl?.trim()) {
+        const videoUrls = input.videoUrls?.filter(Boolean) ?? [];
+        if (input.type === "video" && videoUrls.length === 0 && !input.videoUrl?.trim()) {
           throw new TRPCError({
             code: "PRECONDITION_FAILED",
             message:
               "Video lessons need a public video URL or a Manus storage path",
           });
         }
-        const id = await createModule(input);
+        const primaryVideoUrl = videoUrls[0] ?? input.videoUrl?.trim() ?? "";
+        const id = await createModule({
+          ...input,
+          videoUrl: primaryVideoUrl || undefined,
+          videoUrls: videoUrls.length > 0 ? videoUrls : primaryVideoUrl ? [primaryVideoUrl] : undefined,
+        });
         return { id };
       }),
 
@@ -621,6 +628,7 @@ export const appRouter = router({
           type: z.enum(["video", "text", "assessment"]).optional(),
           content: z.string().optional(),
           videoUrl: lessonVideoUrl.optional(),
+          videoUrls: z.array(lessonVideoUrl).max(3).optional(),
           videoKey: z.string().optional(),
           duration: z.number().optional(),
           sortOrder: z.number().optional(),
@@ -637,7 +645,14 @@ export const appRouter = router({
           throw new TRPCError({ code: "FORBIDDEN" });
         }
         const nextType = input.type ?? module.type;
-        const nextVideoUrl = input.videoUrl ?? module.videoUrl ?? "";
+        const inputVideoUrls = input.videoUrls?.filter(Boolean) ?? [];
+        const existingVideoUrls = Array.isArray(module.videoUrls) ? module.videoUrls : [];
+        const nextVideoUrls = input.videoUrls !== undefined
+          ? inputVideoUrls
+          : existingVideoUrls.length > 0
+            ? existingVideoUrls
+            : module.videoUrl ? [module.videoUrl] : [];
+        const nextVideoUrl = nextVideoUrls[0] ?? input.videoUrl ?? module.videoUrl ?? "";
         if (nextType === "video" && !nextVideoUrl.trim()) {
           throw new TRPCError({
             code: "PRECONDITION_FAILED",
@@ -645,7 +660,10 @@ export const appRouter = router({
               "Video lessons need a public video URL or a Manus storage path",
           });
         }
-        const { id, ...data } = input;
+        const { id, videoUrl: _videoUrl, videoUrls: _videoUrls, ...rest } = input;
+        const data: Record<string, unknown> = { ...rest };
+        data.videoUrl = nextVideoUrl || null;
+        data.videoUrls = nextVideoUrls.length > 0 ? nextVideoUrls : null;
         await updateModule(id, data);
         return { success: true };
       }),

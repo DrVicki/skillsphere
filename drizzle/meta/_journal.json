@@ -141,6 +141,13 @@
       "when": 1795457686480,
       "tag": "0019_flat_johnny_storm",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "5",
+      "when": 1795465432796,
+      "tag": "0020_unknown_shinko_yamashiro",
+      "breakpoints": true
     }
   ]
 }

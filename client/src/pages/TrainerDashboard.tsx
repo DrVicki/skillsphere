@@ -37,7 +37,7 @@ export default function TrainerDashboard() {
 
   const [moduleForm, setModuleForm] = useState({
     title: "", type: "text" as "video" | "text" | "assessment",
-    content: "", videoUrl: "", duration: 0, isPreview: false, order: 0,
+    content: "", videoUrl: "", videoUrls: [""], duration: 0, isPreview: false, order: 0,
   });
   const [moduleDialogOpen, setModuleDialogOpen] = useState(false);
   const [activeCourseId, setActiveCourseId] = useState<number | null>(null);
@@ -86,7 +86,7 @@ export default function TrainerDashboard() {
   };
 
   const resetModuleForm = () => {
-    setModuleForm({ title: "", type: "text", content: "", videoUrl: "", duration: 0, isPreview: false, order: 0 });
+    setModuleForm({ title: "", type: "text", content: "", videoUrl: "", videoUrls: [""], duration: 0, isPreview: false, order: 0 });
   };
 
   const openEditCourse = (course: any) => {
@@ -115,8 +115,15 @@ export default function TrainerDashboard() {
 
   const handleSaveModule = () => {
     if (!activeCourseId) return;
-    const { order, ...rest } = moduleForm;
-    createModule.mutate({ courseId: activeCourseId, ...rest, sortOrder: order });
+    const { order, videoUrls, ...rest } = moduleForm;
+    const normalizedVideoUrls = videoUrls.filter(url => url.trim());
+    createModule.mutate({
+      courseId: activeCourseId,
+      ...rest,
+      videoUrl: normalizedVideoUrls[0] ?? "",
+      videoUrls: normalizedVideoUrls,
+      sortOrder: order,
+    });
   };
 
   if (loading) return (
@@ -340,8 +347,26 @@ export default function TrainerDashboard() {
                       </div>
                       {moduleForm.type === "video" && (
                         <div>
-                          <Label>Video URL</Label>
-                          <Input placeholder="https://..." value={moduleForm.videoUrl} onChange={(e) => setModuleForm({ ...moduleForm, videoUrl: e.target.value })} className="mt-1" />
+                          <div className="mb-2 flex items-center justify-between gap-2">
+                            <Label>YouTube videos (up to 3)</Label>
+                            {moduleForm.videoUrls.length < 3 && (
+                              <Button type="button" variant="outline" size="sm" onClick={() => setModuleForm({ ...moduleForm, videoUrls: [...moduleForm.videoUrls, ""] })}>
+                                <Plus className="mr-1 h-3.5 w-3.5" /> Add video
+                              </Button>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            {moduleForm.videoUrls.map((videoUrl, index) => (
+                              <div key={index} className="flex items-center gap-2">
+                                <span className="w-14 shrink-0 text-xs text-muted-foreground">Video {index + 1}</span>
+                                <Input placeholder="https://www.youtube.com/watch?v=..." value={videoUrl} onChange={(e) => setModuleForm({ ...moduleForm, videoUrls: moduleForm.videoUrls.map((url, i) => i === index ? e.target.value : url) })} className="mt-1" />
+                                {moduleForm.videoUrls.length > 1 && (
+                                  <Button type="button" variant="ghost" size="icon" aria-label={`Remove video ${index + 1}`} onClick={() => setModuleForm({ ...moduleForm, videoUrls: moduleForm.videoUrls.filter((_, i) => i !== index) })}>×</Button>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                          <p className="mt-1.5 text-xs text-muted-foreground">Add up to three public YouTube videos or playlists.</p>
                         </div>
                       )}
                       <div>

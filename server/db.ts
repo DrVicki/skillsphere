@@ -479,6 +479,7 @@ export async function createModule(data: {
   type: "video" | "text" | "assessment";
   content?: string;
   videoUrl?: string;
+  videoUrls?: string[];
   videoKey?: string;
   duration?: number;
   sortOrder?: number;
@@ -493,6 +494,7 @@ export async function createModule(data: {
     type: data.type,
     content: data.content ?? null,
     videoUrl: data.videoUrl ?? null,
+    videoUrls: data.videoUrls ?? null,
     videoKey: data.videoKey ?? null,
     duration: data.duration ?? 0,
     sortOrder: data.sortOrder ?? 0,
