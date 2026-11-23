@@ -90,6 +90,7 @@ import {
   updateGameDesignDiaryEntry,
   getPythonForgeLabCode,
   getPythonForgeLabNotebookData,
+  recordPythonNotebookDownload,
   upsertPythonForgeLabCode,
   getPythonForgeLabProgress,
   getPythonForgeLabSubmissions,
@@ -1047,6 +1048,22 @@ export const appRouter = router({
           throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in the Python course to download lab notebooks." });
         }
         return getPythonForgeLabNotebookData(ctx.user.id, input);
+      }),
+
+    recordDownload: protectedProcedure
+      .input(z.object({
+        courseId: z.number(),
+        activityId: z.string().trim().min(1).max(64).optional(),
+        downloadType: z.enum(["single", "bundle"]),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const course = await requirePythonForgeCourse(input.courseId);
+        const enrollment = await getEnrollment(ctx.user.id, course.id);
+        if (!enrollment && course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Enroll in the Python course before tracking notebook downloads." });
+        }
+        await recordPythonNotebookDownload({ ...input, userId: ctx.user.id });
+        return { success: true };
       }),
 
     save: protectedProcedure

@@ -110,18 +110,29 @@ describe("Python Forge learner lab persistence", () => {
   it("adds a learner dashboard notebook library for both Python courses", () => {
     const router = read("server/routers.ts");
     const db = read("server/db.ts");
+    const schema = read("drizzle/schema.ts");
     const dashboard = read("client/src/pages/Dashboard.tsx");
     const library = read("client/src/components/PythonNotebookLibrary.tsx");
     const notebook = read("client/src/lib/pythonNotebook.ts");
+    const admin = read("client/src/pages/AdminDashboard.tsx");
 
     expect(router).toContain("notebookData: protectedProcedure");
     expect(router).toContain("download lab notebooks");
+    expect(router).toContain("recordDownload: protectedProcedure");
     expect(db).toContain("getPythonForgeLabNotebookData");
+    expect(db).toContain("recordPythonNotebookDownload");
+    expect(db).toContain("notebookDownloads");
+    expect(schema).toContain('mysqlTable(\n  "python_notebook_download_events"');
     expect(dashboard).toContain('value="notebooks"');
     expect(dashboard).toContain("PythonNotebookLibrary");
     expect(library).toContain("downloadPythonNotebook");
+    expect(library).toContain("Download all ZIP");
+    expect(library).toContain("downloadType: \"bundle\"");
+    expect(library).toContain("Completed");
+    expect(library).toContain("Resubmit requested");
     expect(library).toContain("Saved learner code");
     expect(library).toContain("Starter code");
+    expect(admin).toContain("Notebook Downloads");
     expect(notebook).toContain('type: "application/x-ipynb+json"');
     expect(notebook).toContain("nbformat: 4");
   });

@@ -622,6 +622,25 @@ export const pythonForgeLabCode = mysqlTable(
 );
 export type PythonForgeLabCode = typeof pythonForgeLabCode.$inferSelect;
 export type InsertPythonForgeLabCode = typeof pythonForgeLabCode.$inferInsert;
+
+// Learner notebook download analytics stores event metadata only, never notebook contents.
+export const pythonNotebookDownloadEvents = mysqlTable(
+  "python_notebook_download_events",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: int("userId").notNull(),
+    courseId: int("courseId").notNull(),
+    activityId: varchar("activityId", { length: 64 }),
+    downloadType: mysqlEnum("downloadType", ["single", "bundle"]).notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  table => [
+    index("python_notebook_download_user_course_idx").on(table.userId, table.courseId),
+    index("python_notebook_download_course_created_idx").on(table.courseId, table.createdAt),
+  ]
+);
+export type PythonNotebookDownloadEvent = typeof pythonNotebookDownloadEvents.$inferSelect;
+export type InsertPythonNotebookDownloadEvent = typeof pythonNotebookDownloadEvents.$inferInsert;
 // Learner evidence for the AI in Data Analytics course.
 export const aiDataAnalyticsEvidence = mysqlTable(
   "ai_data_analytics_evidence",

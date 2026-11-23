@@ -24,6 +24,7 @@ import {
   gameDesignDiaryEntries,
   caioAssessmentResults,
   pythonForgeLabCode,
+  pythonNotebookDownloadEvents,
   pythonForgeLabNotifications,
   gameDesignKnowledgeCheckResults,
   caioEvidenceSubmissions,
@@ -1395,7 +1396,10 @@ export async function getPythonForgeLabNotebookData(
       moduleId: pythonForgeLabCode.moduleId,
       activityId: pythonForgeLabCode.activityId,
       code: pythonForgeLabCode.code,
+      reviewStatus: pythonForgeLabCode.reviewStatus,
       updatedAt: pythonForgeLabCode.updatedAt,
+      completedAt: moduleProgress.completedAt,
+      isCompleted: moduleProgress.isCompleted,
     })
     .from(pythonForgeLabCode)
     .innerJoin(
@@ -1405,8 +1409,27 @@ export async function getPythonForgeLabNotebookData(
         eq(modules.courseId, courseId)
       )
     )
-    .where(eq(pythonForgeLabCode.userId, userId))
+    .leftJoin(
+      moduleProgress,
+      and(
+        eq(moduleProgress.moduleId, pythonForgeLabCode.moduleId),
+        eq(moduleProgress.courseId, courseId),
+        eq(moduleProgress.userId, userId)
+      )
+    )
+    .where(and(eq(pythonForgeLabCode.userId, userId), eq(pythonForgeLabCode.courseId, courseId)))
     .orderBy(pythonForgeLabCode.updatedAt);
+}
+
+export async function recordPythonNotebookDownload(data: {
+  userId: number;
+  courseId: number;
+  activityId?: string;
+  downloadType: "single" | "bundle";
+}) {
+  const db = await getDb();
+  if (!db) return undefined;
+  return db.insert(pythonNotebookDownloadEvents).values(data);
 }
 
 export async function upsertPythonForgeLabCode(data: {
@@ -2407,6 +2430,9 @@ export async function getAnalyticsOverview() {
         sql`CAST(${payments.discountAmount} AS DECIMAL(10,2)) > 0`
       )
     );
+  const [notebookDownloadStats] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(pythonNotebookDownloadEvents);
   const topCourses = await db
     .select({
       id: courses.id,
@@ -2430,6 +2456,7 @@ export async function getAnalyticsOverview() {
     totalRevenue: revenue?.total ?? "0",
     promotionRedemptions: Number(promotionStats?.redemptions ?? 0),
     promotionDiscountTotal: promotionStats?.discountTotal ?? "0",
+    notebookDownloads: Number(notebookDownloadStats?.count ?? 0),
     topCourses,
   };
 }
