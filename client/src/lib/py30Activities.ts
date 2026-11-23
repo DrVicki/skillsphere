@@ -1059,7 +1059,21 @@ export const py30Activities: PythonForgeActivity[] = [
 
 const byTitle = new Map(py30Activities.map(activity => [activity.title, activity]));
 
+function normalizeLessonTitle(title: string) {
+  return title
+    .replace(/^[^|·]+[|·]\s*/, "")
+    .replace(/^\d+\s*[|·]\s*/, "")
+    .trim()
+    .toLowerCase();
+}
+
 export function getPy30ActivityForModule(courseSlug?: string | null, moduleTitle?: string | null) {
   if (courseSlug !== PY30_COURSE_SLUG || !moduleTitle) return null;
-  return byTitle.get(moduleTitle) ?? null;
+  return (
+    byTitle.get(moduleTitle) ??
+    py30Activities.find(
+      activity => normalizeLessonTitle(activity.title) === normalizeLessonTitle(moduleTitle)
+    ) ??
+    null
+  );
 }
