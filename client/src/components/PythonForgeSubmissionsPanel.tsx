@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { BarChart3, Code2, Download, Eye, Search, Users } from "lucide-react";
+import JSZip from "jszip";
+import { BarChart3, Code2, Download, Eye, FileArchive, Search, Users } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { trpc } from "@/lib/trpc";
+import { createPythonNotebook } from "@/lib/pythonNotebook";
+import { py30Activities, PY30_COURSE_SLUG } from "@/lib/py30Activities";
+import { pythonForgeActivities } from "@/lib/pythonForgeActivities";
+import type { PythonForgeActivity } from "@/lib/pythonForgeActivities";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -11,11 +17,33 @@ import { toast } from "sonner";
 
 interface Props {
   courseId: number;
+  courseSlug?: string;
   classroomId?: number;
   classroomName?: string;
 }
 
-export default function PythonForgeSubmissionsPanel({ courseId, classroomId, classroomName }: Props) {
+function notebookActivity(courseSlug: string | undefined, submission: { activityId: string; moduleTitle: string }): PythonForgeActivity {
+  const catalog = courseSlug === PY30_COURSE_SLUG ? py30Activities : pythonForgeActivities;
+  return catalog.find(activity => activity.id === submission.activityId) ?? {
+    id: submission.activityId,
+    title: submission.moduleTitle,
+    sourceUrl: "",
+    starterCode: "",
+    hints: [],
+    activity: { title: submission.moduleTitle, brief: "Learner-submitted Python lab code exported from the classroom review queue.", steps: ["Review the learner's submitted code below."], successCriteria: [] },
+  };
+}
+
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+export default function PythonForgeSubmissionsPanel({ courseId, courseSlug, classroomId, classroomName }: Props) {
   const queryInput = { courseId, ...(classroomId !== undefined ? { classroomId } : {}) };
   const { data: submissions, isLoading, isError } = trpc.pythonForgeLab.submissions.useQuery(queryInput, {
     enabled: courseId > 0,
@@ -28,6 +56,10 @@ export default function PythonForgeSubmissionsPanel({ courseId, classroomId, cla
   const { data: metrics } = trpc.pythonForgeLab.classroomMetrics.useQuery(
     { courseId, classroomId: classroomId ?? 0 },
     { enabled: classroomId !== undefined && courseId > 0 }
+  );
+  const { data: engagement } = trpc.pythonForgeLab.notebookEngagement.useQuery(
+    { courseId, ...(classroomId !== undefined ? { classroomId } : {}) },
+    { enabled: courseId > 0 }
   );
   const exportReport = trpc.pythonForgeLab.exportClassroomCsv.useMutation();
   const saveFeedback = trpc.pythonForgeLab.feedback.useMutation({
@@ -78,6 +110,20 @@ export default function PythonForgeSubmissionsPanel({ courseId, classroomId, cla
     URL.revokeObjectURL(url);
   };
 
+  const downloadClassroomNotebooks = async () => {
+    if (classroomId === undefined || !submissions?.length) return;
+    const zip = new JSZip();
+    submissions.forEach(submission => {
+      const learner = (submission.learnerName || submission.learnerEmail || `learner-${submission.userId}`)
+        .replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || `learner-${submission.userId}`;
+      const activity = notebookActivity(courseSlug, submission);
+      zip.file(`${learner}/${activity.id}.ipynb`, JSON.stringify(createPythonNotebook(activity, submission.code), null, 2));
+    });
+    const blob = await zip.generateAsync({ type: "blob", compression: "DEFLATE" });
+    downloadBlob(blob, `${(classroomName || "classroom").replace(/[^a-z0-9]+/gi, "-").toLowerCase()}-python-notebooks.zip`);
+    toast.success(`${submissions.length} learner notebooks downloaded`);
+  };
+
   return (
     <section className="rounded-2xl border border-blue-200 bg-white shadow-sm" aria-labelledby="python-forge-submissions-title">
       <div className="flex flex-col gap-4 border-b border-slate-200 p-5 sm:flex-row sm:items-start sm:justify-between">
@@ -102,6 +148,9 @@ export default function PythonForgeSubmissionsPanel({ courseId, classroomId, cla
           {classroomId !== undefined && <Button size="sm" variant="outline" onClick={downloadReport} disabled={exportReport.isPending}>
             <Download className="mr-1.5 h-3.5 w-3.5" /> {exportReport.isPending ? "Preparing…" : "Export CSV"}
           </Button>}
+          {classroomId !== undefined && <Button size="sm" variant="outline" onClick={() => void downloadClassroomNotebooks()} disabled={!submissions?.length}>
+            <FileArchive className="mr-1.5 h-3.5 w-3.5" /> Download notebook ZIP
+          </Button>}
         </div>
       </div>
 
@@ -116,6 +165,26 @@ export default function PythonForgeSubmissionsPanel({ courseId, classroomId, cla
           <p className="text-lg font-bold text-slate-900">{value}</p><p className="text-xs text-slate-500">{label}</p>
         </div>)}
       </div>}
+
+      <div className="border-b border-slate-200 p-5">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div>
+            <h3 className="font-semibold text-slate-900">Notebook engagement</h3>
+            <p className="text-xs text-slate-500">{classroomName ? "Downloads from learners in this classroom" : "Downloads across this course"}</p>
+          </div>
+          <Badge variant="outline">Last 30 days</Badge>
+        </div>
+        {(engagement?.length ?? 0) > 0 ? <ResponsiveContainer width="100%" height={220}>
+          <BarChart data={engagement} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <XAxis dataKey="day" tick={{ fontSize: 10 }} tickFormatter={value => String(value).slice(5)} />
+            <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+            <Tooltip />
+            <Bar dataKey="singleDownloads" name="Individual downloads" stackId="downloads" fill="#2A63BF" />
+            <Bar dataKey="bundleDownloads" name="Bundle downloads" stackId="downloads" fill="#14b8a6" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer> : <div className="flex h-[220px] items-center justify-center rounded-xl bg-slate-50 text-sm text-slate-500">No notebook downloads recorded yet</div>}
+      </div>
 
       <div className="p-5">
         <div className="relative max-w-md">

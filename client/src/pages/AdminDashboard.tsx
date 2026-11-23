@@ -167,7 +167,7 @@ export default function AdminDashboard() {
 
           {gameDesignCourseId > 0 && <GameDesignDiaryReviewPanel courseId={gameDesignCourseId} />}
           {caioCourseId > 0 && caioAssessmentModuleId > 0 && <CAIOAssessmentAnalyticsPanel courseId={caioCourseId} moduleId={caioAssessmentModuleId} />}
-          {pythonLabCourses.map(course => <PythonForgeSubmissionsPanel key={course.id} courseId={course.id} />)}
+          {pythonLabCourses.map(course => <PythonForgeSubmissionsPanel key={course.id} courseId={course.id} courseSlug={course.slug} />)}
 
           {/* Top Courses */}
           {analytics?.topCourses && analytics.topCourses.length > 0 && (

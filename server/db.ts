@@ -1601,6 +1601,36 @@ export async function exportPythonForgeClassroomCsv(courseId: number, classroomI
   ].join("\n");
 }
 
+export async function getPythonForgeNotebookEngagement(courseId: number, classroomId?: number) {
+  const db = await getDb();
+  if (!db) return [];
+  const classroomMemberFilter = classroomId
+    ? sql`EXISTS (
+        SELECT 1 FROM classroom_members cm
+        WHERE cm.classroomId = ${classroomId}
+          AND cm.userId = ${pythonNotebookDownloadEvents.userId}
+          AND cm.status = 'active'
+      )`
+    : undefined;
+  const day = sql<string>`DATE_FORMAT(${pythonNotebookDownloadEvents.createdAt}, '%Y-%m-%d')`;
+  return db
+    .select({
+      day,
+      downloads: sql<number>`COUNT(*)`,
+      singleDownloads: sql<number>`SUM(CASE WHEN ${pythonNotebookDownloadEvents.downloadType} = 'single' THEN 1 ELSE 0 END)`,
+      bundleDownloads: sql<number>`SUM(CASE WHEN ${pythonNotebookDownloadEvents.downloadType} = 'bundle' THEN 1 ELSE 0 END)`,
+    })
+    .from(pythonNotebookDownloadEvents)
+    .where(and(
+      eq(pythonNotebookDownloadEvents.courseId, courseId),
+      sql`${pythonNotebookDownloadEvents.createdAt} >= DATE_SUB(NOW(), INTERVAL 30 DAY)`,
+      classroomMemberFilter
+    ))
+    .groupBy(day)
+    .orderBy(day)
+    .limit(30);
+}
+
 export async function createPythonForgeLabNotification(data: { userId: number; courseId: number; moduleId: number; labCodeId: number; title: string; body: string }) {
   const db = await getDb();
   if (!db) return undefined;

@@ -97,6 +97,7 @@ import {
   updatePythonForgeLabFeedback,
   getPythonForgeClassroomMetrics,
   exportPythonForgeClassroomCsv,
+  getPythonForgeNotebookEngagement,
   createPythonForgeLabNotification,
   getPythonForgeLabNotifications,
   markPythonForgeLabNotificationRead,
@@ -956,6 +957,22 @@ export const appRouter = router({
           throw new TRPCError({ code: "FORBIDDEN", message: "Only the classroom course instructor can export lab reports." });
         }
         return exportPythonForgeClassroomCsv(input.courseId, input.classroomId);
+      }),
+
+    notebookEngagement: trainerProcedure
+      .input(z.object({ courseId: z.number(), classroomId: z.number().optional() }))
+      .query(async ({ ctx, input }) => {
+        const course = await requirePythonForgeCourse(input.courseId);
+        if (input.classroomId !== undefined) {
+          await requireClassroomManager(ctx.user, input.classroomId);
+          const classroomCourses = await getClassroomCourses(input.classroomId);
+          if (!classroomCourses.some(item => item.courseId === input.courseId) || (course.trainerId !== ctx.user.id && ctx.user.role !== "admin")) {
+            throw new TRPCError({ code: "FORBIDDEN", message: "Only the assigned classroom instructor can view notebook engagement." });
+          }
+        } else if (course.trainerId !== ctx.user.id && ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Only the course instructor can view notebook engagement." });
+        }
+        return getPythonForgeNotebookEngagement(input.courseId, input.classroomId);
       }),
 
     feedback: trainerProcedure

@@ -302,7 +302,7 @@ export default function TrainerDashboard() {
           </div>
 
           {caioCourseId > 0 && caioAssessmentModuleId > 0 && <CAIOAssessmentAnalyticsPanel courseId={caioCourseId} moduleId={caioAssessmentModuleId} />}
-          {pythonLabCourses.map(course => <PythonForgeSubmissionsPanel key={course.id} courseId={course.id} />)}
+          {pythonLabCourses.map(course => <PythonForgeSubmissionsPanel key={course.id} courseId={course.id} courseSlug={course.slug} />)}
 
           {/* Module Manager */}
           {activeCourseId && (

@@ -509,6 +509,7 @@ export default function AdminClassrooms() {
                             <PythonForgeSubmissionsPanel
                               key={course.courseId}
                               courseId={course.courseId}
+                              courseSlug={course.slug}
                               classroomId={expanded.id}
                               classroomName={expanded.name}
                             />
