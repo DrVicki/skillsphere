@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   getVideoPlayback,
+  getYouTubeThumbnail,
   normalizeEmbedContent,
   normalizeVideoLessonUrl,
 } from "../client/src/lib/embedContent";
@@ -68,6 +69,13 @@ describe("normalizeEmbedContent", () => {
       provider: "YouTube",
       src: expect.stringContaining("embed/videoseries?list=PLBfr9Gu76okk"),
     });
+  });
+
+  it("creates a thumbnail for a YouTube video but not a playlist", () => {
+    expect(getYouTubeThumbnail("https://www.youtube.com/watch?v=abc123")).toBe(
+      "https://i.ytimg.com/vi/abc123/hqdefault.jpg"
+    );
+    expect(getYouTubeThumbnail("https://youtube.com/playlist?list=PL123")).toBeNull();
   });
 
   it("rejects unsafe or malformed sources", () => {

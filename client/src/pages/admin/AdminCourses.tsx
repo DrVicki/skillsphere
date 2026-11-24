@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { normalizeVideoLessonUrl } from "@/lib/embedContent";
+import { getYouTubeThumbnail, normalizeVideoLessonUrl } from "@/lib/embedContent";
 import {
   Dialog,
   DialogContent,
@@ -115,6 +115,7 @@ export default function AdminCourses() {
   const [editingModule, setEditingModule] = useState<number | null>(null);
   const [moduleForm, setModuleForm] = useState<ModuleForm>(defaultModuleForm);
   const [moduleCourseId, setModuleCourseId] = useState<number | null>(null);
+  const [draggedVideoIndex, setDraggedVideoIndex] = useState<number | null>(null);
   const [search, setSearch] = useState("");
 
   const { data: expandedModules } = trpc.modules.byCourse.useQuery(
@@ -211,6 +212,7 @@ export default function AdminCourses() {
   const openNewModule = (courseId: number) => {
     setEditingModule(null);
     setModuleCourseId(courseId);
+    setDraggedVideoIndex(null);
     setModuleForm(defaultModuleForm);
     setShowModuleDialog(true);
   };
@@ -218,6 +220,7 @@ export default function AdminCourses() {
   const openEditModule = (mod: any, courseId: number) => {
     setEditingModule(mod.id);
     setModuleCourseId(courseId);
+    setDraggedVideoIndex(null);
     setModuleForm({
       title: mod.title ?? "",
       type: mod.type ?? "text",
@@ -262,6 +265,25 @@ export default function AdminCourses() {
     } else {
       createModule.mutate({ courseId: moduleCourseId, ...data });
     }
+  };
+
+  const moveVideo = (fromIndex: number, toIndex: number) => {
+    setModuleForm(form => {
+      if (toIndex < 0 || toIndex >= form.videoUrls.length) return form;
+      const videoUrls = [...form.videoUrls];
+      const [movedVideo] = videoUrls.splice(fromIndex, 1);
+      videoUrls.splice(toIndex, 0, movedVideo);
+      return { ...form, videoUrls };
+    });
+  };
+
+  const dropVideo = (targetIndex: number) => {
+    if (draggedVideoIndex === null || draggedVideoIndex === targetIndex) {
+      setDraggedVideoIndex(null);
+      return;
+    }
+    moveVideo(draggedVideoIndex, targetIndex);
+    setDraggedVideoIndex(null);
   };
 
   const filtered =
@@ -739,18 +761,56 @@ export default function AdminCourses() {
                     </Button>
                   )}
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-3" aria-label="Lesson video order">
                   {moduleForm.videoUrls.map((videoUrl, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <span className="w-16 shrink-0 text-xs font-medium text-gray-500">Video {index + 1}</span>
-                      <Input
-                        value={videoUrl}
-                        onChange={e => setModuleForm(f => ({
-                          ...f,
-                          videoUrls: f.videoUrls.map((url, i) => i === index ? e.target.value : url),
-                        }))}
-                        placeholder="https://www.youtube.com/watch?v=..."
-                      />
+                    <div
+                      key={index}
+                      draggable
+                      onDragStart={() => setDraggedVideoIndex(index)}
+                      onDragOver={event => event.preventDefault()}
+                      onDrop={() => dropVideo(index)}
+                      onDragEnd={() => setDraggedVideoIndex(null)}
+                      className={`rounded-lg border p-2 transition-colors ${draggedVideoIndex === index ? "border-primary bg-primary/5 opacity-60" : "border-border bg-white"}`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          draggable={false}
+                          className="cursor-grab rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 active:cursor-grabbing"
+                          aria-label={`Drag to reorder video ${index + 1}`}
+                          title="Drag to reorder"
+                        >
+                          <GripVertical className="h-4 w-4" />
+                        </button>
+                        <span className="w-16 shrink-0 text-xs font-medium text-gray-500">Video {index + 1}</span>
+                        <Input
+                          value={videoUrl}
+                          onChange={e => setModuleForm(f => ({
+                            ...f,
+                            videoUrls: f.videoUrls.map((url, i) => i === index ? e.target.value : url),
+                          }))}
+                          placeholder="https://www.youtube.com/watch?v=..."
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          disabled={index === 0}
+                          aria-label={`Move video ${index + 1} up`}
+                          onClick={() => moveVideo(index, index - 1)}
+                        >
+                          <ChevronUp className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          disabled={index === moduleForm.videoUrls.length - 1}
+                          aria-label={`Move video ${index + 1} down`}
+                          onClick={() => moveVideo(index, index + 1)}
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
                       {moduleForm.videoUrls.length > 1 && (
                         <Button
                           type="button"
@@ -764,6 +824,21 @@ export default function AdminCourses() {
                         >
                           <X className="h-4 w-4" />
                         </Button>
+                      )}
+                      </div>
+                      {getYouTubeThumbnail(videoUrl) ? (
+                        <div className="mt-2 flex items-center gap-3 border-t border-border pt-2">
+                          <img
+                            src={getYouTubeThumbnail(videoUrl) ?? undefined}
+                            alt={`Preview thumbnail for video ${index + 1}`}
+                            className="h-16 w-28 rounded object-cover"
+                          />
+                          <span className="text-xs text-gray-500">YouTube preview · drag this row to change playback order</span>
+                        </div>
+                      ) : (
+                        <p className="mt-2 border-t border-border pt-2 text-xs text-gray-400">
+                          Paste a YouTube URL to show its preview thumbnail.
+                        </p>
                       )}
                     </div>
                   ))}

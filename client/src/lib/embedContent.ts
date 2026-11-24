@@ -192,6 +192,29 @@ export function normalizeVideoLessonUrl(input: string): string {
 }
 
 /**
+ * Returns a privacy-safe YouTube thumbnail for a pasted video URL or iframe.
+ * Playlists and non-YouTube sources intentionally return null because they do
+ * not have a single stable video thumbnail.
+ */
+export function getYouTubeThumbnail(input: string): string | null {
+  if (!input.trim()) return null;
+
+  try {
+    const embed = normalizeEmbedContent(input);
+    if (embed.provider !== "YouTube" || embed.kind !== "video") return null;
+
+    const url = new URL(embed.src);
+    const parts = url.pathname.split("/").filter(Boolean);
+    const videoId = parts[0] === "embed" && parts[1] !== "videoseries" ? parts[1] : "";
+    return videoId
+      ? `https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg`
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Chooses the correct lesson player for a stored video URL. Public YouTube and
  * Vimeo links need an iframe player; direct media files and storage URLs keep
  * using the native HTML video element.

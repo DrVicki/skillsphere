@@ -50,5 +50,8 @@ describe("video lesson authoring", () => {
     expect(adminEditorSource).toContain("videoUrls: string[]");
     expect(adminEditorSource).toContain("Add video");
     expect(adminEditorSource).toContain("moduleForm.videoUrls.length < 3");
+    expect(adminEditorSource).toContain("draggable");
+    expect(adminEditorSource).toContain("getYouTubeThumbnail");
+    expect(adminEditorSource).toContain("Move video");
   });
 });
