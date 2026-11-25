@@ -499,6 +499,21 @@ export default function LearnCourse({ params }: Props) {
                       )}
                     </div>
 
+                    {/* Python Forge keeps each source-authored hands-on activity immediately below the lesson heading. */}
+                    {(pythonForgeActivity || py30Activity) && (
+                      <PythonForgeLab
+                        activity={pythonForgeActivity ?? py30Activity!}
+                        courseId={course.id}
+                        moduleId={activeModule.id}
+                        canPersist={hasCourseAccess && isAuthenticated}
+                        onLabCompleted={() => {
+                          if (hasCourseAccess && isAuthenticated) {
+                            markComplete.mutate({ moduleId: activeModule.id, courseId: course.id });
+                          }
+                        }}
+                      />
+                    )}
+
                     {/* Video Module */}
                     {activeModule.type === "video" && videoPlaybacks.length > 0 && (
                       <div className="mb-6 space-y-4">
@@ -588,21 +603,6 @@ export default function LearnCourse({ params }: Props) {
                         moduleTitle={activeModule.title}
                         isCapstone={aiDataAnalyticsLab?.id === "capstone"}
                         canPersist={hasCourseAccess && isAuthenticated}
-                      />
-                    )}
-
-                    {/* Python Forge keeps each source-authored hands-on activity in a browser-run Python lab. */}
-                    {(pythonForgeActivity || py30Activity) && (
-                      <PythonForgeLab
-                        activity={pythonForgeActivity ?? py30Activity!}
-                        courseId={course.id}
-                        moduleId={activeModule.id}
-                        canPersist={hasCourseAccess && isAuthenticated}
-                        onLabCompleted={() => {
-                          if (hasCourseAccess && isAuthenticated) {
-                            markComplete.mutate({ moduleId: activeModule.id, courseId: course.id });
-                          }
-                        }}
                       />
                     )}
 

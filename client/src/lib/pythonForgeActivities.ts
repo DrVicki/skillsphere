@@ -1804,17 +1804,33 @@ export const pythonForgeActivities: PythonForgeActivity[] = [
   },
 ];
 
+const normalizeActivityTitle = (title: string) =>
+  title
+    .replace(/\s+/g, " ")
+    .replace(/\s*\|\s*/g, " | ")
+    .trim()
+    .toLocaleLowerCase();
+
 const activitiesByTitle = new Map(
   pythonForgeActivities.map(activity => [activity.title, activity])
+);
+const activitiesByNormalizedTitle = new Map(
+  pythonForgeActivities.map(activity => [normalizeActivityTitle(activity.title), activity])
 );
 
 export function getPythonForgeActivityForModule(
   courseSlug?: string | null,
   moduleTitle?: string | null
 ): PythonForgeActivity | null {
-  if (courseSlug !== PYTHON_FORGE_COURSE_SLUG || !moduleTitle) return null;
+  if (courseSlug?.trim() !== PYTHON_FORGE_COURSE_SLUG || !moduleTitle) return null;
   const normalizedTitle = moduleTitle
     .replace(/^Module\s+\d+\s*[-–—·]?\s*Lesson\s+\d+\s*:\s*/i, "")
     .trim();
-  return activitiesByTitle.get(moduleTitle) ?? activitiesByTitle.get(normalizedTitle) ?? null;
+  return (
+    activitiesByTitle.get(moduleTitle) ??
+    activitiesByTitle.get(normalizedTitle) ??
+    activitiesByNormalizedTitle.get(normalizeActivityTitle(moduleTitle)) ??
+    activitiesByNormalizedTitle.get(normalizeActivityTitle(normalizedTitle)) ??
+    null
+  );
 }

@@ -47,6 +47,12 @@ describe("Python Forge activity routing", () => {
       }),
       reflectionPrompt: expect.stringContaining("Action assignment"),
     });
+    expect(
+      getPythonForgeActivityForModule(
+        " python-forge-learn-by-building ",
+        "Week 1  |  Review  Project 1: Guess the Number"
+      )
+    ).toMatchObject({ id: "week1-review-project-1-guess-number" });
     for (const activity of pythonForgeActivities) {
       expect(
         getPythonForgeActivityForModule(
