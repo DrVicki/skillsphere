@@ -1061,8 +1061,11 @@ const byTitle = new Map(py30Activities.map(activity => [activity.title, activity
 
 function normalizeLessonTitle(title: string) {
   return title
+    .trim()
     .replace(/^[^|·]+[|·]\s*/, "")
     .replace(/^\d+\s*[|·]\s*/, "")
+    .replace(/\s+/g, " ")
+    .replace(/\breview\s+project\s+(\d+)\b/gi, "review $1")
     .trim()
     .toLowerCase();
 }

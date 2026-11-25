@@ -25,6 +25,18 @@ describe("py30 embedded lab routing", () => {
     expect(
       getPy30ActivityForModule(
         "30-days-to-learn-python",
+        "Week 1 | Review  Project 1: Guess the Number"
+      )
+    ).toMatchObject({ id: "py30-d06" });
+    expect(
+      getPy30ActivityForModule(
+        "30-days-to-learn-python",
+        "  Week 1 | Review Project 1:   Guess the Number  "
+      )
+    ).toMatchObject({ id: "py30-d06" });
+    expect(
+      getPy30ActivityForModule(
+        "30-days-to-learn-python",
         "Week 5 | Capstone: Ship the To-Do CLI"
       )
     ).toMatchObject({ id: "py30-d30" });
