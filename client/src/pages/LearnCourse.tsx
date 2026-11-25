@@ -499,21 +499,6 @@ export default function LearnCourse({ params }: Props) {
                       )}
                     </div>
 
-                    {/* Python Forge keeps each source-authored hands-on activity immediately below the lesson heading. */}
-                    {(pythonForgeActivity || py30Activity) && (
-                      <PythonForgeLab
-                        activity={pythonForgeActivity ?? py30Activity!}
-                        courseId={course.id}
-                        moduleId={activeModule.id}
-                        canPersist={hasCourseAccess && isAuthenticated}
-                        onLabCompleted={() => {
-                          if (hasCourseAccess && isAuthenticated) {
-                            markComplete.mutate({ moduleId: activeModule.id, courseId: course.id });
-                          }
-                        }}
-                      />
-                    )}
-
                     {/* Video Module */}
                     {activeModule.type === "video" && videoPlaybacks.length > 0 && (
                       <div className="mb-6 space-y-4">
@@ -720,6 +705,21 @@ export default function LearnCourse({ params }: Props) {
                           </p>
                         </div>
                       ))}
+
+                    {/* Embedded Python labs are intentionally placed at the bottom of lesson content. */}
+                    {(pythonForgeActivity || py30Activity) && (
+                      <PythonForgeLab
+                        activity={pythonForgeActivity ?? py30Activity!}
+                        courseId={course.id}
+                        moduleId={activeModule.id}
+                        canPersist={hasCourseAccess && isAuthenticated}
+                        onLabCompleted={() => {
+                          if (hasCourseAccess && isAuthenticated) {
+                            markComplete.mutate({ moduleId: activeModule.id, courseId: course.id });
+                          }
+                        }}
+                      />
+                    )}
 
                     {/* Navigation */}
                     <div className="flex justify-between mt-6">
