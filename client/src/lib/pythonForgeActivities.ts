@@ -1361,6 +1361,39 @@ export const pythonForgeActivities: PythonForgeActivity[] = [
     },
   },
   {
+    id: "week1-review-project-1-guess-number",
+    title: "Week 1 | Review Project 1: Guess the Number",
+    sourceUrl: "https://pyforgecourse.org/projects/1/guess-the-number",
+    starterCode:
+      '# Week 1 review project: Guess the Number\n# The secret is fixed so you can test the program repeatedly in the browser.\nsecret_number = 7\nguesses = [3, 9, 7]\n\n# TODO: Count the guesses and track whether the secret was found.\nattempts = 0\nfound = False\n\nfor guess in guesses:\n    # TODO: increase attempts and compare guess with secret_number.\n    pass\n\nprint("Attempts:", attempts)\nprint("Found the number?", found)\nif found:\n    print("You win!")\nelse:\n    print("Keep practising!")',
+    expectedOutput:
+      "Attempts: 3\nFound the number? True\nYou win!",
+    hints: [
+      "Start each loop pass by increasing attempts with attempts += 1.",
+      "Use an if statement to compare guess with secret_number and set found to True when they match.",
+      "Keep the loop running so the program can report how many guesses were tried; use a second list to test a losing round.",
+    ],
+    activity: {
+      title: "Review build: Guess the Number",
+      brief:
+        "Bring together variables, lists, for loops, comparisons, and conditionals in a small game that reports attempts and a win or loss.",
+      steps: [
+        "Run the starter once and predict which guess will match the fixed secret number.",
+        "Complete the loop so attempts increases for every guess and found becomes True when a guess matches secret_number.",
+        "Change guesses to a list with no 7 and run again. Explain why the final message changes.",
+        "Extend the output with a hint such as too low or too high, then save your finished .py file as a review artifact.",
+      ],
+      successCriteria: [
+        "The program runs in the embedded Python 3 lab without an error.",
+        "Attempts equals the number of guesses processed, rather than a hard-coded answer.",
+        "The program reports a win when a guess equals secret_number and a practice message when no guess matches.",
+        "The learner can explain how the loop and comparison work together.",
+      ],
+    },
+    reflectionPrompt:
+      "Action assignment: Change the secret number and create two test rounds—one that wins and one that does not. In your notes, explain which variable represents input, which variable records state, and what you would change to stop immediately after a correct guess.",
+  },
+  {
     id: "project-01",
     title: "Portfolio Project 01 · Launch Checklist Generator",
     sourceUrl: "https://pyforgecourse.org/projects/1",

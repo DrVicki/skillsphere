@@ -6,7 +6,7 @@ import {
 
 describe("Python Forge activity routing", () => {
   it("maps every source lesson and portfolio project to an embedded coding activity", () => {
-    expect(pythonForgeActivities).toHaveLength(42);
+    expect(pythonForgeActivities).toHaveLength(43);
     expect(
       getPythonForgeActivityForModule(
         "python-forge-learn-by-building",
@@ -32,11 +32,26 @@ describe("Python Forge activity routing", () => {
       id: "project-12",
       activity: expect.objectContaining({ title: "Portfolio build brief" }),
     });
-    for (const [index, activity] of pythonForgeActivities.entries()) {
+    expect(
+      getPythonForgeActivityForModule(
+        "python-forge-learn-by-building",
+        "Week 1 | Review Project 1: Guess the Number"
+      )
+    ).toMatchObject({
+      id: "week1-review-project-1-guess-number",
+      title: "Week 1 | Review Project 1: Guess the Number",
+      starterCode: expect.stringContaining("secret_number"),
+      activity: expect.objectContaining({
+        title: "Review build: Guess the Number",
+        steps: expect.arrayContaining([expect.stringContaining("Run the starter")]),
+      }),
+      reflectionPrompt: expect.stringContaining("Action assignment"),
+    });
+    for (const activity of pythonForgeActivities) {
       expect(
         getPythonForgeActivityForModule(
           "python-forge-learn-by-building",
-          `Module ${Math.floor(index / 3) + 1} - Lesson ${index + 1}: ${activity.title}`
+          activity.title
         )
       ).toMatchObject({ id: activity.id });
     }
@@ -53,6 +68,12 @@ describe("Python Forge activity routing", () => {
       getPythonForgeActivityForModule(
         "python-forge-learn-by-building",
         "A different lesson"
+      )
+    ).toBeNull();
+    expect(
+      getPythonForgeActivityForModule(
+        "30-days-to-learn-python",
+        "Week 1 | Review Project 1: Guess the Number"
       )
     ).toBeNull();
   });

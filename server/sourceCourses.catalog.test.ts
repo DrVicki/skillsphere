@@ -41,7 +41,7 @@ describe("source course catalog", () => {
     });
     expect(bySlug.get("python-forge-learn-by-building")).toMatchObject({
       title: "Python Forge — Learn by Building",
-      totalModules: 42,
+      totalModules: 43,
       isPublished: true,
     });
     expect(bySlug.get("10-ways-chatgpt-business-owners")).toMatchObject({
@@ -133,7 +133,7 @@ describe("source course catalog", () => {
       }),
     });
 
-    expect(pyforgeModules).toHaveLength(42);
+    expect(pyforgeModules).toHaveLength(43);
     expect(pyforgeModules[0]?.content).toContain(
       "programs_make_a_plan_explicit"
     );
@@ -141,6 +141,13 @@ describe("source course catalog", () => {
       "The interactive Python lab, hints, definition of done, reflection, and knowledge check appear directly below this lesson."
     );
     expect(pyforgeModules[0]?.content).toContain("predict-run-explain");
+    expect(pyforgeModules[3]).toMatchObject({
+      title: "Week 1 | Review Project 1: Guess the Number",
+      type: "text",
+      content: expect.stringContaining(
+        "The interactive Python lab below is the working area for this review project"
+      ),
+    });
     expect(pyforgeModules.at(-1)).toMatchObject({
       title: "Portfolio Project 12 · Portfolio-Ready Python Product",
       content: expect.stringContaining("build_requirements"),
